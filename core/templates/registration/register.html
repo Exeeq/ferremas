@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block contenido %}
+<!-- Start Hero Section -->
+<div class="hero">
+  <div class="container d-flex justify-content-center mx-auto aling-items-center">
+    <div class="row">
+      <div class="">
+        <h1>REGISTRO DE USUARIOS</h1>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Hero Section -->
+<div class="container">
+  <div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8">
+      <form method="POST" class="p-4 rounded shadow">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ form.run.id_for_label }}" class="h6">Run:</label>
+          <input type="{{ form.run.field.widget.input_type }}" id="{{ form.run.id_for_label }}" name="{{ form.run.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+          <label for="{{ form.pnombre.id_for_label }}" class="h6">Primer Nombre:</label>
+          <input type="{{ form.pnombre.field.widget.input_type }}" id="{{ form.pnombre.id_for_label }}" name="{{ form.pnombre.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+          <label for="{{ form.ap_paterno.id_for_label }}" class="h6">Apellido Paterno:</label>
+          <input type="{{ form.ap_paterno.field.widget.input_type }}" id="{{ form.ap_paterno.id_for_label }}" name="{{ form.ap_paterno.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+          <label for="{{ form.correo_usuario.id_for_label }}" class="h6">Correo Electrónico:</label>
+          <input type="{{ form.correo_usuario.field.widget.input_type }}" id="{{ form.correo_usuario.id_for_label }}" name="{{ form.correo_usuario.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+            <label for="{{ form.password1.id_for_label }}" class="h6">Contraseña:</label>
+            <input type="password" id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+            <label for="{{ form.password2.id_for_label }}" class="h6">Confirmar Contraseña:</label>
+            <input type="password" id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+          <label for="{{ form.fecha_nacimiento.id_for_label }}" class="h6">Fecha de Nacimiento:</label>
+          <input type="{{ form.fecha_nacimiento.field.widget.input_type }}" id="{{ form.fecha_nacimiento.id_for_label }}" name="{{ form.fecha_nacimiento.html_name }}" class="form-control rounded-pill">
+        </div>
+        <div class="form-group mt-4">
+          <label for="{{ form.dirrecion.id_for_label }}" class="h6">Dirección:</label>
+          <input type="{{ form.dirrecion.field.widget.input_type }}" id="{{ form.dirrecion.id_for_label }}" name="{{ form.dirrecion.html_name }}" class="form-control rounded-pill">
+        </div>
+        
+        <input type="submit" class="btn btn-primary btn-block mt-3 rounded-pill d-flex mx-auto" value="Registrar">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock contenido %}
