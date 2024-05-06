@@ -44,9 +44,25 @@
 						<li><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
 						<li><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
 					</ul>
-
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href=""><img src="{% static 'core/images/user.svg' %}"></a></li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="{% static 'core/images/user.svg' %}" alt="User Icon">
+							</a>
+							<ul class="dropdown-menu bg-black" aria-labelledby="navbarDropdown">
+								{% if user.is_authenticated %}
+								<li>
+									<a class="nav-link text-white" href="#" role="button" aria-expanded="false">
+										{{ user.pnombre }} {{ user.ap_paterno }}
+									</a>
+								</li>
+								<li><a class="dropdown-item text-white" href="{% url 'logout' %}">Cerrar sesión</a></li>
+								{% else %}
+									<li><a class="dropdown-item text-white" href="{% url 'register' %}">Registrarse</a></li>
+									<li><a class="dropdown-item text-white" href="{% url 'login' %}">Iniciar Sesión</a></li>
+								{% endif %}
+							</ul>
+						</li>
 						<li><a class="nav-link" href="{% url 'cart' %}"><img src="{% static 'core/images/cart.svg' %}"></a></li>
 					</ul>
 				</div>

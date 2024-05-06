@@ -8,9 +8,11 @@ class UsuarioCustom(AbstractUser):
     snombre = models.CharField(max_length=20)
     ap_paterno = models.CharField(max_length=24)
     ap_materno = models.CharField(max_length=24)
-    correo_usuario = models.CharField(max_length=60)
+    correo_usuario = models.EmailField('email address', unique=True)
     fecha_nacimiento = models.DateField()
     direccion = models.CharField(max_length=40)
+
+    USERNAME_FIELD = 'correo_usuario'
     
 
     def __str__(self):
