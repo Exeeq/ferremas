@@ -4,6 +4,10 @@ from .forms import *
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from .forms import CustomAuthenticationForm
 
 
 
@@ -47,12 +51,13 @@ def register(request):
 
     return render(request, 'registration/register.html', { 'form': form })
 
-def login_view(request):
-    if request.method == 'POST':
-        form = CustomAuthenticationForm(request, request.POST)
-        if form.is_valid():
-            # Autenticar al usuario
-            return redirect('index')  # Redirigir a la página de inicio
-    else:
-        form = CustomAuthenticationForm(request)
-    return render(request, 'tu_template.html', {'form': form})
+
+class CustomLoginView(LoginView):
+    authentication_form = CustomAuthenticationForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('core/index.html')
+
+    def form_valid(self, form):
+        user = form.get_user()
+        login(self.request, user)
+        return super().form_valid(form)

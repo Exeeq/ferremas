@@ -3,16 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from core.models import *
 
 class UsuarioCustom(AbstractUser):
-    run = models.CharField(max_length=12)
-    pnombre = models.CharField(max_length=20)
+    run = models.CharField(max_length=12, blank=False, null=False)
+    pnombre = models.CharField(max_length=20, blank=False, null=False)
     snombre = models.CharField(max_length=20)
-    ap_paterno = models.CharField(max_length=24)
+    ap_paterno = models.CharField(max_length=24, blank=False, null=False)
     ap_materno = models.CharField(max_length=24)
-    correo_usuario = models.EmailField('email address', unique=True)
-    fecha_nacimiento = models.DateField()
+    correo_usuario = models.EmailField('correo electrónico')
+    fecha_nacimiento = models.DateField(null=True)
     direccion = models.CharField(max_length=40)
-
-    USERNAME_FIELD = 'correo_usuario'
     
 
     def __str__(self):

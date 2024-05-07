@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import *
+from .views import CustomLoginView
 
 urlpatterns = [
     path('', index, name="index"),
@@ -10,6 +11,7 @@ urlpatterns = [
     path('cart/', cart, name="cart"),
     path('checkout/', checkout, name="checkout"),
     path('thankyou/', thankyou, name="thankyou"),
-    path('register/', register, name="register")
+    path('register/', register, name="register"),
+
 ]
 
