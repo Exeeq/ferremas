@@ -8,16 +8,27 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .forms import CustomAuthenticationForm
-
-
+from django.db import connection
 
 # VIEWS
 def index(request):
 	return render(request, 'core/index.html')
 
+from django.shortcuts import render
+from django.db import connection
+
 @login_required
 def shop(request):
-	return render(request, 'core/shop.html')
+    # Llamar al procedimiento almacenado
+    with connection.cursor() as cursor:
+        # Ejecutar el procedimiento almacenado con un argumento vacío
+        cursor.callproc("SP_GET_PRODUCTOS", [""])
+        
+        # Obtener el resultado del procedimiento almacenado
+        productos = cursor.fetchall()
+    
+    return render(request, 'core/shop.html', {'productos': productos})
+
 
 def about(request):
 	return render(request, 'core/about.html')
