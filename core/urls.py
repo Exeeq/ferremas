@@ -13,5 +13,7 @@ urlpatterns = [
     path('thankyou/', thankyou, name="thankyou"),
     path('register/', register, name="register"),
 
+    #URLS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR):
+    path('addProduct/', addProduct, name="addProduct")
 ]
 

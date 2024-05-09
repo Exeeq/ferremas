@@ -46,4 +46,14 @@ class CustomAuthenticationForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+    
+#FORM CRUD PRODUCTOS (AÑADIR, ACTUALIZAR):
+class ProductForm(forms.Form):
+    idProducto = forms.IntegerField(label='ID del Producto')
+    nombreProducto = forms.CharField(label='Nombre del Producto', max_length=255)
+    precioProducto = forms.IntegerField(label='Precio del Producto')
+    imagenProducto = forms.ImageField(label='Imagen del Producto')
+    descripcionProducto = forms.CharField(label='Descripción del Producto', widget=forms.Textarea)
+    idcategoriaProducto = forms.IntegerField(label='ID de la Categoría del Producto')
+    idmarcaProducto = forms.IntegerField(label='ID de la Marca del Producto')
 
