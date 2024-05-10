@@ -1,5 +1,5 @@
 from django.contrib import admin
-from usuario.models import UsuarioCustom
+from .models import *
 
 class UsuarioAdmin(admin.ModelAdmin):
     list_display = ['username','run', 'pnombre', 'snombre', 'ap_paterno', 'ap_materno', 'correo_usuario', 'fecha_nacimiento', 'direccion']
@@ -8,4 +8,13 @@ class UsuarioAdmin(admin.ModelAdmin):
     list_filter = ['ap_paterno']
     list_editable = ['pnombre', 'run', 'snombre', 'ap_paterno', 'ap_materno', 'correo_usuario', 'fecha_nacimiento', 'direccion']
 
-admin.site.register(UsuarioCustom, UsuarioAdmin)
+admin.site.register(usuarioCustom, UsuarioAdmin)
+admin.site.register(rolUsuario)
+admin.site.register(comuna)
+admin.site.register(region)
+admin.site.register(marca)
+admin.site.register(categoriaProducto)
+admin.site.register(producto)
+admin.site.register(sucursal)
+admin.site.register(bodega)
+admin.site.register(inventario)

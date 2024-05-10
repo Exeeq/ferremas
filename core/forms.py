@@ -1,5 +1,5 @@
 from django import forms
-from usuario.models import UsuarioCustom
+from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext, gettext_lazy as _
@@ -7,14 +7,18 @@ from django.contrib.auth import authenticate
 
 
 class RegisterForm(UserCreationForm):
-    fecha_nacimiento = forms.DateField(
-        label='Fecha de Nacimiento',
-        widget=forms.DateInput(attrs={'type': 'date'})
-    )
+    username = forms.CharField(label='Nombre de usuario', help_text='Mínimo 6 caracteres')
+    run = forms.CharField(label='RUN (Rol Único Nacional)', help_text='Ejemplo: 12345678-9')
+    correo_usuario = forms.EmailField(label='Correo electrónico')
+    pnombre = forms.CharField(label='Primer Nombre')
+    ap_paterno = forms.CharField(label='Apellido Paterno')
+    fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento', widget=forms.DateInput(attrs={'type': 'date'}))
+    direccion = forms.CharField(label='Dirección', widget=forms.TextInput(attrs={'placeholder': 'Calle, número, comuna'}))
+    comuna = forms.ModelChoiceField(queryset=comuna.objects.all(), label='Comuna')
 
     class Meta:
-        model = UsuarioCustom
-        fields = ['username', 'run', 'correo_usuario', 'pnombre', 'ap_paterno', 'fecha_nacimiento', 'direccion']
+        model = usuarioCustom
+        fields = ['username', 'run', 'correo_usuario', 'pnombre', 'ap_paterno', 'fecha_nacimiento', 'direccion', 'comuna']
 
 class CustomAuthenticationForm(AuthenticationForm):
     email = forms.EmailField(
@@ -48,12 +52,5 @@ class CustomAuthenticationForm(AuthenticationForm):
         return self.cleaned_data
     
 #FORM CRUD PRODUCTOS (AÑADIR, ACTUALIZAR):
-class ProductForm(forms.Form):
-    idProducto = forms.IntegerField(label='ID del Producto')
-    nombreProducto = forms.CharField(label='Nombre del Producto', max_length=255)
-    precioProducto = forms.IntegerField(label='Precio del Producto')
-    imagenProducto = forms.ImageField(label='Imagen del Producto')
-    descripcionProducto = forms.CharField(label='Descripción del Producto', widget=forms.Textarea)
-    idcategoriaProducto = forms.IntegerField(label='ID de la Categoría del Producto')
-    idmarcaProducto = forms.IntegerField(label='ID de la Marca del Producto')
+
 

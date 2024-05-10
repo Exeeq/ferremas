@@ -20,24 +20,7 @@ def index(request):
 
 @login_required
 def shop(request):
-    try:
-        # Llamar al procedimiento almacenado para obtener los productos 
-        with connection.cursor() as cursor:
-            cursor.callproc("SP_GET_PRODUCTOS", [""])
-            productos = cursor.fetchall()
-            
-            for producto in productos:
-                imagen_binaria = producto[3]
-                imagen_base64 = base64.b64encode(imagen_binaria).decode('utf-8')
-                producto[3] = f"data:image/jpeg;base64,{imagen_base64}"
-        
-    except Exception as e:
-        print("Error al obtener los productos:", e)
-        productos = []
-
-    return render(request, 'core/shop.html', {'productos': productos})
-
-
+    return render(request, 'core/shop.html')
 
 def about(request):
 	return render(request, 'core/about.html')
@@ -62,16 +45,17 @@ def thankyou(request):
 	return render(request, 'core/thankyou.html')
 
 def register(request):
-    #TOMAR EL FORMULARIO DE FORM.PY
     form = RegisterForm()
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            #SI FORMULARIO ES VALIDO SE GUARDA.
-            form.save()
+            user = form.save(commit=False)  # No guarda el usuario todavía
+            # Asigna el rol por defecto "Cliente"
+            user.rol = rolUsuario.objects.get(nombreRol='Cliente')
+            user.save()  # Ahora guarda el usuario con el rol asignado
             return redirect("index")
 
-    return render(request, 'registration/register.html', { 'form': form })
+    return render(request, 'registration/register.html', {'form': form})
 
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
@@ -83,43 +67,15 @@ class CustomLoginView(LoginView):
         login(self.request, user)
         return super().form_valid(form)
 
+def handle_uploaded_file(f):
+    with open('media/productos/' + f.name, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
 #VISTAS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR)
-def addProduct(request):
-    #Inicializar el formulario
-    form = ProductForm() 
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                # Obtener los datos del formulario
-                idProducto = form.cleaned_data['idProducto']
-                nombreProducto = form.cleaned_data['nombreProducto']
-                precioProducto = form.cleaned_data['precioProducto']
-                imagenProducto = form.cleaned_data['imagenProducto']
-                descripcionProducto = form.cleaned_data['descripcionProducto']
-                idcategoriaProducto = form.cleaned_data['idcategoriaProducto']
-                idmarcaProducto = form.cleaned_data['idmarcaProducto']
-                
-                # Llamar al procedimiento almacenado para insertar el producto
-                with connection.cursor() as cursor:
-                    cursor.callproc("SP_POST_PRODUCTO", [
-                        idProducto,
-                        nombreProducto,
-                        precioProducto,
-                        imagenProducto,  
-                        descripcionProducto,
-                        idcategoriaProducto,
-                        idmarcaProducto,
-                        [""]
-                    ])
-                
-                # Redireccionar a shop.html después de la inserción exitosa
-                return redirect("shop")
-                
-            except Exception as e:
-                print("Error:", e)
-    
-    return render(request, 'core/addproduct.html', {'form': form})
+def addProduct(request):    
+    return render(request, 'core/addproduct.html')
+
 
     
 

@@ -40,9 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'crispy_forms',
-    'usuario',
-
+    'crispy_forms'
 ]
 
 #USO DEL CRISPYFORMS:
@@ -87,7 +85,7 @@ WSGI_APPLICATION = 'ferremas.wsgi.application'
 DATABASES = {
     'default' : {
         'ENGINE' : 'django.db.backends.mysql',
-        'NAME' : 'ferremas_bd',
+        'NAME' : 'ferremas',
         'HOST' : 'localhost',
         'PORT' : '3306',
         'USER' : 'root',
@@ -98,7 +96,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'usuario.UsuarioCustom'
+AUTH_USER_MODEL = 'core.usuarioCustom'
 
 
 # Password validation
@@ -145,3 +143,7 @@ STATICFILES_DIRS = [
 #LOGIN CONFIG:
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+#RUTA IMGS:
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
