@@ -12,7 +12,6 @@ from django.db import connection
 from django.shortcuts import render
 from django.db import connection
 from django.http import HttpResponse
-import base64
 
 # VIEWS
 def index(request):
@@ -20,7 +19,11 @@ def index(request):
 
 @login_required
 def shop(request):
-    return render(request, 'core/shop.html')
+    cone = connection.cursor()
+    cone.callproc('SP_GET_PRODUCTOS', [""])
+    productos = cone.fetchone()
+        
+    return render(request, 'core/shop.html', {'productos': productos})
 
 def about(request):
 	return render(request, 'core/about.html')
@@ -49,10 +52,11 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)  # No guarda el usuario todavía
-            # Asigna el rol por defecto "Cliente"
-            user.rol = rolUsuario.objects.get(nombreRol='Cliente')
-            user.save()  # Ahora guarda el usuario con el rol asignado
+            user = form.save(commit=False)
+            # Asignar el rol por defecto Cliente
+            user.idRol = rolUsuario.objects.get(nombreRol='Cliente')
+            user.idComuna = form.cleaned_data['comuna']
+            user.save()
             return redirect("index")
 
     return render(request, 'registration/register.html', {'form': form})
@@ -74,7 +78,15 @@ def handle_uploaded_file(f):
 
 #VISTAS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR)
 def addProduct(request):    
-    return render(request, 'core/addproduct.html')
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            redirect(to="shop")
+    else:
+        form = ProductoForm()
+    
+    return render(request, 'core/addproduct.html', {'form': form})
 
 
     

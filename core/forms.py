@@ -52,5 +52,8 @@ class CustomAuthenticationForm(AuthenticationForm):
         return self.cleaned_data
     
 #FORM CRUD PRODUCTOS (AÑADIR, ACTUALIZAR):
-
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = producto
+        fields = ['nombreProducto', 'precioProducto', 'imagenProducto', 'descripcionProducto', 'idcategoriaProducto', 'idMarca']
 

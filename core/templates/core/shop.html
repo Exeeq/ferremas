@@ -24,16 +24,18 @@
 				<div class="d-flex mx-auto align-items-center justify-content-center mb-5">
 					<p><a href="{% url 'addProduct' %}" class="btn btn-secondary me-2 text-white font-bold">AÑADIR PRODUCTO</a></p>
 				</div>
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="" class="img-fluid product-thumbnail" alt="{{ producto.3 }}">
-							<h3 class="product-title"></h3>
-							<strong class="product-price">$</strong>
-							<span class="icon-cross">
-								<img src="{% static 'core/images/cross.svg' %}" class="img-fluid">
-							</span>
-						</a>
-					</div> 
+                {% for producto in productos %}
+				    <div class="col-12 col-md-4 col-lg-3 mb-5">
+					    <a class="product-item" href="#">
+						    <img src="{{ producto.imagenProducto.url }}" class="img-fluid product-thumbnail" alt="{{ producto.nombreProducto }}">
+						    <h3 class="product-title">{{ producto.1 }}</h3>
+						    <strong class="product-price">${{ producto.2 }}</strong>
+						    <span class="icon-cross">
+							    <img src="{% static 'core/images/cross.svg' %}" class="img-fluid">
+						    </span>
+					    </a>
+				    </div>
+                {% endfor %}
 			</div>
 		</div>
 	</div>

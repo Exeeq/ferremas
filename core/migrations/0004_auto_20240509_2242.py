@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='usuariocustom',
             name='idRol',
-            field=models.ForeignKey(default=django.utils.timezone.now, on_delete=django.db.models.deletion.CASCADE, to='core.rolusuario'),
-            preserve_default=False,
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.rolusuario'),            preserve_default=False,
         ),
     ]
