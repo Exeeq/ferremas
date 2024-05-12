@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col-12 m-5">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form | crispy }}
                 <input type="submit" class="btn btn-success mt-4" value="Guardar">

@@ -55,5 +55,10 @@ class CustomAuthenticationForm(AuthenticationForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = producto
-        fields = ['nombreProducto', 'precioProducto', 'imagenProducto', 'descripcionProducto', 'idcategoriaProducto', 'idMarca']
+        fields = ["nombreProducto", "precioProducto", "imagenProducto", "descripcionProducto", "idMarca", "idcategoriaProducto", "stockProducto"]
+        widgets = {
+            'idcategoriaProducto': forms.Select(attrs={'class': 'form-control'}),
+            'idMarca': forms.Select(attrs={'class': 'form-control'}),
+        }
+
 

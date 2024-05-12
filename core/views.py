@@ -8,10 +8,11 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .forms import CustomAuthenticationForm
-from django.db import connection
 from django.shortcuts import render
 from django.db import connection
-from django.http import HttpResponse
+import cx_Oracle
+import oracledb
+from django.core.files.storage import default_storage
 
 # VIEWS
 def index(request):
@@ -19,11 +20,30 @@ def index(request):
 
 @login_required
 def shop(request):
-    cone = connection.cursor()
-    cone.callproc('SP_GET_PRODUCTOS', [""])
-    productos = cone.fetchone()
-        
-    return render(request, 'core/shop.html', {'productos': productos})
+    lista = []
+    try:
+        cursor = connection.cursor()
+        cursor_productos = cursor.var(oracledb.CURSOR)
+        out = cursor.var(int)
+        cursor.callproc("SP_GET_PRODUCTOS",[cursor_productos, out])
+        if out.getvalue() == 1:
+            for fila in cursor_productos.getvalue():
+                json = {}
+                json['idProducto'] = fila[0]
+                json['nombreProducto'] = fila[1]
+                json['precioProducto'] = fila[2]
+                json['stockProducto'] = fila[3]
+                json['imagenProducto'] = fila[4]
+                json['idMarca'] = fila[5]
+                json['idcategoriaProducto'] = fila[6]
+                lista.append(json)
+                print("JSON:", json)  
+                print("LISTA:", lista)  
+            return render(request, 'core/shop.html', {'productos': lista}) 
+    except Exception as e:
+        print("ERROR EN SHOP: ", e)
+
+    return render(request, 'core/shop.html', {'productos': lista})
 
 def about(request):
 	return render(request, 'core/about.html')
@@ -77,16 +97,34 @@ def handle_uploaded_file(f):
             destination.write(chunk)
 
 #VISTAS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR)
-def addProduct(request):    
+def addProduct(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            redirect(to="shop")
+            nombreProducto = form.cleaned_data['nombreProducto']
+            precioProducto = form.cleaned_data['precioProducto']
+            descripcionProducto = form.cleaned_data['descripcionProducto']
+            idMarca = form.cleaned_data['idMarca'].idMarca
+            idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].idcategoriaProducto
+            stockProducto = form.cleaned_data['stockProducto']
+            imagenProducto = form.cleaned_data['imagenProducto']
+            imagen_path = default_storage.save('productos/' + imagenProducto.name, imagenProducto)
+            
+        try:
+            cursor = connection.cursor()
+            out = cursor.var(int)
+            cursor.callproc("SP_GET_POST",[nombreProducto, precioProducto, descripcionProducto, idMarca, idcategoriaProducto, stockProducto, imagen_path, out])
+            if out.getvalue()==1:
+                connection.commit()
+        except Exception as e:
+            print("ERROR EN ADDPRODUCTO: ", e)
+
     else:
         form = ProductoForm()
-    
     return render(request, 'core/addproduct.html', {'form': form})
+
+
+
 
 
     

@@ -1,6 +1,8 @@
 from django.urls import path, include
 from .views import *
 from .views import CustomLoginView
+from django.conf import settings
+from django.contrib.staticfiles.urls import static
 
 urlpatterns = [
     path('', index, name="index"),
@@ -15,5 +17,6 @@ urlpatterns = [
 
     #URLS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR):
     path('addProduct/', addProduct, name="addProduct")
+
 ]
 

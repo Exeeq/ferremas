@@ -83,16 +83,13 @@ WSGI_APPLICATION = 'ferremas.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default' : {
-        'ENGINE' : 'django.db.backends.mysql',
-        'NAME' : 'ferremas',
-        'HOST' : 'localhost',
-        'PORT' : '3306',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'OPTIONS': {
-            'sql_mode': 'STRICT_TRANS_TABLES',
-        },
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'ORCL',
+        'USER': 'FERREMASBD',
+        'PASSWORD': 'FERREMASBD',
+        'HOST': 'localhost',
+        'PORT': '1521',       
     }
 }
 

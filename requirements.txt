@@ -2,6 +2,5 @@ django
 django-admin-interface
 django-crispy-forms
 pillow
-pymysql
-mysqlclient
+cx_Oracle
 django-jazzmin

@@ -33,8 +33,8 @@ class usuarioCustom(AbstractUser):
     correo_usuario = models.EmailField(blank=False, null=False)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     direccion = models.CharField(blank=False, null=False, max_length=100)
-    idRol = models.ForeignKey(rolUsuario, on_delete=models.CASCADE)
-    idComuna = models.ForeignKey(comuna, on_delete=models.CASCADE)
+    idRol = models.ForeignKey(rolUsuario, on_delete=models.CASCADE, blank=True, null=True)
+    idComuna = models.ForeignKey(comuna, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.username    
@@ -58,10 +58,11 @@ class producto(models.Model):
     idProducto = models.AutoField(primary_key=True)
     nombreProducto = models.CharField(max_length=50, blank=False, null=False)
     precioProducto = models.IntegerField(blank=False, null=False)
-    imagenProducto = models.ImageField(upload_to='productos/', blank=True, null=True)
+    stockProducto = models.IntegerField(blank=False, null=False)
+    imagenProducto = models.ImageField(upload_to='productos/', null=True, blank=True)
     descripcionProducto = models.CharField(max_length=200, blank=False, null=False)
-    idcategoriaProducto = models.ForeignKey(categoriaProducto, on_delete=models.CASCADE)
-    idMarca = models.ForeignKey(marca, on_delete=models.CASCADE)
+    idcategoriaProducto = models.ForeignKey(categoriaProducto, on_delete=models.CASCADE, blank=False, null=False)
+    idMarca = models.ForeignKey(marca, on_delete=models.CASCADE, blank=False, null=False)
 
     def __str__(self):
         return self.nombreProducto
@@ -76,21 +77,6 @@ class sucursal(models.Model):
     def __str__(self):
         return self.nombreSucursal
 
-class bodega(models.Model):
-    idBodega = models.AutoField(primary_key=True)
-    nombreBodega = models.CharField(max_length=50, blank=False, null=False)
-    idSucursal = models.ForeignKey(sucursal, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.nombreBodega
-    
-class inventario(models.Model):
-    stock = models.IntegerField(blank=False, null=False)
-    idProducto = models.ForeignKey(producto, on_delete=models.CASCADE)
-    idBodega = models.ForeignKey(bodega, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"Inventario de {self.idProducto.nombreProducto} en {self.idBodega.nombreBodega}"
 
 #MODELOS RELACIONADOS AL CARRITO DE COMPRA
 

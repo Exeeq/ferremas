@@ -25,16 +25,20 @@
 					<p><a href="{% url 'addProduct' %}" class="btn btn-secondary me-2 text-white font-bold">AÑADIR PRODUCTO</a></p>
 				</div>
                 {% for producto in productos %}
-				    <div class="col-12 col-md-4 col-lg-3 mb-5">
-					    <a class="product-item" href="#">
-						    <img src="{{ producto.imagenProducto.url }}" class="img-fluid product-thumbnail" alt="{{ producto.nombreProducto }}">
-						    <h3 class="product-title">{{ producto.1 }}</h3>
-						    <strong class="product-price">${{ producto.2 }}</strong>
-						    <span class="icon-cross">
-							    <img src="{% static 'core/images/cross.svg' %}" class="img-fluid">
-						    </span>
-					    </a>
-				    </div>
+                    <div class="col-12 col-md-4 col-lg-3 mb-5">
+                        <a class="product-item" href="#">
+                            {% if producto.4 %}
+                                <img src="{{ producto.4.url }}" class="img-fluid product-thumbnail" alt="{{ producto.1 }}">
+                            {% else %}
+                                <p>No hay imagen disponible</p>
+                            {% endif %}
+                            <h3 class="product-title">{{ producto.2 }}</h3>
+                            <strong class="product-price">${{ producto.3 }}</strong>
+                            <span class="icon-cross">
+                                <img src="{% static 'core/images/cross.svg' %}" class="img-fluid">
+                            </span>
+                        </a>
+                    </div>
                 {% endfor %}
 			</div>
 		</div>
