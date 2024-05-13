@@ -13,6 +13,8 @@ from django.db import connection
 import cx_Oracle
 import oracledb
 from django.core.files.storage import default_storage
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 # VIEWS
@@ -78,7 +80,6 @@ def handle_uploaded_file(f):
             destination.write(chunk)
 
 #VISTAS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR)
-
 def addProduct(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
@@ -89,32 +90,15 @@ def addProduct(request):
             idMarca = form.cleaned_data['idMarca'].idMarca
             idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].idcategoriaProducto
             stockProducto = form.cleaned_data['stockProducto']
-            imagenProducto = form.cleaned_data['imagenProducto']
             
-            if imagenProducto: 
-                imagen_path = default_storage.save('productos/' + imagenProducto.name, imagenProducto)
-            else:
-                imagen_path = ""
+            # Procesar la imagen
+            imagen = request.FILES['imagenProducto']
+            imagen_data = imagen.read() 
+            
+            # Llamar al procedimiento almacenado
+            if agregar_producto(None, nombreProducto, precioProducto, descripcionProducto, idMarca, idcategoriaProducto, stockProducto, imagen_data):
+                return HttpResponseRedirect(reverse('shop'))
 
-            try:
-                cursor = connection.cursor()
-                out = cursor.var(cx_Oracle.NUMBER)
-                cursor.callproc("SP_POST_PRODUCTO", [None,
-                                                     nombreProducto,
-                                                     precioProducto,
-                                                     imagen_path,
-                                                     descripcionProducto,
-                                                     idMarca,
-                                                     idcategoriaProducto,
-                                                     stockProducto,
-                                                     ""])
-                
-                connection.commit()
-                form.save()
-                redirect(to="shop")
-                    
-            except Exception as e:
-                print(f"ERROR EN ADDPRODUCTO: {e}")
     else:
         form = ProductoForm()
     return render(request, 'core/addproduct.html', {'form': form})
@@ -132,8 +116,16 @@ def lista_productos():
     for fila in out_cur:
          lista.append(fila)
 
-    return lista    
-    
+    return lista
+
+def agregar_producto(idProducto, nombreProducto, precioProducto, stockProducto, descripcionProducto, idMarca, idcategoriaProducto, imagenProducto):
+    try:
+        django_cursor = connection.cursor()
+        cursor = django_cursor.connection.cursor()
+        # out = cursor.var(cx_Oracle.NUMBER)
+        cursor.callproc("SP_POST_PRODUCTO", [idProducto, nombreProducto, precioProducto, stockProducto, descripcionProducto, idMarca, idcategoriaProducto, imagenProducto, ""])
+    except Exception as e:
+        print("ERROR EN AGREGAR PRODUCTO: ", e)
 
 
 

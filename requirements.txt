@@ -3,4 +3,5 @@ django-admin-interface
 django-crispy-forms
 pillow
 cx_Oracle
+oracledb
 django-jazzmin

@@ -59,7 +59,7 @@ class producto(models.Model):
     nombreProducto = models.CharField(max_length=50, blank=False, null=False)
     precioProducto = models.IntegerField(blank=False, null=False)
     stockProducto = models.IntegerField(blank=False, null=False)
-    imagenProducto = models.BinaryField(blank=True, null=True)
+    imagenProducto = models.ImageField(upload_to="productos/",blank=True, null=True)
     descripcionProducto = models.CharField(max_length=200, blank=False, null=False)
     idcategoriaProducto = models.ForeignKey(categoriaProducto, on_delete=models.CASCADE, blank=False, null=False)
     idMarca = models.ForeignKey(marca, on_delete=models.CASCADE, blank=False, null=False)
