@@ -83,13 +83,16 @@ WSGI_APPLICATION = 'ferremas.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'ORCL',
-        'USER': 'FERREMASBD',
-        'PASSWORD': 'FERREMASBD',
-        'HOST': 'localhost',
-        'PORT': '1521',       
+    'default' : {
+        'ENGINE' : 'django.db.backends.mysql',
+        'NAME' : 'FERREMASBD',
+        'HOST' : 'localhost',
+        'PORT' : '3306',
+        'USER' : 'root',
+        'PASSWORD' : '',
+        'OPTIONS': {
+            'sql_mode': 'STRICT_TRANS_TABLES',
+        },
     }
 }
 
@@ -120,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-cl'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "America/Santiago"
 
 USE_I18N = True
 
@@ -128,19 +131,24 @@ USE_L10N = True
 
 USE_TZ = True
 
+STATIC_URL = "/static/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-#LOGIN CONFIG:
+# CONFIGURACIONES CUSTOMS
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
+# LA CARPETA PARA LAS IMAGENES
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# SISTEMA DE MENSAJERIA DE DJANGO
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+
+# CONFIGURANDO EL LOGIN
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
-#RUTA IMGS:
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'

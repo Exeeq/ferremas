@@ -1,21 +1,17 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .forms import CustomAuthenticationForm
 from django.shortcuts import render
 from django.db import connection
-import cx_Oracle
-import oracledb
-from django.core.files.storage import default_storage
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
+from django.conf import settings
 
 # VIEWS
 def index(request):
@@ -23,8 +19,10 @@ def index(request):
 
 @login_required
 def shop(request):
+
     data = {
-        'listado': lista_productos()
+        'listado': lista_productos(),
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'core/shop.html', data)
 
@@ -86,18 +84,22 @@ def addProduct(request):
         if form.is_valid():
             nombreProducto = form.cleaned_data['nombreProducto']
             precioProducto = form.cleaned_data['precioProducto']
-            descripcionProducto = form.cleaned_data['descripcionProducto']
-            idMarca = form.cleaned_data['idMarca'].idMarca
-            idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].idcategoriaProducto
             stockProducto = form.cleaned_data['stockProducto']
-            
-            # Procesar la imagen
-            imagen = request.FILES['imagenProducto']
-            imagen_data = imagen.read() 
-            
-            # Llamar al procedimiento almacenado
-            if agregar_producto(None, nombreProducto, precioProducto, descripcionProducto, idMarca, idcategoriaProducto, stockProducto, imagen_data):
-                return HttpResponseRedirect(reverse('shop'))
+            imagenProducto = request.FILES['imagenProducto']
+            descripcionProducto = form.cleaned_data['descripcionProducto']
+            idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].pk  
+            idMarca = form.cleaned_data['idMarca'].pk  
+
+            with open('media/productos/' + imagenProducto.name, 'wb+') as destination:
+                for chunk in imagenProducto.chunks():
+                    destination.write(chunk)
+                    
+            error_msg = agregar_producto(nombreProducto, precioProducto, stockProducto, imagenProducto.name, descripcionProducto, idcategoriaProducto, idMarca)
+            if error_msg:
+                form.save()
+                return render(request, 'core/shop.html', {'form': form, 'error_msg': error_msg})
+            else:
+                return redirect("shop")
 
     else:
         form = ProductoForm()
@@ -108,24 +110,28 @@ def addProduct(request):
 def lista_productos():
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
-    out_cur = django_cursor.connection.cursor()
 
-    cursor.callproc("SP_GET_PRODUCTOS", [out_cur])
+    cursor.callproc("SP_GET_PRODUCTOS", [""])
 
     lista = []
-    for fila in out_cur:
+    for fila in cursor:
          lista.append(fila)
 
     return lista
 
-def agregar_producto(idProducto, nombreProducto, precioProducto, stockProducto, descripcionProducto, idMarca, idcategoriaProducto, imagenProducto):
+def agregar_producto(nombreProducto, precioProducto, stockProducto, imagenProducto, descripcionProducto, idcategoriaProducto, idMarca):
     try:
         django_cursor = connection.cursor()
         cursor = django_cursor.connection.cursor()
-        # out = cursor.var(cx_Oracle.NUMBER)
-        cursor.callproc("SP_POST_PRODUCTO", [idProducto, nombreProducto, precioProducto, stockProducto, descripcionProducto, idMarca, idcategoriaProducto, imagenProducto, ""])
+
+        # Llamar al procedimiento almacenado
+        cursor.callproc("SP_POST_PRODUCTO", [nombreProducto, precioProducto, stockProducto, imagenProducto, descripcionProducto, idcategoriaProducto, idMarca])
+        return None 
+    
     except Exception as e:
+        error_msg = "Hubo un error al agregar el producto. Por favor, inténtalo de nuevo más tarde."
         print("ERROR EN AGREGAR PRODUCTO: ", e)
+        return error_msg
 
 
 
