@@ -21,44 +21,10 @@ def index(request):
 
 @login_required
 def shop(request):
-    lista = []
-    try:
-        cursor = connection.cursor()
-
-        # Crear variables de salida para el cursor y el valor
-        cursor_productos = cursor.var(cx_Oracle.CURSOR)
-        out = cursor.var(int)
-
-        # Llamar al procedimiento almacenado con las variables de salida
-        cursor.callproc("SP_GET_PRODUCTOS", (cursor_productos, out))
-
-        # Obtener el valor de la variable de salida
-        out_value = out.getvalue()
-
-        # Verificar si el procedimiento se ejecutó correctamente
-        if out_value == 1:
-            # Obtener el cursor y los resultados
-            cursor_productos_value = cursor_productos.getvalue()
-            productos = cursor_productos_value.fetchall()
-            for fila in productos:
-                json = {
-                    'idProducto': fila[0],
-                    'nombreProducto': fila[1],
-                    'precioProducto': fila[2],
-                    'imagenProducto': fila[3],
-                    'descripcionProducto': fila[4],
-                    'stockProducto': fila[5],
-                    'idMarca': fila[6],
-                    'idcategoriaProducto': fila[7]
-                }
-                lista.append(json)
-        else:
-            print("El procedimiento almacenado no devolvió datos")
-    except Exception as e:
-        # Registra el error para fines de depuración
-        print("ERROR EN SHOP: ", e)
-
-    return render(request, 'core/shop.html', {'productos': lista})
+    data = {
+        'listado': lista_productos()
+    }
+    return render(request, 'core/shop.html', data)
 
 def about(request):
 	return render(request, 'core/about.html')
@@ -154,6 +120,20 @@ def addProduct(request):
     return render(request, 'core/addproduct.html', {'form': form})
 
 
+#LISTAR PRODUCTOS:
+def lista_productos():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cur = django_cursor.connection.cursor()
+
+    cursor.callproc("SP_GET_PRODUCTOS", [out_cur])
+
+    lista = []
+    for fila in out_cur:
+         lista.append(fila)
+
+    return lista    
+    
 
 
 

@@ -23,23 +23,23 @@
 			<div class="row">
 				<div class="d-flex mx-auto align-items-center justify-content-center mb-5">
 					<p><a href="{% url 'addProduct' %}" class="btn btn-secondary me-2 text-white font-bold">AÑADIR PRODUCTO</a></p>
-				</div>
-                {% for producto in productos %}
-                    <div class="col-12 col-md-4 col-lg-3 mb-5">
-                        <a class="product-item" href="#">
-                            {% if producto.4 %}
-                                <img src="{{ producto.4.url }}" class="img-fluid product-thumbnail" alt="{{ producto.1 }}">
-                            {% else %}
-                                <p>No hay imagen disponible</p>
-                            {% endif %}
-                            <h3 class="product-title">{{ producto.2 }}</h3>
-                            <strong class="product-price">${{ producto.3 }}</strong>
-                            <span class="icon-cross">
-                                <img src="{% static 'core/images/cross.svg' %}" class="img-fluid">
-                            </span>
-                        </a>
                     </div>
-                {% endfor %}
+                    {% for aux in listado %}
+                        <div class="col-12 col-md-4 col-lg-3 mb-5 mt-5">
+                            <a class="product-item" href="#">
+                                {% if aux.4 %}
+                                    <img src="{{ aux.4 }}" class="img-fluid product-thumbnail" alt="{{ aux.1 }}">
+                                {% else %}
+                                    <p>No hay imagen disponible</p>
+                                {% endif %}
+                                <h3 class="product-title">{{ aux.1 }}</h3>
+                                <strong class="product-price">${{ aux.2 }}</strong>
+                                <span class="icon-cross">
+                                    <img src="{% static 'core/images/cross.svg' %}" class="img-fluid">
+                                </span>
+                            </a>
+                        </div>
+                    {% endfor %}
 			</div>
 		</div>
 	</div>
