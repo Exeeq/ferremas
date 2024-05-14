@@ -16,7 +16,9 @@ urlpatterns = [
     path('register/', register, name="register"),
 
     #URLS CRUD PRODUCTOS (AÑADIR, ACTUALIZAR, ELIMINAR):
-    path('addProduct/', addProduct, name="addProduct")
-
+    path('addProduct/', addProduct, name="addProduct"),
+    path('detalle_producto/<int:idProducto>/', detalle_producto, name='detalle_producto'),
+    path('producto/<int:idProducto>/modificar/', modificar_producto, name='modificar_producto'),
+    path('producto/<int:idProducto>/eliminar/', eliminar_producto, name='eliminar_producto'),
 ]
 

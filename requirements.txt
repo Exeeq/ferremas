@@ -5,3 +5,4 @@ pillow
 pymysql
 mysqlclient
 django-jazzmin
+fontawesomefree

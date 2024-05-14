@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-05-2024 a las 00:10:50
+-- Tiempo de generación: 14-05-2024 a las 04:31:17
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -27,6 +27,12 @@ DELIMITER $$
 --
 -- Procedimientos
 --
+DROP PROCEDURE IF EXISTS `SP_DELETE_PRODUCTO`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE_PRODUCTO` (IN `p_idProducto` INT)   BEGIN
+    DELETE FROM core_producto
+    WHERE idProducto = p_idProducto;
+END$$
+
 DROP PROCEDURE IF EXISTS `SP_GET_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_PRODUCTO` (IN `p_idProducto` INT)  NO SQL SELECT * FROM core_producto 
 WHERE idProducto = p_idProducto$$
@@ -53,6 +59,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProduc
         idcategoriaProducto,
         idMarca
     );
+END$$
+
+DROP PROCEDURE IF EXISTS `SP_PUT_PRODUCTO`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_PUT_PRODUCTO` (IN `p_idProducto` INT, IN `p_nombreProducto` VARCHAR(255), IN `p_precioProducto` DECIMAL(10,0), IN `p_stockProducto` INT, IN `p_imagenProducto` VARCHAR(255), IN `p_descripcionProducto` VARCHAR(120), IN `p_idMarca` INT, IN `p_idcategoriaProducto` INT)   BEGIN
+    UPDATE core_producto
+    SET nombreProducto = p_nombreProducto,
+        precioProducto = p_precioProducto,
+        stockProducto = p_stockProducto,
+        imagenProducto = p_imagenProducto,
+        descripcionProducto = p_descripcionProducto,
+        idMarca_id = p_idMarca,
+        idcategoriaProducto_id = p_idcategoriaProducto
+    WHERE idProducto = p_idProducto;
 END$$
 
 DELIMITER ;
@@ -229,8 +248,8 @@ CREATE TABLE `core_producto` (
 --
 
 INSERT INTO `core_producto` (`idProducto`, `nombreProducto`, `precioProducto`, `stockProducto`, `imagenProducto`, `descripcionProducto`, `idMarca_id`, `idcategoriaProducto_id`) VALUES
-(4, 'Martillo loco', 6790, 3, 'martillo-venta.jpg', 'Martillo para martillar cosas', 1, 1),
-(6, 'Martillo de felix el reparador', 5999999, 5, '9caea45d370e2f37ed47b77a838c9c99.jpg', 'Martillo de felix el reparador', 1, 1);
+(4, 'Martillo Loco', 6790, 12, 'martillo-venta.jpg', 'Martillo para martillar cosas cualquiera como clavos, madera, etc.', 1, 1),
+(6, 'Martillo de felix el reparador', 5999999, 5, '9caea45d370e2f37ed47b77a838c9c99.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -615,7 +634,7 @@ ALTER TABLE `core_marca`
 -- AUTO_INCREMENT de la tabla `core_producto`
 --
 ALTER TABLE `core_producto`
-  MODIFY `idProducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idProducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `core_region`

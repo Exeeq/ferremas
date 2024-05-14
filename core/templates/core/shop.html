@@ -26,7 +26,7 @@
                     </div>
                     {% for aux in listado %}
                         <div class="col-12 col-md-4 col-lg-3 mb-5 mt-5">
-                            <a class="product-item" href="#">
+                            <a class="product-item" href="{% url 'detalle_producto' aux.0 %}">
                                 {% if aux.4 %}
                                     <img src="{{ MEDIA_URL }}productos/{{ aux.4 }}" class="img-fluid product-thumbnail" alt="">
                                 {% else %}

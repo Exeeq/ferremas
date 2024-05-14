@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+{% block contenido %}
+<!-- Start Hero Section -->
+<div class="hero mb-5">
+    <div class="container d-flex justify-content-center mx-auto align-items-center">
+      <div class="row">
+        <div class="">
+          <h1>DETALLE PRODUCTO</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!-- End Hero Section -->
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex mx-auto align-items-end justify-content-end">
+        <p><a href="{% url 'modificar_producto' producto.idProducto %}" class="btn btn-secondary me-2 text-white font-bold"><i class="fa-solid fa-pen"></i> Modificar </a></p>
+      <p><a href="{% url 'eliminar_producto' producto.idProducto %}" class="btn btn-secondary me-2 text-white font-bold"><i class="fa-solid fa-trash"></i> Eliminar </a></p>
+    </div>
+    <div class="card shadow">
+        <br><br><br>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="{{ MEDIA_URL }}productos/{{ producto.imagenProducto }}" alt="{{ producto.nombreProducto }}" class="img-fluid w-50 h-auto">
+                </div>
+                <div class="col-md-6">
+                    <h2 class="text-black fw-bold text-uppercase h1">{{ producto.nombreProducto }}</h2>
+                    <p class="text-black text-capitalize h5">{{ producto.descripcionProducto }}</p>
+                    <div class="">
+                        <p class="text-black text-uppercase h5">Precio: <span class="badge bg-warning w-25 h-auto">${{ producto.precioProducto }}</span></p>
+                        <p class="text-black text-uppercase h5">Stock: <span class="badge bg-warning w-25 h-auto">{{ producto.stockProducto }}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br><br><br><br>
+    </div>
+    <br><br><br>
+</div>
+{% endblock contenido %}

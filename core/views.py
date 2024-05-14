@@ -1,17 +1,16 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .forms import CustomAuthenticationForm
 from django.shortcuts import render
 from django.db import connection
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.conf import settings
+from django.shortcuts import render, redirect, get_object_or_404
 
 # VIEWS
 def index(request):
@@ -132,7 +131,50 @@ def agregar_producto(nombreProducto, precioProducto, stockProducto, imagenProduc
         error_msg = "Hubo un error al agregar el producto. Por favor, inténtalo de nuevo más tarde."
         print("ERROR EN AGREGAR PRODUCTO: ", e)
         return error_msg
+    
+def detalle_producto(request, idProducto):
+    producto_instance = producto.objects.get(idProducto=idProducto) 
+    data = {
+         'producto':producto_instance,
+         'MEDIA_URL': settings.MEDIA_URL,
+    }
+    return render(request, 'core/detalle_producto.html', data)
 
+def modificar_producto(request, idProducto):
+    producto_instance = producto.objects.get(idProducto=idProducto) 
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, instance=producto_instance)
+        if form.is_valid():
+            # Obtener los datos del formulario
+            nombreProducto = form.cleaned_data['nombreProducto']
+            precioProducto = form.cleaned_data['precioProducto']
+            stockProducto = form.cleaned_data['stockProducto']
+            imagenProducto = form.cleaned_data['imagenProducto']
+            descripcionProducto = form.cleaned_data['descripcionProducto']
+            idMarca = form.cleaned_data['idMarca'].pk
+            idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].pk
+            
+            # Llamar al procedimiento almacenado para actualizar el producto
+            with connection.cursor() as cursor:
+                cursor.callproc('SP_PUT_PRODUCTO', [
+                    idProducto,
+                    nombreProducto,
+                    precioProducto,
+                    stockProducto,
+                    imagenProducto,
+                    descripcionProducto,
+                    idMarca,
+                    idcategoriaProducto
+                ])
+            return redirect('detalle_producto', idProducto=idProducto)
+    else:
+        form = ProductoForm(instance=producto_instance)  
+    return render(request, 'core/modificar_producto.html', {'form': form})
+
+def eliminar_producto(request, idProducto):
+    with connection.cursor() as cursor:
+        cursor.callproc('SP_DELETE_PRODUCTO', [idProducto])
+    return redirect(to='shop')
 
 
     
