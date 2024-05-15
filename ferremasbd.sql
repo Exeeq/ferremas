@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-05-2024 a las 04:31:17
+-- Tiempo de generación: 15-05-2024 a las 04:16:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -33,12 +33,26 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE_PRODUCTO` (IN `p_idProduc
     WHERE idProducto = p_idProducto;
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_DELETE_USUARIO`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE_USUARIO` (IN `p_idUsuario` INT)   BEGIN
+
+    DELETE FROM core_usuario WHERE id = p_idUsuario;
+    
+END$$
+
 DROP PROCEDURE IF EXISTS `SP_GET_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_PRODUCTO` (IN `p_idProducto` INT)  NO SQL SELECT * FROM core_producto 
 WHERE idProducto = p_idProducto$$
 
 DROP PROCEDURE IF EXISTS `SP_GET_PRODUCTOS`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_PRODUCTOS` (OUT `p_out` INT)  NO SQL SELECT * FROM core_producto$$
+
+DROP PROCEDURE IF EXISTS `SP_GET_USUARIO`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_USUARIO` (IN `p_idUsuario` INT)  NO SQL SELECT * FROM core_usuariocustom
+WHERE id = p_idUsuario$$
+
+DROP PROCEDURE IF EXISTS `SP_GET_USUARIOS`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_USUARIOS` (OUT `p_out` INT)  NO SQL SELECT * FROM core_usuariocustom$$
 
 DROP PROCEDURE IF EXISTS `SP_POST_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProducto` VARCHAR(50), IN `precioProducto` INT, IN `stockProducto` INT, IN `imagenProducto` VARCHAR(255), IN `descripcionProducto` VARCHAR(200), IN `idcategoriaProducto` INT, IN `idMarca` INT)   BEGIN
@@ -59,6 +73,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProduc
         idcategoriaProducto,
         idMarca
     );
+END$$
+
+DROP PROCEDURE IF EXISTS `SP_POST_USUARIO`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_USUARIO` (IN `p_username` VARCHAR(150), IN `p_password` VARCHAR(128), IN `p_run` VARCHAR(12), IN `p_pnombre` VARCHAR(20), IN `p_ap_paterno` VARCHAR(24), IN `p_correo_usuario` VARCHAR(254), IN `p_fecha_nacimiento` DATE, IN `p_direccion` VARCHAR(100), IN `p_idRol` INT, IN `p_idComuna` INT)   BEGIN
+    INSERT INTO core_usuariocustom (username, password, run, pnombre, ap_paterno, correo_usuario, fecha_nacimiento, direccion, idRol_id, idComuna_id)
+    VALUES (p_username, p_password, p_run, p_pnombre, p_ap_paterno, p_correo_usuario, p_fecha_nacimiento, p_direccion, p_idRol, p_idComuna);
+    
 END$$
 
 DROP PROCEDURE IF EXISTS `SP_PUT_PRODUCTO`$$
@@ -205,6 +226,14 @@ CREATE TABLE `core_comuna` (
   `idRegion_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `core_comuna`
+--
+
+INSERT INTO `core_comuna` (`idComuna`, `nombreComuna`, `idRegion_id`) VALUES
+(1, 'Puente Alto', 1),
+(2, 'La Florida', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -263,6 +292,13 @@ CREATE TABLE `core_region` (
   `nombreRegion` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `core_region`
+--
+
+INSERT INTO `core_region` (`idRegion`, `nombreRegion`) VALUES
+(1, 'Metropolitana');
+
 -- --------------------------------------------------------
 
 --
@@ -274,6 +310,17 @@ CREATE TABLE `core_rolusuario` (
   `idRol` int(11) NOT NULL,
   `nombreRol` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `core_rolusuario`
+--
+
+INSERT INTO `core_rolusuario` (`idRol`, `nombreRol`) VALUES
+(1, 'Cliente'),
+(2, 'Vendedor'),
+(3, 'Bodeguero'),
+(4, 'Contador'),
+(5, 'Administrador');
 
 -- --------------------------------------------------------
 
@@ -325,7 +372,8 @@ CREATE TABLE `core_usuariocustom` (
 --
 
 INSERT INTO `core_usuariocustom` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `run`, `pnombre`, `snombre`, `ap_paterno`, `ap_materno`, `correo_usuario`, `fecha_nacimiento`, `direccion`, `idComuna_id`, `idRol_id`) VALUES
-(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-13 21:45:31.140524', 1, 'admin', '', '', '', 1, 1, '2024-05-13 19:58:21.484730', '', '', '', '', '', '', NULL, '', NULL, NULL);
+(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-15 01:29:59.710782', 1, 'admin', '', '', '', 1, 1, '2024-05-13 19:58:21.484730', '', 'Admin', '', 'Supremo', '', 'admin@ferremas.cl', NULL, '', 1, 5),
+(4, 'pbkdf2_sha256$216000$RTCQYm3C7cN5$PAVJ6B3bls+7yQA+4qep2scXluciXChUeon6LgxezNI=', '2024-05-15 01:28:29.361936', 0, 'Exequiel', '', '', '', 0, 1, '2024-05-15 01:28:14.561514', '21.002.289-9', 'Exequiel', '', 'Albornoz', '', 'ex.albornoz@duocuc.cl', '2024-05-12', 'Millantu, 167, Puente Alto', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -462,7 +510,7 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('7zk382kyc707dzv3tqzkkewn3mq7w5h1', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s6c0T:ZRqehJST-sIXUuTkHLLkbq7H8tKGKSE4jbaALxOBeUY', '2024-05-27 20:10:45.521235'),
+('7ycni6ehdscgg55fqqgt67goaj9mph8v', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s73Sx:7m2JGtYDBrKxkkyHl02LqQNgnlOK8D42HCDAb3zvmRE', '2024-05-29 01:29:59.713088'),
 ('zy1fged2q5ogaszivxymsh4qvd0no11j', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s6dUB:p7P9R15anq53G1ehucxdV6xWzgoCfG6VRKFy4BS51SI', '2024-05-27 21:45:31.141588');
 
 --
@@ -622,7 +670,7 @@ ALTER TABLE `core_categoriaproducto`
 -- AUTO_INCREMENT de la tabla `core_comuna`
 --
 ALTER TABLE `core_comuna`
-  MODIFY `idComuna` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idComuna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `core_marca`
@@ -640,13 +688,13 @@ ALTER TABLE `core_producto`
 -- AUTO_INCREMENT de la tabla `core_region`
 --
 ALTER TABLE `core_region`
-  MODIFY `idRegion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idRegion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `core_rolusuario`
 --
 ALTER TABLE `core_rolusuario`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `core_sucursal`
@@ -658,7 +706,7 @@ ALTER TABLE `core_sucursal`
 -- AUTO_INCREMENT de la tabla `core_usuariocustom`
 --
 ALTER TABLE `core_usuariocustom`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `core_usuariocustom_groups`
