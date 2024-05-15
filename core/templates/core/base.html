@@ -49,17 +49,22 @@
 							</a>
 							<ul class="dropdown-menu bg-black" aria-labelledby="navbarDropdown">
 								{% if user.is_authenticated %}
-									<li>
-										<a class="nav-link text-white" href="#" role="button" aria-expanded="false">
-											{{ user.pnombre }} {{ user.ap_paterno }}
-										</a>
-									</li>
-									<li><a class="dropdown-item text-white" href="{% url 'logout' %}">Cerrar sesión</a></li>
+								  <li class="dropdown-item">
+									<a class="nav-link text-white" href="#" role="button" aria-expanded="false">
+									  {{ user.pnombre }} {{ user.ap_paterno }}
+									</a>
+								  </li>
+								  {% if user.idRol_id == 5 %}
+								  <li class="dropdown-item">
+									<a class="nav-link text-white" href="{% url 'panel_administracion' %}" role="button" aria-expanded="false">Panel de administración</a>
+								  </li>
+								  {% endif %}
+								  <li><a class="dropdown-item text-white" href="{% url 'logout' %}">Cerrar sesión</a></li>
 								{% else %}
-									<li><a class="dropdown-item text-white" href="{% url 'login' %}">Iniciar Sesión</a></li>
-									<li><a class="dropdown-item text-white" href="{% url 'register' %}">Registrarse</a></li>
+								  <li><a class="dropdown-item text-white" href="{% url 'login' %}">Iniciar Sesión</a></li>
+								  <li><a class="dropdown-item text-white" href="{% url 'register' %}">Registrarse</a></li>
 								{% endif %}
-							</ul>
+							  </ul>
 						</li>
 						<li><a class="nav-link" href="{% url 'cart' %}"><img src="{% static 'core/images/cart.svg' %}"></a></li>
 					</ul>

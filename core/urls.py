@@ -20,5 +20,11 @@ urlpatterns = [
     path('detalle_producto/<int:idProducto>/', detalle_producto, name='detalle_producto'),
     path('producto/<int:idProducto>/modificar/', modificar_producto, name='modificar_producto'),
     path('producto/<int:idProducto>/eliminar/', eliminar_producto, name='eliminar_producto'),
+
+    #PANEL DE ADMINISTRACIÓN (ROL ADMINISTRADOR):
+    path('panel_administracion/', panel_administracion, name='panel_administracion'),
+    path('gestion_usuarios/', gestion_usuarios, name='gestion_usuarios'),
+
+
 ]
 

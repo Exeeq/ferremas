@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block contenido %}
+<!-- Start Hero Section -->
+<div class="hero">
+    <div class="container d-flex justify-content-center mx-auto align-items-center">
+      <div class="row">
+        <div class="">
+          <h1>PANEL DE ADMINISTRACIÓN</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Hero Section -->
+
+<!-- Start Admin Panel Section -->
+<br><br>
+<div class="container mx-auto align-items-center ">
+    <div class="row">
+        <!-- Card 1 -->
+        <div class="col-md-6 ">
+            <div class="card mb-4 shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h5 class="card-title">Gestión de Usuarios</h5>
+                    <p class="card-text">Administrar usuarios y sus roles.</p>
+                    <a href="{% url 'gestion_usuarios' %}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-boxes fa-3x mb-3"></i>
+                    <h5 class="card-title">Gestión de Productos</h5>
+                    <p class="card-text">Agregar, editar o eliminar productos.</p>
+                    <a href="" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Card 3 -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                    <h5 class="card-title">Gestión de Pedidos</h5>
+                    <p class="card-text">Ver y administrar pedidos de clientes.</p>
+                    <a href="" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card 6 -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-envelope fa-3x mb-3"></i>
+                    <h5 class="card-title">Soporte</h5>
+                    <p class="card-text">Administrar consultas y soporte al cliente.</p>
+                    <a href="" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br><br><br><br>
+<!-- End Admin Panel Section -->
+
+{% endblock contenido %}

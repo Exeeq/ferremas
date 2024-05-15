@@ -177,7 +177,25 @@ def eliminar_producto(request, idProducto):
     return redirect(to='shop')
 
 
-    
+#PANEL DE ADMINISTRACIÓN (ROL ADMINISTRADOR):
+def panel_administracion(request):
+    return render(request, 'core/panel_administracion.html') 
 
-    
+def gestion_usuarios(request):
+    data = {
+        'usuarios': lista_usuarios()
+    }
+    return render(request, 'core/gestion_usuarios.html', data)
+
+def lista_usuarios():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+
+    cursor.callproc("SP_GET_USUARIOS", [""])
+    lista = []
+    for fila in cursor:
+         lista.append(fila)
+    return lista
+
+
 
