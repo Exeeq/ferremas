@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-05-2024 a las 04:16:12
+-- Tiempo de generación: 16-05-2024 a las 05:31:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -36,7 +36,7 @@ END$$
 DROP PROCEDURE IF EXISTS `SP_DELETE_USUARIO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE_USUARIO` (IN `p_idUsuario` INT)   BEGIN
 
-    DELETE FROM core_usuario WHERE id = p_idUsuario;
+    DELETE FROM core_usuariocustom WHERE core_usuariocustom.id = p_idUsuario;
     
 END$$
 
@@ -55,7 +55,7 @@ DROP PROCEDURE IF EXISTS `SP_GET_USUARIOS`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_USUARIOS` (OUT `p_out` INT)  NO SQL SELECT * FROM core_usuariocustom$$
 
 DROP PROCEDURE IF EXISTS `SP_POST_PRODUCTO`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProducto` VARCHAR(50), IN `precioProducto` INT, IN `stockProducto` INT, IN `imagenProducto` VARCHAR(255), IN `descripcionProducto` VARCHAR(200), IN `idcategoriaProducto` INT, IN `idMarca` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProducto` VARCHAR(50), IN `precioProducto` INT, IN `stockProducto` INT, IN `imagenProducto` VARCHAR(255), IN `descripcionProducto` VARCHAR(200), IN `idcategoriaProducto` INT, IN `idMarca` INT)  NO SQL BEGIN
     INSERT INTO core_producto (
         nombreProducto,
         precioProducto,
@@ -93,6 +93,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_PUT_PRODUCTO` (IN `p_idProducto`
         idMarca_id = p_idMarca,
         idcategoriaProducto_id = p_idcategoriaProducto
     WHERE idProducto = p_idProducto;
+END$$
+
+DROP PROCEDURE IF EXISTS `SP_PUT_USUARIO`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_PUT_USUARIO` (IN `p_id` INT, IN `p_run` VARCHAR(50), IN `p_pnombre` VARCHAR(100), IN `p_ap_paterno` VARCHAR(100), IN `p_correo_usuario` VARCHAR(100), IN `p_fecha_nacimiento` DATE, IN `p_direccion` VARCHAR(255), IN `p_idComuna` INT, IN `p_idRol` INT)   BEGIN
+    UPDATE core_usuariocustom
+    SET 
+        run = p_run,
+        pnombre = p_pnombre,
+        ap_paterno = p_ap_paterno,
+        correo_usuario = p_correo_usuario,
+        fecha_nacimiento = p_fecha_nacimiento,
+        direccion = p_direccion,
+        idComuna = p_idComuna,
+        idRol = p_idRol
+    WHERE id = p_id;
 END$$
 
 DELIMITER ;
@@ -372,8 +387,8 @@ CREATE TABLE `core_usuariocustom` (
 --
 
 INSERT INTO `core_usuariocustom` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `run`, `pnombre`, `snombre`, `ap_paterno`, `ap_materno`, `correo_usuario`, `fecha_nacimiento`, `direccion`, `idComuna_id`, `idRol_id`) VALUES
-(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-15 01:29:59.710782', 1, 'admin', '', '', '', 1, 1, '2024-05-13 19:58:21.484730', '', 'Admin', '', 'Supremo', '', 'admin@ferremas.cl', NULL, '', 1, 5),
-(4, 'pbkdf2_sha256$216000$RTCQYm3C7cN5$PAVJ6B3bls+7yQA+4qep2scXluciXChUeon6LgxezNI=', '2024-05-15 01:28:29.361936', 0, 'Exequiel', '', '', '', 0, 1, '2024-05-15 01:28:14.561514', '21.002.289-9', 'Exequiel', '', 'Albornoz', '', 'ex.albornoz@duocuc.cl', '2024-05-12', 'Millantu, 167, Puente Alto', 1, 1);
+(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-16 01:35:03.069450', 1, 'admin', '', '', '', 1, 1, '2024-05-13 19:58:21.484730', '', 'Admin', '', 'Supremo', '', 'admin@ferremas.cl', NULL, '', 1, 5),
+(5, 'pbkdf2_sha256$216000$kiBDwre6Bxpj$icGEmTHVSOsuvuNVFBs2ggVfxa3Xjp6qig52WvvheLU=', NULL, 0, 'Exequiel', '', '', '', 0, 1, '2024-05-16 01:34:53.717480', '21.002.289-9', 'Exequiel', '', 'Albornoz', '', 'albornozexequiel01@gmail.com', '2002-02-01', 'San Carlos, 123', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -510,8 +525,8 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('7ycni6ehdscgg55fqqgt67goaj9mph8v', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s73Sx:7m2JGtYDBrKxkkyHl02LqQNgnlOK8D42HCDAb3zvmRE', '2024-05-29 01:29:59.713088'),
-('zy1fged2q5ogaszivxymsh4qvd0no11j', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s6dUB:p7P9R15anq53G1ehucxdV6xWzgoCfG6VRKFy4BS51SI', '2024-05-27 21:45:31.141588');
+('bjhm9ra5sb0srhbwiomudq49uodqn8q4', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s7Q1P:vZPQR2jDeTwgZs77ZdEY8boh2E71jwZdgp0vLpTSgmY', '2024-05-30 01:35:03.071451'),
+('u1luljz2trlgbatp76fvxaplh8yviix4', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s7Jvo:qpG9b_hP3ddhZg4SCjFaK4Bztmv5EjcKIWkz-VSEG2M', '2024-05-29 19:04:52.891703');
 
 --
 -- Índices para tablas volcadas
@@ -706,7 +721,7 @@ ALTER TABLE `core_sucursal`
 -- AUTO_INCREMENT de la tabla `core_usuariocustom`
 --
 ALTER TABLE `core_usuariocustom`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `core_usuariocustom_groups`
