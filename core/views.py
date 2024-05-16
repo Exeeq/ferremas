@@ -11,6 +11,7 @@ from django.db import connection
 from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
 # VIEWS
 def index(request):
@@ -113,8 +114,8 @@ def lista_productos():
     cursor.callproc("SP_GET_PRODUCTOS", [""])
 
     lista = []
-    for fila in cursor:
-         lista.append(fila)
+    for x in cursor:
+         lista.append(x)
 
     return lista
 
@@ -187,6 +188,8 @@ def gestion_usuarios(request):
     }
     return render(request, 'core/gestion_usuarios.html', data)
 
+
+#GESTIÓN DE USUARIOS
 def lista_usuarios():
     django_cursor = connection.cursor()
     cursor = django_cursor.connection.cursor()
@@ -197,5 +200,55 @@ def lista_usuarios():
          lista.append(fila)
     return lista
 
+def eliminar_usuario(id):
+    try:
+        django_cursor = connection.cursor()
+        cursor = django_cursor.connection.cursor()
+
+        cursor.callproc("SP_DELETE_USUARIO", [id])
+        django_cursor.connection.commit()
+        
+        
+    except Exception as e:
+        print("Error en eliminar usuario: ", e)
+
+    return redirect('gestion_usuarios')
+
+def modificar_usuario(request, id):
+    usuario_instance = usuarioCustom.objects.get(id=id) 
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST, instance=usuario_instance)
+        if form.is_valid():
+            # Obtener los datos del formulario
+            run = form.cleaned_data['run']
+            pnombre = form.cleaned_data['pnombre']
+            ap_paterno = form.cleaned_data['ap_paterno']
+            correo_usuario = form.cleaned_data['correo_usuario']
+            fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
+            direccion = form.cleaned_data['direccion']
+            idComuna = form.cleaned_data['idComuna'].pk
+            idRol = form.cleaned_data['idRol'].pk
+            
+            try:
+                with connection.cursor() as cursor:
+                    cursor.callproc("SP_PUT_USUARIO", [
+                        id,
+                        run,
+                        pnombre,
+                        ap_paterno,
+                        correo_usuario,
+                        fecha_nacimiento,
+                        direccion,
+                        idComuna,
+                        idRol,
+                    ])
+                    connection.commit()
+                    form.save()
+                return redirect('gestion_usuarios')
+            except Exception as e:
+                print("ERROR EN MODIFICAR USUARIO: ", e)
+    else:
+        form = UsuarioForm(instance=usuario_instance)  
+    return render(request, 'core/modificar_usuario.html', {'form': form, 'usuario': usuario_instance})
 
 

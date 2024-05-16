@@ -33,8 +33,8 @@ class usuarioCustom(AbstractUser):
     correo_usuario = models.EmailField(blank=False, null=False)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     direccion = models.CharField(blank=False, null=False, max_length=100)
-    idRol = models.ForeignKey(rolUsuario, on_delete=models.CASCADE, blank=True, null=True)
     idComuna = models.ForeignKey(comuna, on_delete=models.CASCADE, blank=True, null=True)
+    idRol = models.ForeignKey(rolUsuario, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.username    
