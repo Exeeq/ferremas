@@ -40,7 +40,30 @@ def contact(request):
 
 @login_required
 def cart(request):
-	return render(request, 'core/cart.html')
+    try:
+        usuario = request.user
+        carrito = Carrito.objects.get(usuario=usuario)
+        items = carrito.itemcarrito_set.all()
+        
+        subtotal = sum(item.producto.precioProducto * item.cantidad for item in items)
+        total = subtotal 
+
+        data = {
+            'carrito': carrito,
+            'subtotal': subtotal,
+            'total': total,
+            'MEDIA_URL': settings.MEDIA_URL,
+        }
+        
+        return render(request, 'core/cart.html', data)
+    
+    except Carrito.DoesNotExist:
+        messages.warning(request, 'Debes añadir un producto primero a tu carrito.')    
+        return redirect('index')  
+    
+    except Carrito.DoesNotExist:        
+         messages.warning(request, 'Debes añadir un producto primero a tu carrito.')    
+         return render(request, 'core/index.html')
 
 @login_required
 def checkout(request):
@@ -161,11 +184,14 @@ def modificar_producto(request, idProducto):
             nombreProducto = form.cleaned_data['nombreProducto']
             precioProducto = form.cleaned_data['precioProducto']
             stockProducto = form.cleaned_data['stockProducto']
-            imagenProducto = form.cleaned_data['imagenProducto']
+            imagenProducto = request.FILES['imagenProducto']
             descripcionProducto = form.cleaned_data['descripcionProducto']
             idMarca = form.cleaned_data['idMarca'].pk
             idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].pk
             
+            with open('media/productos/' + imagenProducto.name, 'wb+') as destination:
+                for chunk in imagenProducto.chunks():
+                    destination.write(chunk)
             # Llamar al procedimiento almacenado para actualizar el producto
             with connection.cursor() as cursor:
                 cursor.callproc('SP_PUT_PRODUCTO', [
@@ -173,7 +199,7 @@ def modificar_producto(request, idProducto):
                     nombreProducto,
                     precioProducto,
                     stockProducto,
-                    imagenProducto,
+                    imagenProducto.name,
                     descripcionProducto,
                     idMarca,
                     idcategoriaProducto
@@ -318,5 +344,14 @@ def add_user(request):
     return render(request, 'core/addusuario.html', {'form': form})
             
             
+#CARRITO DE COMPRAS:
+def agregar_al_carrito(request, idProducto):
+    producto_cart = get_object_or_404(producto, pk=idProducto)
+    carrito, created = Carrito.objects.get_or_create(usuario=request.user)
+    item, item_created = ItemCarrito.objects.get_or_create(carrito=carrito, producto=producto_cart)
+    if not item_created:
+        item.cantidad += 1
+        item.save()
 
+    return redirect(to="cart")
 

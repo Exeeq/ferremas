@@ -2,41 +2,40 @@
 {% block contenido %}
 <!-- Start Hero Section -->
 <div class="hero mb-5">
-    <div class="container d-flex justify-content-center mx-auto align-items-center">
-      <div class="row">
-        <div class="">
-          <h1>DETALLE PRODUCTO</h1>
-        </div>
-      </div>
+    <div class="container text-center">
+        <h1>DETALLE PRODUCTO</h1>
     </div>
-  </div>
-  <br>
-  <!-- End Hero Section -->
+</div>
+<!-- End Hero Section -->
 
 <div class="container mt-5 mb-5">
-    <div class="d-flex mx-auto align-items-end justify-content-end">
-        <p><a href="{% url 'modificar_producto' producto.idProducto %}" class="btn btn-secondary me-2 text-white font-bold"><i class="fa-solid fa-pen"></i> Modificar </a></p>
-      <p><a href="{% url 'eliminar_producto' producto.idProducto %}" class="btn btn-secondary me-2 text-white font-bold"><i class="fa-solid fa-trash"></i> Eliminar </a></p>
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'modificar_producto' producto.idProducto %}" class="btn btn-secondary me-2 text-light"><i class="fa-solid fa-pen"></i> Modificar </a>
+        <a href="{% url 'eliminar_producto' producto.idProducto %}" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Eliminar </a>
     </div>
-    <div class="card shadow">
-        <br><br><br>
+    <div class="card shadow-sm">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
-                    <img src="{{ MEDIA_URL }}productos/{{ producto.imagenProducto }}" alt="{{ producto.nombreProducto }}" class="img-fluid w-50 h-auto">
+                <div class="col-md-6 text-center">
+                    <img src="{{ MEDIA_URL }}productos/{{ producto.imagenProducto }}" alt="{{ producto.nombreProducto }}" class="img-fluid">
                 </div>
                 <div class="col-md-6">
-                    <h2 class="text-black fw-bold text-uppercase h1">{{ producto.nombreProducto }}</h2>
-                    <p class="text-black text-capitalize h5">{{ producto.descripcionProducto }}</p>
-                    <div class="">
-                        <p class="text-black text-uppercase h5">Precio: <span class="badge bg-warning w-25 h-auto">${{ producto.precioProducto }} / ${{ precio_dolares }}</span></p>
-                        <p class="text-black text-uppercase h5">Stock: <span class="badge bg-warning w-25 h-auto">{{ producto.stockProducto }}</span></p>
+                    <h2 class="text-uppercase fw-bold text-black">{{ producto.nombreProducto }}</h2>
+                    <p class="text-muted">{{ producto.descripcionProducto }}</p>
+                    <div class="mt-4">
+                        <p class="h5 text-uppercase">Precio: <span class="badge bg-warning">${{ producto.precioProducto }} / ${{ precio_dolares }}</span></p>
+                        <p class="h5 text-uppercase">Stock: <span class="badge bg-warning">{{ producto.stockProducto }}</span></p>
+                        <p class="h5 text-uppercase">Marca: <span class="badge bg-warning">{{ producto.idMarca }}</span></p>
+                        <p class="h5 text-uppercase">Categoria: <span class="badge bg-warning">{{ producto.idcategoriaProducto }}</span></p>
+                        <p class="h5 text-uppercase">Stock: <span class="badge bg-warning">{{ producto.stockProducto }}</span></p>
+                        <div class="mt-5 text-center">
+                          <a href="{% url 'agregar_al_carrito'  producto.idProducto %}" class="btn btn-warning text-white font-weight-bold rounded-pill">Añadir al Carrito</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <br><br><br><br><br>
     </div>
-    <br><br><br>
 </div>
+<br><br><br>
 {% endblock contenido %}

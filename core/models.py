@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import uuid
 
 #MODELOS RELACIONADOS AL USUARIOS
 class rolUsuario(models.Model):
@@ -66,6 +67,10 @@ class producto(models.Model):
 
     def __str__(self):
         return self.nombreProducto
+    
+    def disminuir_stock(self, cantidad):
+        self.stockProducto -= cantidad
+        self.save()
 
 #MODELOS RELACIONADOS A LA SUCURSAL
 class sucursal(models.Model):
@@ -77,8 +82,79 @@ class sucursal(models.Model):
     def __str__(self):
         return self.nombreSucursal
 
+    
 
 #MODELOS RELACIONADOS AL CARRITO DE COMPRA
+class Carrito(models.Model):
+    usuario = models.OneToOneField(usuarioCustom, on_delete=models.CASCADE)
+    productos = models.ManyToManyField(producto, through='ItemCarrito')
 
+    def __str__(self):
+        return f"{self.usuario.username}"
+    
+    
+class ItemCarrito(models.Model):
+    carrito = models.ForeignKey(Carrito, on_delete=models.CASCADE)
+    producto = models.ForeignKey(producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.producto.nombreProducto} - {self.carrito.usuario.username}"
+
+    def precio_total(self):
+        return self.cantidad * self.producto.precioProducto
+    
+    def calcularDescuentoCarrito(self):
+        return round(self.producto.precioProducto - (self.producto.precioProducto * 0.05))
+    
+    def precio_total_suscritor(self):
+        return round(self.producto.precioProducto - (self.producto.precioProducto * 0.05)) * self.cantidad
+
+class Seguimiento(models.Model):
+    descripcion = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.descripcion
+    
+class Pedido(models.Model):
+    carrito = models.ForeignKey(Carrito, on_delete=models.CASCADE)
+    numero = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
+    fecha = models.DateTimeField(auto_now_add=True)
+    estado = models.ForeignKey(Seguimiento, on_delete=models.CASCADE, default=1)
+    productos = models.ManyToManyField(producto, through='ItemPedido')
+
+    def __str__(self):
+        return f"Orden #{self.numero}"
+    
+    
+    def calcular_total(self):
+        items = self.ItemPedido_set.all()
+        total = 0
+
+        for item in items:
+            total += item.precio_total()
+        
+        return total
+        
+    def calcular_cantidad(self):
+        items = self.ItemPedido_set.all()
+        total = 0
+
+        for item in items:
+            total += item.cantidad
+        
+        return total
+    
+class ItemPedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    producto = models.ForeignKey(producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.producto.nombreProducto} - {self.pedido.carrito.usuario.username}"
+
+    def precio_total(self):
+        return self.cantidad * self.producto.precioProducto
+    
 
 
