@@ -26,8 +26,9 @@ urlpatterns = [
 
     #GESTIÓN DE USUARIOS
     path('gestion_usuarios/', gestion_usuarios, name='gestion_usuarios'),
-    path('eliminar_usuario/<int:id>/', eliminar_usuario, name='eliminar_usuario'),
-    path('usuario/<int:id>/modificar/', modificar_usuario, name='modificar_usuario'),
+    path('adduser/', add_user, name="adduser"),
+    path('eliminar_usuario/<id>/', eliminar_usuario, name='eliminar_usuario'),
+    path('<p_id>/modificar_usuario/', modificar_usuario, name='modificar_usuario'),
 
 
 ]

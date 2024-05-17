@@ -12,6 +12,8 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.hashers import make_password
+import requests
 
 # VIEWS
 def index(request):
@@ -124,7 +126,7 @@ def agregar_producto(nombreProducto, precioProducto, stockProducto, imagenProduc
         django_cursor = connection.cursor()
         cursor = django_cursor.connection.cursor()
 
-        # Llamar al procedimiento almacenado
+        #Llamar al procedimiento almacenado
         cursor.callproc("SP_POST_PRODUCTO", [nombreProducto, precioProducto, stockProducto, imagenProducto, descripcionProducto, idcategoriaProducto, idMarca])
         return None 
     
@@ -135,9 +137,18 @@ def agregar_producto(nombreProducto, precioProducto, stockProducto, imagenProduc
     
 def detalle_producto(request, idProducto):
     producto_instance = producto.objects.get(idProducto=idProducto) 
+    precio_total = 0
+    precio_total_dolares = 0
+    api_mindicador = requests.get('https://mindicador.cl/api/')
+    divisas = api_mindicador.json()
+    tasa_dolar = divisas['dolar']['valor']
+
+    precio_dolares = round(producto_instance.precioProducto / tasa_dolar, 2)
+
     data = {
          'producto':producto_instance,
          'MEDIA_URL': settings.MEDIA_URL,
+         'precio_dolares': precio_dolares,
     }
     return render(request, 'core/detalle_producto.html', data)
 
@@ -200,55 +211,112 @@ def lista_usuarios():
          lista.append(fila)
     return lista
 
-def eliminar_usuario(id):
+def eliminar_usuario(request, id):
     try:
         django_cursor = connection.cursor()
         cursor = django_cursor.connection.cursor()
 
         cursor.callproc("SP_DELETE_USUARIO", [id])
         django_cursor.connection.commit()
-        
+        return render(request, 'core/gestion_usuarios.html', {'usuarios': lista_usuarios()})
         
     except Exception as e:
         print("Error en eliminar usuario: ", e)
+        return render(request, 'core/gestion_usuarios.html', {'usuarios': lista_usuarios()})
 
-    return redirect('gestion_usuarios')
 
-def modificar_usuario(request, id):
-    usuario_instance = usuarioCustom.objects.get(id=id) 
+def modificar_usuario(request, p_id):
+    usuario = usuarioCustom.objects.get(id=p_id)
     if request.method == 'POST':
-        form = UsuarioForm(request.POST, instance=usuario_instance)
+        form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
-            # Obtener los datos del formulario
-            run = form.cleaned_data['run']
-            pnombre = form.cleaned_data['pnombre']
-            ap_paterno = form.cleaned_data['ap_paterno']
-            correo_usuario = form.cleaned_data['correo_usuario']
-            fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
-            direccion = form.cleaned_data['direccion']
-            idComuna = form.cleaned_data['idComuna'].pk
-            idRol = form.cleaned_data['idRol'].pk
-            
-            try:
-                with connection.cursor() as cursor:
-                    cursor.callproc("SP_PUT_USUARIO", [
-                        id,
-                        run,
-                        pnombre,
-                        ap_paterno,
-                        correo_usuario,
-                        fecha_nacimiento,
-                        direccion,
-                        idComuna,
-                        idRol,
-                    ])
-                    connection.commit()
-                    form.save()
-                return redirect('gestion_usuarios')
-            except Exception as e:
-                print("ERROR EN MODIFICAR USUARIO: ", e)
+            p_username = form.cleaned_data['username'] 
+            p_run = form.cleaned_data['run'] 
+            p_pnombre = form.cleaned_data['pnombre'] 
+            p_ap_paterno = form.cleaned_data['ap_paterno'] 
+            p_correo_usuario = form.cleaned_data['correo_usuario'] 
+            p_fecha_nacimiento = form.cleaned_data['fecha_nacimiento'] 
+            p_direccion = form.cleaned_data['direccion']
+            p_idComuna = form.cleaned_data['idComuna'].pk
+            p_idRol = form.cleaned_data['idRol'].pk
+
+            #Llamar al procedimiento almacenado para actualizar al usuario
+            with connection.cursor() as cursor:
+                cursor.callproc("SP_PUT_USUARIO", [
+                     p_id,
+                     p_username,
+                     p_run,
+                     p_pnombre,
+                     p_ap_paterno,
+                     p_correo_usuario,
+                     p_fecha_nacimiento,
+                     p_direccion,
+                     p_idComuna,
+                     p_idRol
+                ])
+            form.save()
+            return render(request, 'core/gestion_usuarios.html', {'usuarios': lista_usuarios()})
     else:
-        form = UsuarioForm(instance=usuario_instance)  
-    return render(request, 'core/modificar_usuario.html', {'form': form, 'usuario': usuario_instance})
+        form = UsuarioForm(instance=usuario)
+    return render(request, 'core/modificar_usuario.html', {'form': form})
+
+def post_usuario(p_username, p_run, p_pnombre, p_ap_paterno, p_correo_usuario, p_fecha_nacimiento, p_direccion, p_idComuna, p_idRol, p_password):
+    try:
+        django_cursor = connection.cursor()
+        cursor = django_cursor.connection.cursor()
+
+        #ENCRIPTAR LA CONTRASEÑA:
+        #Llamar al procedimiento almacenado:
+        p_password_encrypted = make_password(p_password)
+        cursor.callproc("SP_POST_USUARIO", [
+             p_username,
+             p_run,
+             p_pnombre,
+             p_ap_paterno,
+             p_correo_usuario,
+             p_fecha_nacimiento,
+             p_direccion,
+             p_idComuna,
+             p_idRol,
+             p_password_encrypted
+        ])
+        return print("Funciono post usuario!")
+    except Exception as e:
+        return print("ERROR EN POST USUARIO: ", e)
+    
+
+def add_user(request):
+    if request.method == 'POST':
+        form = RegisterUserAdminForm(request.POST)
+        if form.is_valid():
+            form.save()
+            p_username = form.cleaned_data['username']
+            p_run = form.cleaned_data['run']
+            p_pnombre = form.cleaned_data['pnombre']
+            p_ap_paterno = form.cleaned_data['ap_paterno']
+            p_correo_usuario = form.cleaned_data['correo_usuario']
+            p_fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
+            p_direccion = form.cleaned_data['direccion']
+            p_idComuna = form.cleaned_data['idComuna'].pk
+            p_idRol = form.cleaned_data['idRol'].pk
+            p_password = form.cleaned_data['password1']  
+
+            post_usuario(p_username,
+                         p_run,
+                         p_pnombre,
+                         p_ap_paterno,
+                         p_correo_usuario,
+                         p_fecha_nacimiento,
+                         p_direccion,
+                         p_idComuna,
+                         p_idRol,
+                         p_password)
+            
+            return render(request, 'core/gestion_usuarios.html', {'usuarios': lista_usuarios()})
+    else:
+        form = RegisterUserAdminForm()
+    return render(request, 'core/addusuario.html', {'form': form})
+            
+            
 
 
