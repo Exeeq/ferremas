@@ -95,47 +95,140 @@
 		          </div>
 
 		          <div class="row mb-5">
-		            <div class="col-md-12">
-		              <h2 class="h3 mb-3 text-black">Tu pedido</h2>
-		              <div class="p-3 p-lg-5 border bg-white">
-		                <table class="table site-block-order-table mb-5">
-		                  <thead>
-		                    <th>Producto</th>
-		                    <th>Total</th>
-		                  </thead>
-		                  <tbody>
-		                    <tr>
-		                      <td>Top Up T-Shirt <strong class="mx-2">x</strong> 1</td>
-		                      <td>$250.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td>Polo Shirt <strong class="mx-2">x</strong>   1</td>
-		                      <td>$100.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td class="text-black font-weight-bold"><strong>Subtotal carrito</strong></td>
-		                      <td class="text-black">$350.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td class="text-black font-weight-bold"><strong>Total de pedido</strong></td>
-		                      <td class="text-black font-weight-bold"><strong>$350.00</strong></td>
-		                    </tr>
-		                  </tbody>
-		                </table>
-
-
-		                <div class="form-group">
-		                  <a class="btn btn-black btn-lg py-3 btn-block" href="{% url 'thankyou' %}">Pagar</a>
-		                </div>
-
-		              </div>
-		            </div>
-		          </div>
-
-		        </div>
+					<div class="col-md-12">
+						<h2 class="h3 mb-3 text-black">Tu pedido</h2>
+						<div class="p-3 p-lg-5 border bg-white">
+							<table class="table site-block-order-table mb-5">
+								<thead>
+									<th>Producto</th>
+									<th>Total</th>
+								</thead>
+								<tbody>
+									{% for item in items %}
+									<tr>
+										<td>{{ item.producto.nombreProducto }} <strong class="mx-2">x</strong> {{ item.cantidad }}</td>
+										<td>${{ item.precio_total }}</td>
+									</tr>
+									{% endfor %}
+									<tr>
+										<td class="text-black font-weight-bold"><strong>Subtotal carrito</strong></td>
+										<td class="text-black">${{ subtotal }}</td>
+									</tr>
+									<tr>
+										<td class="text-black font-weight-bold"><strong>Total de pedido</strong></td>
+										<td class="text-black font-weight-bold" ><strong>${{ total }} / USD ${{total_dolar}}</strong></td>
+									</tr>
+								</tbody>
+							</table>
+				
+							<div class="form-group">
+								<a class="btn-lg py-3 btn-block" id="btnPaypal"></a>
+							</div>
+				
+						</div>
+					</div>
+				</div>
 		      </div>
 		      <!-- </form> -->
 		    </div>
 		  </div>
 
 {% endblock contenido %}
+{% block js %}
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+	<script>
+		paypal.Button.render({
+			env: 'sandbox',
+			client: {
+				sandbox: 'AUdczilLjDrMGcZtY3F9Xqa4WAmOmJQki8I3sWy9rTnnuxmiPWNOW1RACinASsIaWMDt8QPAbg0JQ1EL',
+				production: 'demo_production_client_id'
+			},
+			locale: 'es_CL',
+			style: {
+				size: 'large',
+				color: 'black',
+				shape: 'rect'
+			},
+			commit: true,
+			payment: function (data, actions) {
+				return actions.payment.create({
+					transactions: [{
+						amount: { 
+							total: '{{ total_dolar }}', 
+							currency: 'USD'
+						}
+					}]
+				});
+			},
+			onAuthorize: function (data, actions) {
+                var csrftoken = getCookie('csrftoken');
+                return actions.payment.execute().then(function () {
+                    // Realizar una solicitud AJAX para crear la orden
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                          xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                        }
+                    });
+                    $.ajax({
+                        type: 'POST',
+                        url: '/crear_orden/',  // Ruta de la vista para crear la orden
+                        data: {},
+                        success: function (response) {
+                                // Orden creada correctamente
+                                Swal.fire({
+                                    title: '¡EL PAGO SE REALIZÓ CON ÉXITO!',
+                                    text: 'Su número de orden es: ' + response.numero_orden,
+                                    icon: 'success',
+                                    showCancelButton: false,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Ver Boleta'
+                                }).then(function () {
+                                    // Redirigir a la página de la orden creada
+                                    window.location.href = '/boleta/' + response.numero_orden;
+                                });
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            // Error en la solicitud AJAX
+                            console.error(errorThrown)
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'ERROR EN LA SOLICITUD!',
+                                icon: 'error',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Confirmar'
+                            });
+                        }
+                    });
+                });
+            },
+            
+			onCancel(data) {
+				Swal.fire({
+						title: '¡CANCELADO!',
+						text: 'Transacción cancelada!',
+						icon: 'error',
+						showCancelButton: false,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Confirmar'
+					})
+			},
+			onError(err) {
+                console.error(err)
+				Swal.fire({
+						title: 'Error',
+						text: 'Ha ocurrido un error con el pago',
+						icon: 'error',
+						showCancelButton: false,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Confirmar'
+					})
+			}
+
+		}, '#btnPaypal');
+	</script>
+{% endblock %}

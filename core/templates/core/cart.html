@@ -58,8 +58,12 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="product-total">${{ item.cantidad }}</td>
-                                <td><a href="" class="btn btn-black btn-sm">X</a></td>
+                                <td class="product-total">${{ item.precio_total }}</td>
+                                <td>
+                                    <a onclick="eliminarProductoCarrito({{ item.id }}); return false;" href="#">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -90,7 +94,7 @@
                                 <span class="text-black">Sub total</span>
                             </div>
                             <div class="col-md-6 text-right">
-                                <strong class="text-black">${{ subtotal|floatformat:2 }}</strong>
+                                <strong class="text-black">${{ subtotal }} / USD ${{ subtotal_dolar }}</strong>
                             </div>
                         </div>
                         <div class="row mb-5">
@@ -98,7 +102,7 @@
                                 <span class="text-black">Total</span>
                             </div>
                             <div class="col-md-6 text-right">
-                                <strong class="text-black">${{ total|floatformat:2 }}</strong>
+                                <strong class="text-black">${{ total }} / USD ${{ total_dolar }}</strong>
                             </div>
                         </div>
 
@@ -114,25 +118,8 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.increase, .decrease').forEach(button => {
-        button.addEventListener('click', function () {
-            const quantityInput = this.closest('.quantity-container').querySelector('.quantity-amount');
-            let quantity = parseInt(quantityInput.value);
-            if (this.classList.contains('increase')) {
-                quantity++;
-            } else {
-                quantity = quantity > 1 ? quantity - 1 : 1;
-            }
-            quantityInput.value = quantity;
-
-            const row = this.closest('tr');
-            const price = parseFloat(row.querySelector('.product-price').innerText.replace('$', ''));
-            row.querySelector('.product-total').innerText = '$' + (price * quantity);
-        });
-    });
-});
-</script>
-
 {% endblock contenido %}
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'core/js/mensajes.js' %}"></script>
+{% endblock js %}

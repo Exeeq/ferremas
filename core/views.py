@@ -45,29 +45,79 @@ def cart(request):
         carrito = Carrito.objects.get(usuario=usuario)
         items = carrito.itemcarrito_set.all()
         
-        subtotal = sum(item.producto.precioProducto * item.cantidad for item in items)
+        api_mindicador = requests.get('https://mindicador.cl/api/')
+        divisas = api_mindicador.json()
+        tasa_dolar = divisas['dolar']['valor']
+
+        subtotal = sum(item.precio_total() for item in items)
+        subtotal_dolar = round(subtotal / tasa_dolar, 2)
         total = subtotal 
+        total_dolar = subtotal_dolar
 
         data = {
             'carrito': carrito,
+            'items': items,  
             'subtotal': subtotal,
             'total': total,
+            'subtotal_dolar': subtotal_dolar,
+            'total_dolar': total_dolar,
             'MEDIA_URL': settings.MEDIA_URL,
         }
         
         return render(request, 'core/cart.html', data)
     
     except Carrito.DoesNotExist:
-        messages.warning(request, 'Debes añadir un producto primero a tu carrito.')    
-        return redirect('index')  
-    
-    except Carrito.DoesNotExist:        
-         messages.warning(request, 'Debes añadir un producto primero a tu carrito.')    
-         return render(request, 'core/index.html')
+
+        data = {
+            'carrito': None,
+            'items': None,
+            'subtotal': 0,
+            'total': 0,
+            'subtotal_dolar': 0,
+            'total_dolar': 0,
+            'MEDIA_URL': settings.MEDIA_URL,
+        }
+        # Muestra un mensaje informativo
+        messages.info(request, 'Tu carrito está vacío. Añade productos para continuar.')
+        return render(request, 'core/cart.html', data)
+
 
 @login_required
 def checkout(request):
-	return render(request, 'core/checkout.html')
+    try:
+        usuario = request.user
+        carrito = Carrito.objects.get(usuario=usuario)
+        items = carrito.itemcarrito_set.all()
+        
+        api_mindicador = requests.get('https://mindicador.cl/api/')
+        divisas = api_mindicador.json()
+        tasa_dolar = divisas['dolar']['valor']
+
+        subtotal = sum(item.precio_total() for item in items)
+        subtotal_dolar = round(subtotal / tasa_dolar, 2)
+        total = subtotal 
+        total_dolar = subtotal_dolar
+
+        # Formatear los valores numéricos como cadenas antes de pasarlos al template
+
+        subtotal_dolar_str = '{:.2f}'.format(subtotal_dolar)
+        total_dolar_str = '{:.2f}'.format(total_dolar)
+
+        data = {
+            'carrito': carrito,
+            'items': items,  
+            'subtotal': subtotal,
+            'total': total,
+            'subtotal_dolar': subtotal_dolar_str,
+            'total_dolar': total_dolar_str,
+            'MEDIA_URL': settings.MEDIA_URL,
+        }
+        
+        return render(request, 'core/checkout.html', data)
+    
+    except Exception as e:
+        print("ERROR EN CHECKOUT: ", e)
+
 
 @login_required
 def thankyou(request):
@@ -160,8 +210,6 @@ def agregar_producto(nombreProducto, precioProducto, stockProducto, imagenProduc
     
 def detalle_producto(request, idProducto):
     producto_instance = producto.objects.get(idProducto=idProducto) 
-    precio_total = 0
-    precio_total_dolares = 0
     api_mindicador = requests.get('https://mindicador.cl/api/')
     divisas = api_mindicador.json()
     tasa_dolar = divisas['dolar']['valor']
@@ -176,37 +224,40 @@ def detalle_producto(request, idProducto):
     return render(request, 'core/detalle_producto.html', data)
 
 def modificar_producto(request, idProducto):
-    producto_instance = producto.objects.get(idProducto=idProducto) 
+    producto_instance = get_object_or_404(producto, idProducto=idProducto)
     if request.method == 'POST':
-        form = ProductoForm(request.POST, instance=producto_instance)
+        form = ProductoForm(request.POST, request.FILES, instance=producto_instance)
         if form.is_valid():
-            # Obtener los datos del formulario
             nombreProducto = form.cleaned_data['nombreProducto']
             precioProducto = form.cleaned_data['precioProducto']
             stockProducto = form.cleaned_data['stockProducto']
-            imagenProducto = request.FILES['imagenProducto']
+            imagenProducto = request.FILES.get('imagenProducto', None)
             descripcionProducto = form.cleaned_data['descripcionProducto']
             idMarca = form.cleaned_data['idMarca'].pk
             idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].pk
-            
-            with open('media/productos/' + imagenProducto.name, 'wb+') as destination:
-                for chunk in imagenProducto.chunks():
-                    destination.write(chunk)
-            # Llamar al procedimiento almacenado para actualizar el producto
+
+            if imagenProducto:
+                with open('media/productos/' + imagenProducto.name, 'wb+') as destination:
+                    for chunk in imagenProducto.chunks():
+                        destination.write(chunk)
+                imagenProducto_name = imagenProducto.name
+            else:
+                imagenProducto_name = producto_instance.imagenProducto
+
             with connection.cursor() as cursor:
                 cursor.callproc('SP_PUT_PRODUCTO', [
                     idProducto,
                     nombreProducto,
                     precioProducto,
                     stockProducto,
-                    imagenProducto.name,
+                    imagenProducto_name,
                     descripcionProducto,
                     idMarca,
                     idcategoriaProducto
                 ])
             return redirect('detalle_producto', idProducto=idProducto)
     else:
-        form = ProductoForm(instance=producto_instance)  
+        form = ProductoForm(instance=producto_instance)
     return render(request, 'core/modificar_producto.html', {'form': form})
 
 def eliminar_producto(request, idProducto):
@@ -349,9 +400,31 @@ def agregar_al_carrito(request, idProducto):
     producto_cart = get_object_or_404(producto, pk=idProducto)
     carrito, created = Carrito.objects.get_or_create(usuario=request.user)
     item, item_created = ItemCarrito.objects.get_or_create(carrito=carrito, producto=producto_cart)
+
     if not item_created:
         item.cantidad += 1
         item.save()
+    else:
+        item.cantidad = 1
+        item.save()
+
+    # Disminuir el stock del producto
+    producto_cart.disminuir_stock(1)
+
+    messages.success(request, f'{producto_cart.nombreProducto} se ha añadido al carrito.')
 
     return redirect(to="cart")
+
+def eliminar_del_carrito(request, itemcarrito_id):
+    item = get_object_or_404(ItemCarrito, pk=itemcarrito_id, carrito__usuario=request.user)
+    producto = item.producto
+
+    # Incrementar la cantidad disponible en el stock del producto
+    producto.stockProducto += item.cantidad
+    producto.save()
+
+    item.delete()
+
+    return redirect('cart')
+
 

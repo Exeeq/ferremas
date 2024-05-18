@@ -107,8 +107,6 @@ class ItemCarrito(models.Model):
     def calcularDescuentoCarrito(self):
         return round(self.producto.precioProducto - (self.producto.precioProducto * 0.05))
     
-    def precio_total_suscritor(self):
-        return round(self.producto.precioProducto - (self.producto.precioProducto * 0.05)) * self.cantidad
 
 class Seguimiento(models.Model):
     descripcion = models.CharField(max_length=250)
@@ -124,7 +122,7 @@ class Pedido(models.Model):
     productos = models.ManyToManyField(producto, through='ItemPedido')
 
     def __str__(self):
-        return f"Orden #{self.numero}"
+        return f"Pedido #{self.numero}"
     
     
     def calcular_total(self):

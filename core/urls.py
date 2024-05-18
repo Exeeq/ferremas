@@ -32,7 +32,7 @@ urlpatterns = [
 
     #CARRITO DE COMPRAS:
     path('agregar/<idProducto>/', agregar_al_carrito, name='agregar_al_carrito'),
-
+    path('eliminar_del_carrito/<int:itemcarrito_id>/', eliminar_del_carrito, name='eliminar_del_carrito'),
 
 ]
 
