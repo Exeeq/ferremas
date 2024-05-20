@@ -101,7 +101,7 @@ def checkout(request):
 
         # Formatear los valores numéricos como cadenas antes de pasarlos al template
 
-        subtotal_dolar_str = '{:.2f}'.format(subtotal_dolar)
+        subtotal_dolar_str = '{:.2f}'.format(subtotal_dolar) 
         total_dolar_str = '{:.2f}'.format(total_dolar)
 
         data = {
@@ -425,6 +425,42 @@ def eliminar_del_carrito(request, itemcarrito_id):
     item.delete()
 
     return redirect('cart')
+
+
+#VISTAS RELACIONADAS A LA CREACIÓN DEL PEDIDO, BOLETA, ETC:
+def crear_pedido(request):
+    if request.method == 'POST':
+        usuario = request.user
+        carrito = usuario.carrito
+
+        pedido = Pedido.objects.create(carrito=carrito, numero=str(uuid.uuid4()))
+
+        items_carrito = carrito.itemcarrito_set.all()
+
+        for item in items_carrito:
+            ItemPedido.objects.create(pedido=pedido, producto=item.producto, cantidad=item.cantidad)
+
+        carrito.productos.clear()
+
+
+        return JsonResponse({'success': True, 'numero_pedido': pedido.numero})
+    else:
+        return JsonResponse({'success': False})
+    
+def boleta(request, numero_pedido):
+    usuario = request.user
+    pedido = Pedido.objects.get(numero = numero_pedido)
+    pedidos = Pedido.objects.filter(carrito__usuario=usuario)
+
+    data = {
+         'pedido': pedido,
+         'pedidos': pedidos,
+         'MEDIA_URL': settings.MEDIA_URL,
+
+    }
+
+    return render(request, 'core/boleta.html', data)
+
 
 
 

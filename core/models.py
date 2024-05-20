@@ -126,7 +126,7 @@ class Pedido(models.Model):
     
     
     def calcular_total(self):
-        items = self.ItemPedido_set.all()
+        items = self.itempedido_set.all() 
         total = 0
 
         for item in items:
@@ -135,7 +135,7 @@ class Pedido(models.Model):
         return total
         
     def calcular_cantidad(self):
-        items = self.ItemPedido_set.all()
+        items = self.itempedido_set.all()  
         total = 0
 
         for item in items:

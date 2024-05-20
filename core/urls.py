@@ -34,5 +34,9 @@ urlpatterns = [
     path('agregar/<idProducto>/', agregar_al_carrito, name='agregar_al_carrito'),
     path('eliminar_del_carrito/<int:itemcarrito_id>/', eliminar_del_carrito, name='eliminar_del_carrito'),
 
+    #PEDIDO
+    path('crear_pedido/', crear_pedido, name='crear_pedido'),
+    path('boleta/<numero_pedido>', boleta, name='boleta'),
+
 ]
 
