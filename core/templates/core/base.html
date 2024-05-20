@@ -11,70 +11,68 @@
   <meta name="description" content="" />
   <meta name="keywords" content="bootstrap, bootstrap4" />
 
-		<!-- Bootstrap CSS -->
-		<link href="{% static 'core/css/bootstrap.min.css' %}" rel="stylesheet">
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-		<link href="{% static 'core/css/tiny-slider.css' %}" rel="stylesheet">
-		<link href="{% static 'core/css/style.css' %}" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'core/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="{% static 'core/css/tiny-slider.css' %}" rel="stylesheet">
+  <link href="{% static 'core/css/style.css' %}" rel="stylesheet">
 
-		<title>Ferremas - Artículos de construcción </title>
-	</head>
+  <title>Ferremas - Artículos de construcción</title>
+</head>
 
-	<body>
+<body>
 
-		<!-- Start Header/Navigation -->
-		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+  <!-- Start Header/Navigation -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img class="logo1" src="{% static 'core/images/logo-ferremas-sinfondo.png' %}" alt="">
+      </a>
 
-			<div class="container">
-				<a class="navbar-brand" href="index.html">
-					<img class="logo1" src="{% static 'core/images/logo-ferremas-sinfondo.png' %}" alt="">
-				</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-
-				<div class="collapse navbar-collapse" id="navbarsFurni">
-					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-						<li><a class="nav-link" href="{% url 'shop' %}">Tienda</a></li>
-						<li><a class="nav-link" href="{% url 'about' %}">Sobre nosotros</a></li>
-						<li><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
-						<li><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
-					</ul>
-					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<img src="{% static 'core/images/user.svg' %}" alt="User Icon">
-							</a>
-							<ul class="dropdown-menu bg-black" aria-labelledby="navbarDropdown">
-								{% if user.is_authenticated %}
-								  <li class="dropdown-item">
-									<a class="nav-link text-white" href="#" role="button" aria-expanded="false">
-									  {{ user.pnombre }} {{ user.ap_paterno }}
-									</a>
-								  </li>
-								  {% if user.idRol_id == 5 %}
-								  <li class="dropdown-item">
-									<a class="nav-link text-white" href="{% url 'panel_administracion' %}" role="button" aria-expanded="false">Panel de administración</a>
-								  </li>
-								  {% endif %}
-								  <li><a class="dropdown-item text-white" href="{% url 'logout' %}">Cerrar sesión</a></li>
-								{% else %}
-								  <li><a class="dropdown-item text-white" href="{% url 'login' %}">Iniciar Sesión</a></li>
-								  <li><a class="dropdown-item text-white" href="{% url 'register' %}">Registrarse</a></li>
-								{% endif %}
-							</ul>
-						</li>
-						<li>
-							<a class="nav-link" href="{% url 'cart' %}"><img src="{% static 'core/images/cart.svg' %}"></a>
-						</li>
-					</ul>
-				</div>
-			</div>
-				
-		</nav>
-		<!-- End Header/Navigation -->
+      <div class="collapse navbar-collapse" id="navbarsFurni">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+          <li><a class="nav-link" href="{% url 'shop' %}">Tienda</a></li>
+          <li><a class="nav-link" href="{% url 'about' %}">Sobre nosotros</a></li>
+          <li><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
+          <li><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+        </ul>
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{% static 'core/images/user.svg' %}" alt="User Icon">
+            </a>
+            <ul class="dropdown-menu bg-black" aria-labelledby="navbarDropdown">
+              {% if user.is_authenticated %}
+                <li class="dropdown-item">
+                  <a class="nav-link text-white" href="#" role="button" aria-expanded="false">
+                    {{ user.pnombre }} {{ user.ap_paterno }}
+                  </a>
+                </li>
+                {% if user.idRol_id == 5 %}
+                  <li class="dropdown-item">
+                    <a class="nav-link text-white" href="{% url 'panel_administracion' %}" role="button" aria-expanded="false">Panel de administración</a>
+                  </li>
+                {% endif %}
+                <li><a class="dropdown-item text-white" href="{% url 'logout' %}">Cerrar sesión</a></li>
+              {% else %}
+                <li><a class="dropdown-item text-white" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'register' %}">Registrarse</a></li>
+              {% endif %}
+            </ul>
+          </li>
+          <li>
+            <a class="nav-link" href="{% url 'cart' %}"><img src="{% static 'core/images/cart.svg' %}"></a>
+          </li>
+        </ul>
+      </div>
+    </div>      
+  </nav>
+  <!-- End Header/Navigation -->
 		{% block contenido %}
 
     
@@ -180,7 +178,7 @@
 		<script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
 		<script src="{% static 'core/js/tiny-slider.js' %}"></script>
 		<script src="{% static 'core/js/custom.js' %}"></script>
-		<script src="https://cdn.jsdelivr.	net/npm/sweetalert2@11"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     	<script src="{% static 'core/js/mensajes.js' %}"></script>
         {% endblock %}
 	</body>

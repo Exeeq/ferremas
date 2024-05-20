@@ -28,7 +28,12 @@
                         <p class="h5 text-uppercase">Marca: <span class="badge bg-warning">{{ producto.idMarca }}</span></p>
                         <p class="h5 text-uppercase">Categoria: <span class="badge bg-warning">{{ producto.idcategoriaProducto }}</span></p>
                         <div class="mt-5 text-center">
-                          <a href="{% url 'agregar_al_carrito'  producto.idProducto %}" class="btn btn-warning text-white font-weight-bold rounded-pill">Añadir al Carrito</a>
+                            {% if producto.stockProducto > 0 %}
+                                <a href="{% url 'agregar_al_carrito' producto.idProducto %}" class="btn btn-warning text-white font-weight-bold rounded-pill">Añadir al Carrito</a>
+                            {% else %}
+                                <button class="btn btn-dark text-white font-weight-bold rounded-pill" disabled>Añadir al Carrito</button>
+                                <p class="fw-bold text-danger ">*Producto sin stock*</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

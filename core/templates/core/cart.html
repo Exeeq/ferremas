@@ -24,9 +24,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th class="product-thumbnail">Imagen</th>
+                                <th class="product-thumbnail">Imágen</th>
                                 <th class="product-name">Producto</th>
-                                <th class="product-price">Precio</th>
+                                <th class="product-price">Precio Unitario</th>
                                 <th class="product-quantity">Cantidad</th>
                                 <th class="product-total">Total</th>
                                 <th class="product-remove">Eliminar</th>
@@ -47,17 +47,7 @@
                                     <h2 class="h5 text-black">{{ item.producto.nombreProducto }}</h2>
                                 </td>
                                 <td class="product-price">${{ item.producto.precioProducto }}</td>
-                                <td>
-                                    <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                                        <div class="input-group-prepend">
-                                            <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                                        </div>
-                                        <input type="text" class="form-control text-center quantity-amount" value="{{ item.cantidad }}" placeholder="" aria-label="Cantidad" aria-describedby="button-addon1">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                                        </div>
-                                    </div>
-                                </td>
+                                <td class="product-price">{{ item.cantidad }}</td>
                                 <td class="product-total">${{ item.precio_total }}</td>
                                 <td>
                                     <a onclick="eliminarProductoCarrito({{ item.id }}); return false;" href="#">
@@ -120,6 +110,9 @@
 
 {% endblock contenido %}
 {% block js %}
+<script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'core/js/tiny-slider.js' %}"></script>
+<script src="{% static 'core/js/custom.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{% static 'core/js/mensajes.js' %}"></script>
-{% endblock js %}
+{% endblock %}

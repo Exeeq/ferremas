@@ -14,6 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import requests
+from django.http import JsonResponse
 
 # VIEWS
 def index(request):
@@ -411,8 +412,6 @@ def agregar_al_carrito(request, idProducto):
     # Disminuir el stock del producto
     producto_cart.disminuir_stock(1)
 
-    messages.success(request, f'{producto_cart.nombreProducto} se ha añadido al carrito.')
-
     return redirect(to="cart")
 
 def eliminar_del_carrito(request, itemcarrito_id):
@@ -426,5 +425,6 @@ def eliminar_del_carrito(request, itemcarrito_id):
     item.delete()
 
     return redirect('cart')
+
 
 
