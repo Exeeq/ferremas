@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-05-2024 a las 05:11:04
+-- Tiempo de generación: 21-05-2024 a las 22:02:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -220,7 +220,47 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (49, 'Can add user', 13, 'add_usuariocustom'),
 (50, 'Can change user', 13, 'change_usuariocustom'),
 (51, 'Can delete user', 13, 'delete_usuariocustom'),
-(52, 'Can view user', 13, 'view_usuariocustom');
+(52, 'Can view user', 13, 'view_usuariocustom'),
+(53, 'Can add pedido', 14, 'add_pedido'),
+(54, 'Can change pedido', 14, 'change_pedido'),
+(55, 'Can delete pedido', 14, 'delete_pedido'),
+(56, 'Can view pedido', 14, 'view_pedido'),
+(57, 'Can add item carrito', 15, 'add_itemcarrito'),
+(58, 'Can change item carrito', 15, 'change_itemcarrito'),
+(59, 'Can delete item carrito', 15, 'delete_itemcarrito'),
+(60, 'Can view item carrito', 15, 'view_itemcarrito'),
+(61, 'Can add seguimiento', 16, 'add_seguimiento'),
+(62, 'Can change seguimiento', 16, 'change_seguimiento'),
+(63, 'Can delete seguimiento', 16, 'delete_seguimiento'),
+(64, 'Can view seguimiento', 16, 'view_seguimiento'),
+(65, 'Can add carrito', 17, 'add_carrito'),
+(66, 'Can change carrito', 17, 'change_carrito'),
+(67, 'Can delete carrito', 17, 'delete_carrito'),
+(68, 'Can view carrito', 17, 'view_carrito'),
+(69, 'Can add item pedido', 18, 'add_itempedido'),
+(70, 'Can change item pedido', 18, 'change_itempedido'),
+(71, 'Can delete item pedido', 18, 'delete_itempedido'),
+(72, 'Can view item pedido', 18, 'view_itempedido');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `core_carrito`
+--
+
+DROP TABLE IF EXISTS `core_carrito`;
+CREATE TABLE `core_carrito` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `core_carrito`
+--
+
+INSERT INTO `core_carrito` (`id`, `usuario_id`) VALUES
+(3, 1),
+(4, 17);
 
 -- --------------------------------------------------------
 
@@ -260,7 +300,337 @@ CREATE TABLE `core_comuna` (
 
 INSERT INTO `core_comuna` (`idComuna`, `nombreComuna`, `idRegion_id`) VALUES
 (1, 'Puente Alto', 1),
-(2, 'La Florida', 1);
+(2, 'La Florida', 1),
+(3, 'Alhué', 1),
+(4, 'Cerrillos', 1),
+(5, 'Cerro Navia', 1),
+(6, 'Conchalí', 1),
+(7, 'El Bosque', 1),
+(8, 'Estación Central', 1),
+(9, 'Huechuraba', 1),
+(10, 'Independencia', 1),
+(11, 'La Cisterna', 1),
+(12, 'La Granja', 1),
+(13, 'La Pintana', 1),
+(14, 'La Reina', 1),
+(15, 'Las Condes', 1),
+(16, 'Lo Barnechea', 1),
+(17, 'Lo Espejo', 1),
+(18, 'Lo Prado', 1),
+(19, 'Macul', 1),
+(20, 'Maipú', 1),
+(21, 'Ñuñoa', 1),
+(22, 'Pedro Aguirre Cerda', 1),
+(23, 'Peñalolén', 1),
+(24, 'Providencia', 1),
+(25, 'Pudahuel', 1),
+(26, 'Quilicura', 1),
+(27, 'Quinta Normal', 1),
+(28, 'Recoleta', 1),
+(29, 'Renca', 1),
+(30, 'San Joaquín', 1),
+(31, 'San Miguel', 1),
+(32, 'San Ramón', 1),
+(33, 'Santiago', 1),
+(34, 'Vitacura', 1),
+(35, 'Pirque', 1),
+(36, 'San José de Maipo', 1),
+(37, 'Colina', 1),
+(38, 'Lampa', 1),
+(39, 'Tiltil', 1),
+(40, 'San Bernardo', 1),
+(41, 'Buin', 1),
+(42, 'Calera de Tango', 1),
+(43, 'Paine', 1),
+(44, 'Melipilla', 1),
+(45, 'Curacaví', 1),
+(46, 'María Pinto', 1),
+(47, 'San Pedro', 1),
+(48, 'Talagante', 1),
+(49, 'El Monte', 1),
+(50, 'Isla de Maipo', 1),
+(51, 'Padre Hurtado', 1),
+(52, 'Peñaflor', 1),
+(53, 'Arica', 2),
+(54, 'Camarones', 2),
+(55, 'Putre', 2),
+(56, 'General Lagos', 2),
+(57, 'Iquique', 3),
+(58, 'Alto Hospicio', 3),
+(59, 'Pozo Almonte', 3),
+(60, 'Camiña', 3),
+(61, 'Colchane', 3),
+(62, 'Huara', 3),
+(63, 'Pica', 3),
+(64, 'Antofagasta', 4),
+(65, 'Mejillones', 4),
+(66, 'Sierra Gorda', 4),
+(67, 'Taltal', 4),
+(68, 'Calama', 4),
+(69, 'Ollagüe', 4),
+(70, 'San Pedro de Atacama', 4),
+(71, 'Tocopilla', 4),
+(72, 'María Elena', 4),
+(73, 'Copiapó', 5),
+(74, 'Caldera', 5),
+(75, 'Tierra Amarilla', 5),
+(76, 'Chañaral', 5),
+(77, 'Diego de Almagro', 5),
+(78, 'Vallenar', 5),
+(79, 'Alto del Carmen', 5),
+(80, 'Freirina', 5),
+(81, 'Huasco', 5),
+(82, 'La Serena', 6),
+(83, 'Coquimbo', 6),
+(84, 'Andacollo', 6),
+(85, 'La Higuera', 6),
+(86, 'Paiguano', 6),
+(87, 'Vicuña', 6),
+(88, 'Illapel', 6),
+(89, 'Canela', 6),
+(90, 'Los Vilos', 6),
+(91, 'Salamanca', 6),
+(92, 'Ovalle', 6),
+(93, 'Combarbalá', 6),
+(94, 'Monte Patria', 6),
+(95, 'Punitaqui', 6),
+(96, 'Río Hurtado', 6),
+(97, 'Valparaíso', 7),
+(98, 'Casablanca', 7),
+(99, 'Concón', 7),
+(100, 'Juan Fernández', 7),
+(101, 'Puchuncaví', 7),
+(102, 'Quintero', 7),
+(103, 'Viña del Mar', 7),
+(104, 'Isla de Pascua', 7),
+(105, 'Los Andes', 7),
+(106, 'Calle Larga', 7),
+(107, 'Rinconada', 7),
+(108, 'San Esteban', 7),
+(109, 'La Ligua', 7),
+(110, 'Cabildo', 7),
+(111, 'Papudo', 7),
+(112, 'Petorca', 7),
+(113, 'Zapallar', 7),
+(114, 'Quillota', 7),
+(115, 'Calera', 7),
+(116, 'Hijuelas', 7),
+(117, 'La Cruz', 7),
+(118, 'Nogales', 7),
+(119, 'San Antonio', 7),
+(120, 'Algarrobo', 7),
+(121, 'Cartagena', 7),
+(122, 'El Quisco', 7),
+(123, 'El Tabo', 7),
+(124, 'Santo Domingo', 7),
+(125, 'San Felipe', 7),
+(126, 'Catemu', 7),
+(127, 'Llaillay', 7),
+(128, 'Panquehue', 7),
+(129, 'Putaendo', 7),
+(130, 'Santa María', 7),
+(131, 'Quilpué', 7),
+(132, 'Limache', 7),
+(133, 'Olmué', 7),
+(134, 'Villa Alemana', 7),
+(135, 'Rancagua', 8),
+(136, 'Codegua', 8),
+(137, 'Coinco', 8),
+(138, 'Coltauco', 8),
+(139, 'Doñihue', 8),
+(140, 'Graneros', 8),
+(141, 'Las Cabras', 8),
+(142, 'Machalí', 8),
+(143, 'Malloa', 8),
+(144, 'Mostazal', 8),
+(145, 'Olivar', 8),
+(146, 'Peumo', 8),
+(147, 'Pichidegua', 8),
+(148, 'Quinta de Tilcoco', 8),
+(149, 'Rengo', 8),
+(150, 'Requínoa', 8),
+(151, 'San Vicente', 8),
+(152, 'Pichilemu', 8),
+(153, 'La Estrella', 8),
+(154, 'Litueche', 8),
+(155, 'Marchihue', 8),
+(156, 'Navidad', 8),
+(157, 'Paredones', 8),
+(158, 'San Fernando', 8),
+(159, 'Chépica', 8),
+(160, 'Chimbarongo', 8),
+(161, 'Lolol', 8),
+(162, 'Nancagua', 8),
+(163, 'Palmilla', 8),
+(164, 'Peralillo', 8),
+(165, 'Placilla', 8),
+(166, 'Pumanque', 8),
+(167, 'Santa Cruz', 8),
+(168, 'Talca', 9),
+(169, 'ConsVtitución', 9),
+(170, 'Curepto', 9),
+(171, 'Empedrado', 9),
+(172, 'Maule', 9),
+(173, 'Pelarco', 9),
+(174, 'Pencahue', 9),
+(175, 'Río Claro', 9),
+(176, 'San Clemente', 9),
+(177, 'San Rafael', 9),
+(178, 'Cauquenes', 9),
+(179, 'Chanco', 9),
+(180, 'Pelluhue', 9),
+(181, 'Curicó', 9),
+(182, 'Hualañé', 9),
+(183, 'Licantén', 9),
+(184, 'Molina', 9),
+(185, 'Rauco', 9),
+(186, 'Romeral', 9),
+(187, 'Sagrada Familia', 9),
+(188, 'Teno', 9),
+(189, 'Vichuquén', 9),
+(190, 'Linares', 9),
+(191, 'Colbún', 9),
+(192, 'Longaví', 9),
+(193, 'Parral', 9),
+(194, 'Retiro', 9),
+(195, 'San Javier', 9),
+(196, 'Villa Alegre', 9),
+(197, 'Yerbas Buenas', 9),
+(198, 'Chillán', 10),
+(199, 'Bulnes', 10),
+(200, 'Cobquecura', 10),
+(201, 'Coelemu', 10),
+(202, 'Coihueco', 10),
+(203, 'Chillán Viejo', 10),
+(204, 'El Carmen', 10),
+(205, 'Ninhue', 10),
+(206, 'Ñiquén', 10),
+(207, 'Pemuco', 10),
+(208, 'Pinto', 10),
+(209, 'Portezuelo', 10),
+(210, 'Quillón', 10),
+(211, 'Quirihue', 10),
+(212, 'Ránquil', 10),
+(213, 'San Carlos', 10),
+(214, 'San Fabián', 10),
+(215, 'San Ignacio', 10),
+(216, 'San Nicolás', 10),
+(217, 'Treguaco', 10),
+(218, 'Yungay', 10),
+(219, 'Temuco', 11),
+(220, 'Carahue', 11),
+(221, 'Cunco', 11),
+(222, 'Curarrehue', 11),
+(223, 'Freire', 11),
+(224, 'Galvarino', 11),
+(225, 'Gorbea', 11),
+(226, 'Lautaro', 11),
+(227, 'Loncoche', 11),
+(228, 'Melipeuco', 11),
+(229, 'Nueva Imperial', 11),
+(230, 'Padre Las Casas', 11),
+(231, 'Perquenco', 11),
+(232, 'Pitrufquén', 11),
+(233, 'Pucón', 11),
+(234, 'Saavedra', 11),
+(235, 'Teodoro Schmidt', 11),
+(236, 'Toltén', 11),
+(237, 'Vilcún', 11),
+(238, 'Villarrica', 11),
+(239, 'Cholchol', 11),
+(240, 'Angol', 11),
+(241, 'Collipulli', 11),
+(242, 'Curacautín', 11),
+(243, 'Ercilla', 11),
+(244, 'Lonquimay', 11),
+(245, 'Los Sauces', 11),
+(246, 'Lumaco', 11),
+(247, 'Purén', 11),
+(248, 'Renaico', 11),
+(249, 'Traiguén', 11),
+(250, 'Victoria', 11),
+(251, 'Valdivia', 12),
+(252, 'Corral', 12),
+(253, 'Lanco', 12),
+(254, 'Los Lagos', 12),
+(255, 'Máfil', 12),
+(256, 'Mariquina', 12),
+(257, 'Paillaco', 12),
+(258, 'Panguipulli', 12),
+(261, 'Puerto Montt', 13),
+(262, 'Calbuco', 13),
+(263, 'Cochamó', 13),
+(264, 'Fresia', 13),
+(265, 'Frutillar', 13),
+(266, 'Los Muermos', 13),
+(267, 'Llanquihue', 13),
+(268, 'Maullín', 13),
+(269, 'Puerto Varas', 13),
+(270, 'Castro', 13),
+(271, 'Ancud', 13),
+(272, 'Chonchi', 13),
+(273, 'Curaco de Vélez', 13),
+(274, 'Dalcahue', 13),
+(275, 'Puqueldón', 13),
+(276, 'Queilén', 13),
+(277, 'Quellón', 13),
+(278, 'Quemchi', 13),
+(279, 'Quinchao', 13),
+(280, 'Coyhaique', 14),
+(281, 'Lago Verde', 14),
+(282, 'Aysén', 14),
+(283, 'Cisnes', 14),
+(284, 'Guaitecas', 14),
+(285, 'Cochrane', 14),
+(286, 'O’Higgins', 14),
+(287, 'Tortel', 14),
+(288, 'Punta Arenas', 15),
+(289, 'Laguna Blanca', 15),
+(290, 'Río Verde', 15),
+(291, 'San Gregorio', 15),
+(292, 'Cabo de Hornos', 15),
+(293, 'Porvenir', 15),
+(294, 'Primavera', 15),
+(295, 'Timaukel', 15);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `core_itemcarrito`
+--
+
+DROP TABLE IF EXISTS `core_itemcarrito`;
+CREATE TABLE `core_itemcarrito` (
+  `id` int(11) NOT NULL,
+  `cantidad` int(10) UNSIGNED NOT NULL CHECK (`cantidad` >= 0),
+  `carrito_id` int(11) NOT NULL,
+  `producto_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `core_itempedido`
+--
+
+DROP TABLE IF EXISTS `core_itempedido`;
+CREATE TABLE `core_itempedido` (
+  `id` int(11) NOT NULL,
+  `cantidad` int(10) UNSIGNED NOT NULL CHECK (`cantidad` >= 0),
+  `pedido_id` int(11) NOT NULL,
+  `producto_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `core_itempedido`
+--
+
+INSERT INTO `core_itempedido` (`id`, `cantidad`, `pedido_id`, `producto_id`) VALUES
+(1, 2, 3, 4),
+(2, 1, 4, 4),
+(3, 1, 4, 6),
+(4, 2, 5, 4),
+(5, 1, 5, 6);
 
 -- --------------------------------------------------------
 
@@ -285,6 +655,30 @@ INSERT INTO `core_marca` (`idMarca`, `nombreMarca`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `core_pedido`
+--
+
+DROP TABLE IF EXISTS `core_pedido`;
+CREATE TABLE `core_pedido` (
+  `id` int(11) NOT NULL,
+  `numero` varchar(36) NOT NULL,
+  `fecha` datetime(6) NOT NULL,
+  `carrito_id` int(11) NOT NULL,
+  `estado_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `core_pedido`
+--
+
+INSERT INTO `core_pedido` (`id`, `numero`, `fecha`, `carrito_id`, `estado_id`) VALUES
+(3, 'b2c065ce-55c9-4236-9531-004013cd6138', '2024-05-20 19:48:41.424366', 4, 1),
+(4, '2b05f021-d748-4033-9a73-367caf674b03', '2024-05-21 00:52:28.333640', 3, 5),
+(5, '9c0c539d-f705-4285-96ad-940852c607af', '2024-05-21 00:56:33.354346', 3, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `core_producto`
 --
 
@@ -305,8 +699,8 @@ CREATE TABLE `core_producto` (
 --
 
 INSERT INTO `core_producto` (`idProducto`, `nombreProducto`, `precioProducto`, `stockProducto`, `imagenProducto`, `descripcionProducto`, `idMarca_id`, `idcategoriaProducto_id`) VALUES
-(4, 'Martillo Loco', 6790, 12, 'martillo-venta.jpg', 'Martillo para martillar cosas cualquiera como clavos, madera, etc.', 1, 1),
-(6, 'Martillo de felix el reparador', 5999999, 5, '9caea45d370e2f37ed47b77a838c9c99.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1);
+(4, 'Martillo Loco', 100, 7, 'martillo-venta.jpg', 'Martillo para martillar cosas cualquiera como clavos, madera, etc.', 1, 1),
+(6, 'Martillo de felix el reparador', 130, 9, 'descarga.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -325,7 +719,21 @@ CREATE TABLE `core_region` (
 --
 
 INSERT INTO `core_region` (`idRegion`, `nombreRegion`) VALUES
-(1, 'Metropolitana');
+(1, 'Metropolitana'),
+(2, 'Arica y Parinacota'),
+(3, 'Tarapacá'),
+(4, 'Antofagasta'),
+(5, 'Atacama'),
+(6, 'Coquimbo'),
+(7, 'Valparaíso'),
+(8, 'O´Higgins'),
+(9, 'Maule'),
+(10, 'Ñuble'),
+(11, 'La Araucanía'),
+(12, 'Los Ríos'),
+(13, 'Los Lagos'),
+(14, 'Aysen'),
+(15, 'Magallanes');
 
 -- --------------------------------------------------------
 
@@ -349,6 +757,29 @@ INSERT INTO `core_rolusuario` (`idRol`, `nombreRol`) VALUES
 (3, 'Bodeguero'),
 (4, 'Contador'),
 (5, 'Administrador');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `core_seguimiento`
+--
+
+DROP TABLE IF EXISTS `core_seguimiento`;
+CREATE TABLE `core_seguimiento` (
+  `id` int(11) NOT NULL,
+  `descripcion` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `core_seguimiento`
+--
+
+INSERT INTO `core_seguimiento` (`id`, `descripcion`) VALUES
+(1, 'En preparación'),
+(2, 'Listo para envío'),
+(3, 'En reparto'),
+(4, 'Entregado'),
+(5, 'En reparto');
 
 -- --------------------------------------------------------
 
@@ -400,9 +831,11 @@ CREATE TABLE `core_usuariocustom` (
 --
 
 INSERT INTO `core_usuariocustom` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `run`, `pnombre`, `snombre`, `ap_paterno`, `ap_materno`, `correo_usuario`, `fecha_nacimiento`, `direccion`, `idComuna_id`, `idRol_id`) VALUES
-(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-17 02:50:43.993931', 1, 'admin', '', '', '', 1, 1, '2024-05-13 19:58:21.484730', '', 'Admin', '', 'Supremo', '', 'admin@ferremas.cl', NULL, '', 1, 5),
-(17, 'pbkdf2_sha256$216000$XSMqEWa5tDxI$NpIHN4C3A7mVfsmUuY5oh5MMEUyk2x6KN7CiWZ7mIAY=', '2024-05-17 02:48:50.682794', 0, 'Exequiel', '', '', '', 0, 1, '2024-05-17 02:48:31.294245', '21.002.289-9', 'Exequiel', '', 'Albornoz', '', 'ex.albornoz@duocuc.cl', '2024-05-13', 'Millantu, 167, Puente Alto', 1, 2),
-(19, 'pbkdf2_sha256$216000$YGQHzZt4gprY$kZRsdLTLBXVDnGpUwrctPqzwgayJJMOljRVEEVbfxQo=', '2024-05-17 02:50:37.178359', 0, 'Jairo', '', '', '', 0, 1, '2024-05-17 02:50:06.159752', '21.675.399-K', 'Jairo', '', 'Marín', '', 'jai.marin@duocuc.cl', '2024-04-29', 'El canelo, 555', 1, 3);
+(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-21 19:38:48.667926', 1, 'admin', '', '', '', 1, 1, '2024-05-13 19:58:21.484730', '10.001.100-1', 'Admin', '', 'Supremo', '', 'admin@ferremas.cl', '2024-06-06', 'Admins 111', 1, 5),
+(17, 'pbkdf2_sha256$216000$XSMqEWa5tDxI$NpIHN4C3A7mVfsmUuY5oh5MMEUyk2x6KN7CiWZ7mIAY=', '2024-05-21 19:38:35.374258', 0, 'Exequiel', '', '', '', 0, 1, '2024-05-17 02:48:31.294245', '21.002.289-9', 'Exequiel', '', 'Albornoz', '', 'ex.albornoz@duocuc.cl', '2024-05-13', 'Millantu, 167, Puente Alto', 1, 2),
+(19, 'pbkdf2_sha256$216000$YGQHzZt4gprY$kZRsdLTLBXVDnGpUwrctPqzwgayJJMOljRVEEVbfxQo=', '2024-05-21 19:36:54.011051', 0, 'Jairo', '', '', '', 0, 1, '2024-05-17 02:50:06.159752', '21.675.399-K', 'Jairo', '', 'Marín', '', 'jai.marin@duocuc.cl', '2024-05-07', 'El canelo, 555', 1, 4),
+(21, 'pbkdf2_sha256$216000$o7II5XOHNSjI$dHdq5pWg1Y1U/OMD5FyCUqWlR2l14FYdg+bSUnwn9BM=', '2024-05-21 19:37:06.753736', 0, 'Jeffrey', '', '', '', 0, 1, '2024-05-21 19:26:25.955182', '21.834.265-4', 'Jeffrey', '', 'Ramirez', '', 'jef.ramirez@duocuc.cl', '2024-05-23', 'San Francisco 9484', 1, 3),
+(23, 'pbkdf2_sha256$216000$cqaCqrJCmQ8v$BRVXF4Nb+wumevjk7zO+Zsw4zWHCv0ARcXGB0ZPcjxo=', '2024-05-21 19:29:04.525245', 0, 'Juan', '', '', '', 0, 1, '2024-05-21 19:28:33.585043', '99.999.999-9', 'Juan', '', 'Callabo', '', 'juancallabo@gmail.com', '1999-09-09', 'Juan 999', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -470,12 +903,17 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (3, 'auth', 'group'),
 (2, 'auth', 'permission'),
 (4, 'contenttypes', 'contenttype'),
+(17, 'core', 'carrito'),
 (6, 'core', 'categoriaproducto'),
 (7, 'core', 'comuna'),
+(15, 'core', 'itemcarrito'),
+(18, 'core', 'itempedido'),
 (8, 'core', 'marca'),
+(14, 'core', 'pedido'),
 (12, 'core', 'producto'),
 (9, 'core', 'region'),
 (10, 'core', 'rolusuario'),
+(16, 'core', 'seguimiento'),
 (11, 'core', 'sucursal'),
 (13, 'core', 'usuariocustom'),
 (5, 'sessions', 'session');
@@ -519,7 +957,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (18, 'admin', '0003_logentry_add_action_flag_choices', '2024-05-13 19:46:06.450593'),
 (19, 'core', '0002_auto_20240512_2210', '2024-05-13 19:46:06.480927'),
 (20, 'core', '0003_auto_20240513_1545', '2024-05-13 19:46:06.509734'),
-(21, 'sessions', '0001_initial', '2024-05-13 19:46:06.521666');
+(21, 'sessions', '0001_initial', '2024-05-13 19:46:06.521666'),
+(22, 'core', '0004_auto_20240517_1533', '2024-05-17 19:33:55.389641');
 
 -- --------------------------------------------------------
 
@@ -539,8 +978,8 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('bjhm9ra5sb0srhbwiomudq49uodqn8q4', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s7Q1P:vZPQR2jDeTwgZs77ZdEY8boh2E71jwZdgp0vLpTSgmY', '2024-05-30 01:35:03.071451'),
-('n707oc3d62rl72vokitqwsftehsmjql7', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s7ngB:GyRsKL5AE_GRbXHUG81YZCRfC-KLv04HI_-pOSE_9_o', '2024-05-31 02:50:43.994931');
+('fn25ymqncn9tcnult6p7wmg74ys2xoqw', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s9Unx:FMHHUPw2zh_aw974ETGJgENFqXhlsJIwQtpht3PrdAU', '2024-06-04 19:05:45.956253'),
+('quxmqnlylr6jvmb3zvmgli21ab6uncih', '.eJxVjDsOwjAQRO_iGln-4HhNSc8ZrPXuGgdQIuVTIe5OIqWAcua9mbfKuC4tr7NMuWd1UTaq029ZkJ4y7IQfONxHTeOwTH3Ru6IPOuvbyPK6Hu7fQcO5bWsQZhM7YH8mEjZcUsItuEoYALsQLGycBZMYsATO-65GdlBL8NapzxclhjhE:1s95n7:vINrV-XZJM7ASOeyUqPzbvpmLWy9iyx92tEUaUPlkBk', '2024-06-03 16:23:13.680121');
 
 --
 -- Índices para tablas volcadas
@@ -569,6 +1008,13 @@ ALTER TABLE `auth_permission`
   ADD UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`);
 
 --
+-- Indices de la tabla `core_carrito`
+--
+ALTER TABLE `core_carrito`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `usuario_id` (`usuario_id`);
+
+--
 -- Indices de la tabla `core_categoriaproducto`
 --
 ALTER TABLE `core_categoriaproducto`
@@ -582,10 +1028,35 @@ ALTER TABLE `core_comuna`
   ADD KEY `core_comuna_idRegion_id_8eb1d498_fk_core_region_idRegion` (`idRegion_id`);
 
 --
+-- Indices de la tabla `core_itemcarrito`
+--
+ALTER TABLE `core_itemcarrito`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `core_itemcarrito_carrito_id_427071c4_fk_core_carrito_id` (`carrito_id`),
+  ADD KEY `core_itemcarrito_producto_id_eea3400e_fk_core_prod` (`producto_id`);
+
+--
+-- Indices de la tabla `core_itempedido`
+--
+ALTER TABLE `core_itempedido`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `core_itempedido_pedido_id_a233f553_fk_core_pedido_id` (`pedido_id`),
+  ADD KEY `core_itempedido_producto_id_b797c050_fk_core_producto_idProducto` (`producto_id`);
+
+--
 -- Indices de la tabla `core_marca`
 --
 ALTER TABLE `core_marca`
   ADD PRIMARY KEY (`idMarca`);
+
+--
+-- Indices de la tabla `core_pedido`
+--
+ALTER TABLE `core_pedido`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `numero` (`numero`),
+  ADD KEY `core_pedido_carrito_id_9422b599_fk_core_carrito_id` (`carrito_id`),
+  ADD KEY `core_pedido_estado_id_4cc337f0_fk_core_seguimiento_id` (`estado_id`);
 
 --
 -- Indices de la tabla `core_producto`
@@ -606,6 +1077,12 @@ ALTER TABLE `core_region`
 --
 ALTER TABLE `core_rolusuario`
   ADD PRIMARY KEY (`idRol`);
+
+--
+-- Indices de la tabla `core_seguimiento`
+--
+ALTER TABLE `core_seguimiento`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `core_sucursal`
@@ -687,7 +1164,13 @@ ALTER TABLE `auth_group_permissions`
 -- AUTO_INCREMENT de la tabla `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+
+--
+-- AUTO_INCREMENT de la tabla `core_carrito`
+--
+ALTER TABLE `core_carrito`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `core_categoriaproducto`
@@ -699,13 +1182,31 @@ ALTER TABLE `core_categoriaproducto`
 -- AUTO_INCREMENT de la tabla `core_comuna`
 --
 ALTER TABLE `core_comuna`
-  MODIFY `idComuna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idComuna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=296;
+
+--
+-- AUTO_INCREMENT de la tabla `core_itemcarrito`
+--
+ALTER TABLE `core_itemcarrito`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT de la tabla `core_itempedido`
+--
+ALTER TABLE `core_itempedido`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `core_marca`
 --
 ALTER TABLE `core_marca`
   MODIFY `idMarca` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `core_pedido`
+--
+ALTER TABLE `core_pedido`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `core_producto`
@@ -717,13 +1218,19 @@ ALTER TABLE `core_producto`
 -- AUTO_INCREMENT de la tabla `core_region`
 --
 ALTER TABLE `core_region`
-  MODIFY `idRegion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idRegion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `core_rolusuario`
 --
 ALTER TABLE `core_rolusuario`
   MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `core_seguimiento`
+--
+ALTER TABLE `core_seguimiento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `core_sucursal`
@@ -735,7 +1242,7 @@ ALTER TABLE `core_sucursal`
 -- AUTO_INCREMENT de la tabla `core_usuariocustom`
 --
 ALTER TABLE `core_usuariocustom`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `core_usuariocustom_groups`
@@ -759,13 +1266,13 @@ ALTER TABLE `django_admin_log`
 -- AUTO_INCREMENT de la tabla `django_content_type`
 --
 ALTER TABLE `django_content_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Restricciones para tablas volcadas
@@ -785,10 +1292,37 @@ ALTER TABLE `auth_permission`
   ADD CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`);
 
 --
+-- Filtros para la tabla `core_carrito`
+--
+ALTER TABLE `core_carrito`
+  ADD CONSTRAINT `core_carrito_usuario_id_9eafcb26_fk_core_usuariocustom_id` FOREIGN KEY (`usuario_id`) REFERENCES `core_usuariocustom` (`id`);
+
+--
 -- Filtros para la tabla `core_comuna`
 --
 ALTER TABLE `core_comuna`
   ADD CONSTRAINT `core_comuna_idRegion_id_8eb1d498_fk_core_region_idRegion` FOREIGN KEY (`idRegion_id`) REFERENCES `core_region` (`idRegion`);
+
+--
+-- Filtros para la tabla `core_itemcarrito`
+--
+ALTER TABLE `core_itemcarrito`
+  ADD CONSTRAINT `core_itemcarrito_carrito_id_427071c4_fk_core_carrito_id` FOREIGN KEY (`carrito_id`) REFERENCES `core_carrito` (`id`),
+  ADD CONSTRAINT `core_itemcarrito_producto_id_eea3400e_fk_core_prod` FOREIGN KEY (`producto_id`) REFERENCES `core_producto` (`idProducto`);
+
+--
+-- Filtros para la tabla `core_itempedido`
+--
+ALTER TABLE `core_itempedido`
+  ADD CONSTRAINT `core_itempedido_pedido_id_a233f553_fk_core_pedido_id` FOREIGN KEY (`pedido_id`) REFERENCES `core_pedido` (`id`),
+  ADD CONSTRAINT `core_itempedido_producto_id_b797c050_fk_core_producto_idProducto` FOREIGN KEY (`producto_id`) REFERENCES `core_producto` (`idProducto`);
+
+--
+-- Filtros para la tabla `core_pedido`
+--
+ALTER TABLE `core_pedido`
+  ADD CONSTRAINT `core_pedido_carrito_id_9422b599_fk_core_carrito_id` FOREIGN KEY (`carrito_id`) REFERENCES `core_carrito` (`id`),
+  ADD CONSTRAINT `core_pedido_estado_id_4cc337f0_fk_core_seguimiento_id` FOREIGN KEY (`estado_id`) REFERENCES `core_seguimiento` (`id`);
 
 --
 -- Filtros para la tabla `core_producto`

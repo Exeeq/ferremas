@@ -22,7 +22,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="d-flex mx-auto align-items-center justify-content-center mb-5">
-                    {% if user.idRol_id == 5 %}
+                    {% if user.idRol_id == 5 or user.idRol_id == 3 %}
 					<p><a href="{% url 'addProduct' %}" class="btn btn-secondary me-2 text-white font-bold">AÑADIR PRODUCTO</a></p>
                     {% endif %}
                     </div>

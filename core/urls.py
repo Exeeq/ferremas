@@ -44,5 +44,9 @@ urlpatterns = [
     #ADMINISTRAR PEDIDOS:
     path('administrar_pedidos/', administrar_pedidos, name="administrar_pedidos"),
     path('cambiar_estado/<str:numero_orden>/', cambiar_estado, name='cambiar_estado'),
+
+    #SOPORTE CONTACTO:
+    path('soporte_contacto', soporte_contacto, name="soporte_contacto"),
+    path('generar_informes', generar_informes, name="generar_informes")
 ]
 

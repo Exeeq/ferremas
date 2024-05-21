@@ -508,3 +508,11 @@ def cambiar_estado(request, numero_orden):
     }
 
     return render(request, 'core/administrar_pedidos.html', data)
+
+#SOPORTE CONTACTO ADMINISTRADOR:
+def soporte_contacto(request):
+    return render(request, 'core/soporte_contacto.html')
+
+#GENERAR INFORMES:
+def generar_informes(request):
+    return render(request, 'core/generar_informes.html')
