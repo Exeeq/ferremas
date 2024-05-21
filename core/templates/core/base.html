@@ -22,7 +22,6 @@
 
 <body>
 
-  <!-- Start Header/Navigation -->
   <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
     <div class="container">
       <a class="navbar-brand" href="index.html">
@@ -48,20 +47,15 @@
             </a>
             <ul class="dropdown-menu bg-black" aria-labelledby="navbarDropdown">
               {% if user.is_authenticated %}
-                <li class="dropdown-item">
-                  <a class="nav-link text-white" href="#" role="button" aria-expanded="false">
-                    {{ user.pnombre }} {{ user.ap_paterno }}
-                  </a>
-                </li>
+                	<li><a class="dropdown-item text-white" href=""><i class="fa-solid fa-user"></i> {{ user.pnombre }} {{ user.ap_paterno }}</a></li>
                 {% if user.idRol_id == 5 %}
-                  <li class="dropdown-item">
-                    <a class="nav-link text-white" href="{% url 'panel_administracion' %}" role="button" aria-expanded="false">Panel de administración</a>
-                  </li>
+                	<li><a class="dropdown-item text-white" href="{% url 'panel_administracion' %}"><i class="fa-solid fa-lock"></i> Administración</a></li>
                 {% endif %}
-                <li><a class="dropdown-item text-white" href="{% url 'logout' %}">Cerrar sesión</a></li>
+				<li><a class="dropdown-item text-white" href="{% url 'mis_pedidos' %}"><i class="fa-solid fa-store"></i> Mis pedidos</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a></li>
               {% else %}
-                <li><a class="dropdown-item text-white" href="{% url 'login' %}">Iniciar Sesión</a></li>
-                <li><a class="dropdown-item text-white" href="{% url 'register' %}">Registrarse</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'register' %}"><i class="fa-solid fa-cash-register"></i> Registrarse</a></li>
               {% endif %}
             </ul>
           </li>
@@ -72,7 +66,6 @@
       </div>
     </div>      
   </nav>
-  <!-- End Header/Navigation -->
 		{% block contenido %}
 
     

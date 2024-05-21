@@ -91,4 +91,22 @@ class ProductoForm(forms.ModelForm):
         model = producto
         fields = '__all__'
 
+class SeguimientoForm(forms.Form):
+    numero_orden = forms.CharField(max_length=100, widget=forms.TextInput(attrs={"placeholder":"INGRESE NÚMERO DE PEDIDO"}))
+    numero_orden.widget.attrs['class'] = 'text-center'
+    numero_orden.label = ''
+
+ESTADOS_PEDIDO = [
+    ('EN PREPARACIÓN', 'EN PREPARACIÓN'),
+    ('LISTO PARA ENVÍO', 'LISTO PARA ENVÍO'),
+    ('EN REPARTO', 'EN REPARTO'),
+    ('ENTREGADO', 'ENTREGADO'),
+    ]
+
+class EstadoPedido(forms.Form):
+    pedido_numero = forms.CharField(widget=forms.HiddenInput())
+    estado = forms.ModelChoiceField(queryset=Seguimiento.objects.all(), empty_label=None)
+
+
+
 

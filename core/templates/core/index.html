@@ -172,4 +172,14 @@
 			</div>
 		</div>
 		<!-- End We Help Section -->
-		{% endblock %}	
+		{% endblock %}
+		{% block js %}
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-ZB6xrqfMuj1N0xyQcJcGf2ptWqf3vO4lJAsT1LRjCLYjd3OV3AXSv17t1G0/hkZi" crossorigin="anonymous"></script>
+		<script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+		<script src="{% static 'core/js/custom.js' %}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script src="{% static 'core/js/mensajes.js' %}"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js" integrity="sha512-j+F4W//4Pu39at5I8HC8q2l1BNz4OF3ju39HyWeqKQagW6ww3ZF9gFcu8rzUbyTDY7gEo/vqqzGte0UPpo65QQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		{% endblock js %}	

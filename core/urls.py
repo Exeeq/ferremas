@@ -38,5 +38,11 @@ urlpatterns = [
     path('crear_pedido/', crear_pedido, name='crear_pedido'),
     path('boleta/<numero_pedido>', boleta, name='boleta'),
 
+    #MIS PEDIDOS
+    path('mis_pedidos/', mis_pedidos, name="mis_pedidos"),
+
+    #ADMINISTRAR PEDIDOS:
+    path('administrar_pedidos/', administrar_pedidos, name="administrar_pedidos"),
+    path('cambiar_estado/<str:numero_orden>/', cambiar_estado, name='cambiar_estado'),
 ]
 

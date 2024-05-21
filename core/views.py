@@ -461,6 +461,50 @@ def boleta(request, numero_pedido):
 
     return render(request, 'core/boleta.html', data)
 
+@login_required
+def mis_pedidos(request):
+    usuario = request.user
+    pedidos = Pedido.objects.filter(carrito__usuario=usuario)
 
+    data = {
+        'pedidos': pedidos,
+        'MEDIA_URL': settings.MEDIA_URL,
+    }
+    return render(request, 'core/mis_pedidos.html', data)
 
+@login_required
+def administrar_pedidos(request):
+    pedidos = Pedido.objects.all()
+    form = EstadoPedido()
 
+    if request.method == 'POST':
+        form = EstadoPedido(request.POST)
+        if form.is_valid():
+            pedido_numero = form.cleaned_data['pedido_numero']
+            estado = form.cleaned_data['estado']
+            pedido = Pedido.objects.get(numero=pedido_numero)
+            pedido.estado = estado
+            pedido.save()
+    
+    data = {
+        'pedidos':pedidos,
+        'form': form
+    }
+    return render(request, 'core/administrar_pedidos.html', data)
+
+def cambiar_estado(request, numero_orden):
+    pedido = Pedido.objects.get(numero=numero_orden)
+    form = EstadoPedido(request.POST or None, initial={'estado': pedido.estado})
+
+    if request.method == 'POST' and form.is_valid():
+        seguimiento = Seguimiento.objects.create(descripcion=form.cleaned_data['estado'])
+        pedido.estado = seguimiento
+        pedido.save()
+        # Realizar cualquier acción adicional después de actualizar el estado
+
+    data = {
+        'pedidos': Pedido.objects.all(),
+        'form': form,
+    }
+
+    return render(request, 'core/administrar_pedidos.html', data)
