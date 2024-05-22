@@ -90,6 +90,24 @@ class ProductoForm(forms.ModelForm):
     class Meta:
         model = producto
         fields = '__all__'
+        labels = {
+            'nombreProducto': 'Nombre del Producto',
+            'precioProducto': 'Precio del Producto',
+            'stockProducto': 'Stock del Producto',
+            'imagenProducto': 'Imagen del Producto',
+            'descripcionProducto': 'Descripción del Producto',
+            'idcategoriaProducto': 'Categoría del Producto',
+            'idMarca': 'Marca del Producto',
+        }
+        widgets = {
+            'nombreProducto': forms.TextInput(attrs={'class': 'form-control'}),
+            'precioProducto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'stockProducto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'imagenProducto': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'descripcionProducto': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'idcategoriaProducto': forms.Select(attrs={'class': 'form-control'}),
+            'idMarca': forms.Select(attrs={'class': 'form-control'}),
+        }
 
 class SeguimientoForm(forms.Form):
     numero_orden = forms.CharField(max_length=100, widget=forms.TextInput(attrs={"placeholder":"INGRESE NÚMERO DE PEDIDO"}))
@@ -106,6 +124,11 @@ ESTADOS_PEDIDO = [
 class EstadoPedido(forms.Form):
     pedido_numero = forms.CharField(widget=forms.HiddenInput())
     estado = forms.ModelChoiceField(queryset=Seguimiento.objects.all(), empty_label=None)
+
+class CheckoutForm(forms.ModelForm):
+    class Meta:
+        model = Pedido
+        fields = ['direccion', 'region', 'comuna', 'nombre', 'apellido', 'correo']
 
 
 

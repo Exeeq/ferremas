@@ -15,6 +15,8 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import requests
 from django.http import JsonResponse
+from django.db import connection, DataError, IntegrityError
+from uuid import uuid4
 
 # VIEWS
 def index(request):
@@ -86,6 +88,8 @@ def cart(request):
 @login_required
 def checkout(request):
     try:
+        regiones = region.objects.all()  
+        comunas = comuna.objects.all()
         usuario = request.user
         carrito = Carrito.objects.get(usuario=usuario)
         items = carrito.itemcarrito_set.all()
@@ -111,6 +115,8 @@ def checkout(request):
             'total': total,
             'subtotal_dolar': subtotal_dolar_str,
             'total_dolar': total_dolar_str,
+            'regiones': regiones,
+            'comunas': comunas,
             'MEDIA_URL': settings.MEDIA_URL,
         }
         
@@ -229,34 +235,45 @@ def modificar_producto(request, idProducto):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES, instance=producto_instance)
         if form.is_valid():
-            nombreProducto = form.cleaned_data['nombreProducto']
-            precioProducto = form.cleaned_data['precioProducto']
-            stockProducto = form.cleaned_data['stockProducto']
-            imagenProducto = request.FILES.get('imagenProducto', None)
-            descripcionProducto = form.cleaned_data['descripcionProducto']
-            idMarca = form.cleaned_data['idMarca'].pk
-            idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].pk
+            try:
+                nombreProducto = form.cleaned_data['nombreProducto']
+                precioProducto = form.cleaned_data['precioProducto']
+                stockProducto = form.cleaned_data['stockProducto']
+                imagenProducto = request.FILES.get('imagenProducto', None)
+                descripcionProducto = form.cleaned_data['descripcionProducto']
+                idMarca = form.cleaned_data['idMarca'].pk
+                idcategoriaProducto = form.cleaned_data['idcategoriaProducto'].pk
 
-            if imagenProducto:
-                with open('media/productos/' + imagenProducto.name, 'wb+') as destination:
-                    for chunk in imagenProducto.chunks():
-                        destination.write(chunk)
-                imagenProducto_name = imagenProducto.name
-            else:
-                imagenProducto_name = producto_instance.imagenProducto
+                if imagenProducto:
+                    with open('media/productos/' + imagenProducto.name, 'wb+') as destination:
+                        for chunk in imagenProducto.chunks():
+                            destination.write(chunk)
+                    imagenProducto_name = imagenProducto.name
+                else:
+                    imagenProducto_name = producto_instance.imagenProducto
 
-            with connection.cursor() as cursor:
-                cursor.callproc('SP_PUT_PRODUCTO', [
-                    idProducto,
-                    nombreProducto,
-                    precioProducto,
-                    stockProducto,
-                    imagenProducto_name,
-                    descripcionProducto,
-                    idMarca,
-                    idcategoriaProducto
-                ])
-            return redirect('detalle_producto', idProducto=idProducto)
+                with connection.cursor() as cursor:
+                    cursor.callproc('SP_PUT_PRODUCTO', [
+                        idProducto,
+                        nombreProducto,
+                        precioProducto,
+                        stockProducto,
+                        imagenProducto_name,
+                        descripcionProducto,
+                        idMarca,
+                        idcategoriaProducto
+                    ])
+                messages.success(request, 'Producto modificado exitosamente.')
+                return redirect('detalle_producto', idProducto=idProducto)
+
+            except DataError as e:
+                messages.error(request, "Hubo un problema al ingresar los datos, revise nuevamente por favor.")
+                print(e)
+            except IntegrityError as e:
+                messages.error(request, "Hubo un problema con la integridad de los datos. Por favor, inténtalo de nuevo.")
+            except Exception as e:
+                messages.error(request, "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.")
+
     else:
         form = ProductoForm(instance=producto_instance)
     return render(request, 'core/modificar_producto.html', {'form': form})
@@ -430,22 +447,30 @@ def eliminar_del_carrito(request, itemcarrito_id):
 #VISTAS RELACIONADAS A LA CREACIÓN DEL PEDIDO, BOLETA, ETC:
 def crear_pedido(request):
     if request.method == 'POST':
-        usuario = request.user
-        carrito = usuario.carrito
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            try:
+                usuario = request.user
+                carrito = usuario.carrito
 
-        pedido = Pedido.objects.create(carrito=carrito, numero=str(uuid.uuid4()))
+                pedido = form.save(commit=False)
+                pedido.carrito = carrito
+                pedido.save()
 
-        items_carrito = carrito.itemcarrito_set.all()
+                items_carrito = carrito.itemcarrito_set.all()
 
-        for item in items_carrito:
-            ItemPedido.objects.create(pedido=pedido, producto=item.producto, cantidad=item.cantidad)
+                for item in items_carrito:
+                    ItemPedido.objects.create(pedido=pedido, producto=item.producto, cantidad=item.cantidad)
 
-        carrito.productos.clear()
-
-
-        return JsonResponse({'success': True, 'numero_pedido': pedido.numero})
+                carrito.productos.clear()
+                return JsonResponse({'success': True, 'numero_pedido': pedido.numero})
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+        else:
+            # Si el formulario no es válido, devuelve los errores
+            return JsonResponse({'success': False, 'errors': form.errors})
     else:
-        return JsonResponse({'success': False})
+        return JsonResponse({'success': False, 'error': 'Método de solicitud no válido'})
     
 def boleta(request, numero_pedido):
     usuario = request.user

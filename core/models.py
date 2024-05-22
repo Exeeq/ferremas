@@ -57,11 +57,11 @@ class categoriaProducto(models.Model):
     
 class producto(models.Model):
     idProducto = models.AutoField(primary_key=True)
-    nombreProducto = models.CharField(max_length=50, blank=False, null=False)
+    nombreProducto = models.TextField(blank=False, null=False)
     precioProducto = models.IntegerField(blank=False, null=False)
     stockProducto = models.IntegerField(blank=False, null=False)
-    imagenProducto = models.ImageField(upload_to="productos/",blank=True, null=True)
-    descripcionProducto = models.CharField(max_length=200, blank=False, null=False)
+    imagenProducto = models.ImageField(upload_to="productos/", blank=True, null=True)
+    descripcionProducto = models.TextField(blank=False, null=False)
     idcategoriaProducto = models.ForeignKey(categoriaProducto, on_delete=models.CASCADE, blank=False, null=False)
     idMarca = models.ForeignKey(marca, on_delete=models.CASCADE, blank=False, null=False)
 
@@ -120,7 +120,13 @@ class Pedido(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     estado = models.ForeignKey(Seguimiento, on_delete=models.CASCADE, default=1)
     productos = models.ManyToManyField(producto, through='ItemPedido')
-
+    direccion = models.CharField(max_length=200, blank=True, null=True)
+    region = models.ForeignKey(region, on_delete=models.CASCADE)
+    comuna = models.ForeignKey(comuna, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=20, blank=True, null=True)
+    apellido = models.CharField(max_length=24, blank=True, null=True)
+    correo = models.EmailField(blank=True, null=True)
+    
     def __str__(self):
         return f"Pedido #{self.numero}"
     
