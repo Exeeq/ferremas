@@ -125,10 +125,13 @@ class EstadoPedido(forms.Form):
     pedido_numero = forms.CharField(widget=forms.HiddenInput())
     estado = forms.ModelChoiceField(queryset=Seguimiento.objects.all(), empty_label=None)
 
-class CheckoutForm(forms.ModelForm):
-    class Meta:
-        model = Pedido
-        fields = ['direccion', 'region', 'comuna', 'nombre', 'apellido', 'correo']
+class CheckoutForm(forms.Form):
+    nombre = forms.CharField(max_length=100)
+    apellido = forms.CharField(max_length=100)
+    direccion = forms.CharField(max_length=255)
+    region = forms.ModelChoiceField(queryset=region.objects.all())
+    comuna = forms.ModelChoiceField(queryset=comuna.objects.all())
+    correo = forms.EmailField()
 
 
 

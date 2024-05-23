@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+
 {% block contenido %}
 
 <!-- Start Hero Section -->
@@ -18,7 +19,7 @@
 <div class="container my-5 shadow-lg">
     <div class="card shadow-lg">
         <div class="card-body">
-            <table class="table table-hover ">
+            <table class="table table-hover">
                 <thead class="table-dark text-center">
                     <tr>
                         <th scope="col">Número de Pedido</th>
@@ -28,7 +29,6 @@
                         <th scope="col">Comuna</th>
                         <th scope="col">Región</th>
                         <th scope="col">Estado Actual</th>
-                        <th scope="col">Cambiar Estado</th>
                     </tr>
                 </thead>
                 <tbody class="flex-wrap text-center h6">
@@ -41,15 +41,6 @@
                             <td class="small">{{ pedido.comuna.nombreComuna }}</td>
                             <td class="small">{{ pedido.region.nombreRegion }}</td>
                             <td class="small">{{ pedido.estado }}</td>
-                            <td>
-                                <form method="post" action="{% url 'cambiar_estado' pedido.numero %}">
-                                    {% csrf_token %}
-                                    
-                                    <input type="hidden" name="pedido_numero" value="{{ pedido.numero }}">
-                                    {{ form.estado }}
-                                    <button type="submit" class="btn btn-sm bg-warning border-warning mt-3">Actualizar</button>
-                                </form>
-                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -57,9 +48,13 @@
         </div>
     </div>
 </div>
+<div class="text-center mt-3">
+    <a href="{% url 'generar_informes' %}" class="btn btn-primary">Descargar Excel</a>
+</div>
 <br><br><br><br><br>
 
 {% endblock contenido %}
+
 {% block js %}
 <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'core/js/tiny-slider.js' %}"></script>

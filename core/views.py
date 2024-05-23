@@ -16,7 +16,10 @@ from django.contrib.auth.hashers import make_password
 import requests
 from django.http import JsonResponse
 from django.db import connection, DataError, IntegrityError
-from uuid import uuid4
+from openpyxl import Workbook
+from django.http import HttpResponse
+import pytz
+from django.utils import timezone
 
 # VIEWS
 def index(request):
@@ -447,30 +450,45 @@ def eliminar_del_carrito(request, itemcarrito_id):
 #VISTAS RELACIONADAS A LA CREACIÓN DEL PEDIDO, BOLETA, ETC:
 def crear_pedido(request):
     if request.method == 'POST':
-        form = CheckoutForm(request.POST)
-        if form.is_valid():
-            try:
-                usuario = request.user
-                carrito = usuario.carrito
+        usuario = request.user
+        carrito = usuario.carrito
 
-                pedido = form.save(commit=False)
-                pedido.carrito = carrito
-                pedido.save()
+        # Recibir los datos del formulario
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        direccion = request.POST.get('direccion')
+        region_id = request.POST.get('region')
+        comuna_id = request.POST.get('comuna')
+        correo = request.POST.get('correo')
 
-                items_carrito = carrito.itemcarrito_set.all()
+        # Asegurarse de convertir region_id y comuna_id en objetos de modelo
+        region_obj = region.objects.get(idRegion=region_id)
+        comuna_obj = comuna.objects.get(idComuna=comuna_id)
 
-                for item in items_carrito:
-                    ItemPedido.objects.create(pedido=pedido, producto=item.producto, cantidad=item.cantidad)
+        # Crear el pedido utilizando los datos del formulario
+        pedido = Pedido.objects.create(
+            carrito=carrito,
+            numero=str(uuid.uuid4()),
+            nombre=nombre,
+            apellido=apellido,
+            direccion=direccion,
+            region=region_obj,
+            comuna=comuna_obj,
+            correo=correo
+        )
 
-                carrito.productos.clear()
-                return JsonResponse({'success': True, 'numero_pedido': pedido.numero})
-            except Exception as e:
-                return JsonResponse({'success': False, 'error': str(e)})
-        else:
-            # Si el formulario no es válido, devuelve los errores
-            return JsonResponse({'success': False, 'errors': form.errors})
+        # Copiar los items del carrito al pedido
+        items_carrito = carrito.itemcarrito_set.all()
+        for item in items_carrito:
+            ItemPedido.objects.create(pedido=pedido, producto=item.producto, cantidad=item.cantidad)
+
+        # Limpiar el carrito después de crear el pedido
+        carrito.productos.clear()
+
+        # Devolver una respuesta JSON indicando éxito y el número de pedido creado
+        return JsonResponse({'success': True, 'numero_pedido': pedido.numero})
     else:
-        return JsonResponse({'success': False, 'error': 'Método de solicitud no válido'})
+        return JsonResponse({'success': False})
     
 def boleta(request, numero_pedido):
     usuario = request.user
@@ -540,4 +558,42 @@ def soporte_contacto(request):
 
 #GENERAR INFORMES:
 def generar_informes(request):
-    return render(request, 'core/generar_informes.html')
+    # Obtener todos los pedidos con estado entregado
+    pedidos_entregados = Pedido.objects.filter(estado__descripcion="Entregado")
+
+    # Crear un libro de trabajo de Excel
+    wb = Workbook()
+    ws = wb.active
+
+    # Agregar encabezados a las columnas
+    ws.append(['Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 'Comuna', 'Región', 'Precio Total', 'Productos'])
+
+    # Convertir la fecha a la zona horaria UTC y formatear como cadena de texto
+    utc = pytz.UTC
+
+    # Agregar datos de los pedidos al archivo Excel
+    for pedido in pedidos_entregados:
+        # Convertir la fecha del pedido a UTC y formatear como cadena de texto
+        fecha_utc = pedido.fecha.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S') if pedido.fecha else None
+        # Obtener el precio total del pedido
+        precio_total = pedido.calcular_total()
+        # Obtener los productos comprados en el pedido como una cadena de texto separada por comas
+        productos = ", ".join([item.producto.nombreProducto for item in pedido.itempedido_set.all()])
+        # Agregar los datos al archivo Excel
+        ws.append([pedido.numero, fecha_utc, f"{pedido.nombre} {pedido.apellido}", pedido.direccion, pedido.comuna.nombreComuna, pedido.region.nombreRegion, precio_total, productos])
+
+    # Crear la respuesta HTTP con el archivo Excel como contenido
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=ventas_entregadas.xlsx'
+    wb.save(response)
+    
+    return response
+
+def pedidos_entregados(request):
+    # Filtrar los pedidos con estado "entregado"
+    pedidos = Pedido.objects.filter(estado__descripcion="Entregado")
+    
+    data = {
+        'pedidos': pedidos,
+    }
+    return render(request, 'core/pedidos_entregados.html', data)

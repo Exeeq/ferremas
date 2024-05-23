@@ -46,7 +46,8 @@ urlpatterns = [
     path('cambiar_estado/<str:numero_orden>/', cambiar_estado, name='cambiar_estado'),
 
     #SOPORTE CONTACTO:
-    path('soporte_contacto', soporte_contacto, name="soporte_contacto"),
-    path('generar_informes', generar_informes, name="generar_informes")
+    path('soporte_contacto/', soporte_contacto, name="soporte_contacto"),
+    path('pedidos_entregados/', pedidos_entregados, name="pedidos_entregados"),
+    path('generar_informes/', generar_informes, name="generar_informes")
 ]
 

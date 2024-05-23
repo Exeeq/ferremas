@@ -20,63 +20,56 @@
 <div class="untree_co-section">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 mb-5 mb-md-0"> <!-- Cambia de col-md-6 a col-md-12 -->
-				<h2 class="h3 mb-3 text-black">Detalle del pedido</h2>
-				<div class="p-3 p-lg-5 border bg-white">
-					<div class="form-group row">
-						<div class="col-md-12 mb-5 mb-md-0"> <!-- Cambia de col-md-6 a col-md-12 -->
-							<h2 class="h3 mb-3 text-black">Dirección de envío</h2>
-							<div class="p-3 p-lg-5 border bg-white">
-								<form method="post" class="contact-form">
-									{% csrf_token %}
-									<div class="form-group row">
-										<div class="col-md-6"> <!-- Puedes ajustar aquí el ancho de las columnas según tu preferencia -->
-											<label for="nombre" class="text-black">Nombre <span class="text-danger">*</span></label>
-											<input type="text" class="form-control" id="nombre" name="nombre">
-										</div>
-										<div class="col-md-6">
-											<label for="apellido" class="text-black">Apellido <span class="text-danger">*</span></label>
-											<input type="text" class="form-control" id="apellido" name="apellido">
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-md-12">
-											<label for="direccion" class="text-black">Dirección <span class="text-danger">*</span></label>
-											<input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle">
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-md-6">
-											<label for="region" class="text-black">Región <span class="text-danger">*</span></label>
-											<select class="form-control" id="region" name="region">
-												<option value="">Seleccionar región</option>
-												{% for region in regiones %}
-												<option value="{{ region.id }}">{{ region.nombreRegion }}</option>
-												{% endfor %}
-											</select>
-										</div>
-										<div class="col-md-6">
-											<label for="comuna" class="text-black">Comuna <span class="text-danger">*</span></label>
-											<select class="form-control" id="comuna" name="comuna">
-												<option value="">Seleccionar comuna</option>
-												{% for comuna in comunas %}
-												<option value="{{ comuna.id }}">{{ comuna.nombreComuna }}</option>
-												{% endfor %}
-											</select>
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-md-12">
-											<label for="correo" class="text-black">Correo electrónico <span class="text-danger">*</span></label>
-											<input type="email" class="form-control" id="correo" name="correo">
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            <div class="col-md-6 mb-5 mb-md-0"> 
+                <h2 class="h3 mb-3 text-black">Detalle del pedido</h2>
+                <div class="p-3 p-lg-5 border bg-white">
+                    <form id="checkout-form" method="post" class="contact-form">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="nombre" class="text-black">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apellido" class="text-black">Apellido <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="apellido" name="apellido" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="direccion" class="text-black">Dirección <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="region" class="text-black">Región <span class="text-danger">*</span></label>
+                                <select class="form-control" id="region" name="region" required>
+                                    <option value="">Seleccionar región</option>
+                                    {% for region in regiones %}
+                                    <option value="{{ region.idRegion }}">{{ region.nombreRegion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="comuna" class="text-black">Comuna <span class="text-danger">*</span></label>
+                                <select class="form-control" id="comuna" name="comuna" required>
+                                    <option value="">Seleccionar comuna</option>
+                                    {% for comuna in comunas %}
+                                    <option value="{{ comuna.idComuna }}">{{ comuna.nombreComuna }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="correo" class="text-black">Correo electrónico <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="correo" name="correo" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="row mb-5">
                     <div class="col-md-12">
@@ -153,7 +146,7 @@
         }
         return cookieValue;
     }
-
+    
     paypal.Button.render({
         env: 'sandbox',
         client: {
@@ -178,45 +171,66 @@
             });
         },
         onAuthorize: function (data, actions) {
-			var csrftoken = getCookie('csrftoken');
-			return actions.payment.execute().then(function () {
-				$.ajax({
-					type: 'POST',
-					url: '/crear_pedido/',  
-					beforeSend: function(xhr, settings) {
-						xhr.setRequestHeader('X-CSRFToken', csrftoken);
-					},
-					success: function (response) {
-						// Mostrar mensaje de éxito y redirigir
-						Swal.fire({
-							title: '¡EL PAGO SE REALIZÓ CON ÉXITO!',
-							text: 'Su número de pedido es: ' + response.numero_pedido,
-							icon: 'success',
-							showCancelButton: false,
-							confirmButtonColor: '#3085d6',
-							cancelButtonColor: '#d33',
-							confirmButtonText: 'Ver Boleta'
-						}).then(function () {
-							// Redirigir a la página de la orden creada
-							window.location.href = '/boleta/' + response.numero_pedido;
-						});
-					},
-					error: function (xhr, textStatus, errorThrown) {
-						// Manejar errores
-						console.error(errorThrown)
-						Swal.fire({
-							title: 'Error',
-							text: 'ERROR EN LA SOLICITUD!',
-							icon: 'error',
-							showCancelButton: false,
-							confirmButtonColor: '#3085d6',
-							cancelButtonColor: '#d33',
-							confirmButtonText: 'Confirmar'
-						});
-					}
-				});
-			});
-		},
+            var csrftoken = getCookie('csrftoken');
+            return actions.payment.execute().then(function () {
+                // Obtener los datos del formulario de checkout
+                var nombre = $('#nombre').val();
+                var apellido = $('#apellido').val();
+                var direccion = $('#direccion').val();
+                var region = $('#region').val();
+                var comuna = $('#comuna').val();
+                var correo = $('#correo').val();
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    }
+                });
+
+                console.log("ANTES DE CREAR PEDIDO");
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/crear_pedido/',  
+                    data: {
+                        nombre: nombre,
+                        apellido: apellido,
+                        direccion: direccion,
+                        region: region,
+                        comuna: comuna,
+                        correo: correo,
+                        csrfmiddlewaretoken: csrftoken
+                    },
+                    success: function (response) {
+                        console.log("ENTRANDO A CREAR PEDIDO");
+                        Swal.fire({
+                            title: '¡EL PAGO SE REALIZÓ CON ÉXITO!',
+                            text: 'Su número de pedido es: ' + response.numero_pedido,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Ver Boleta'
+                        }).then(function () {
+                            // Redirigir a la página de la orden creada
+                            window.location.href = '/boleta/' + response.numero_pedido;
+                        });
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        // Error en la solicitud AJAX
+                        console.error(errorThrown)
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'ERROR EN LA SOLICITUD!',
+                            icon: 'error',
+                            showCancelButton: false,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Confirmar'
+                        });
+                    }
+                });
+            });
+        },
         onCancel: function (data) {
             Swal.fire({
                 title: '¡CANCELADO!',

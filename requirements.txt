@@ -6,3 +6,4 @@ pymysql
 mysqlclient
 django-jazzmin
 fontawesomefree
+openpyxl
