@@ -20,6 +20,7 @@ from openpyxl import Workbook
 from django.http import HttpResponse
 import pytz
 from django.utils import timezone
+from datetime import datetime
 
 # VIEWS
 def index(request):
@@ -556,44 +557,76 @@ def cambiar_estado(request, numero_orden):
 def soporte_contacto(request):
     return render(request, 'core/soporte_contacto.html')
 
-#GENERAR INFORMES:
-def generar_informes(request):
-    # Obtener todos los pedidos con estado entregado
-    pedidos_entregados = Pedido.objects.filter(estado__descripcion="Entregado")
-
-    # Crear un libro de trabajo de Excel
-    wb = Workbook()
-    ws = wb.active
-
-    # Agregar encabezados a las columnas
-    ws.append(['Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 'Comuna', 'Región', 'Precio Total', 'Productos'])
-
-    # Convertir la fecha a la zona horaria UTC y formatear como cadena de texto
-    utc = pytz.UTC
-
-    # Agregar datos de los pedidos al archivo Excel
-    for pedido in pedidos_entregados:
-        # Convertir la fecha del pedido a UTC y formatear como cadena de texto
-        fecha_utc = pedido.fecha.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S') if pedido.fecha else None
-        # Obtener el precio total del pedido
-        precio_total = pedido.calcular_total()
-        # Obtener los productos comprados en el pedido como una cadena de texto separada por comas
-        productos = ", ".join([item.producto.nombreProducto for item in pedido.itempedido_set.all()])
-        # Agregar los datos al archivo Excel
-        ws.append([pedido.numero, fecha_utc, f"{pedido.nombre} {pedido.apellido}", pedido.direccion, pedido.comuna.nombreComuna, pedido.region.nombreRegion, precio_total, productos])
-
-    # Crear la respuesta HTTP con el archivo Excel como contenido
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=ventas_entregadas.xlsx'
-    wb.save(response)
-    
-    return response
-
 def pedidos_entregados(request):
+    # Obtener parámetros de filtro
+    mes = request.GET.get('mes')
+    anio = request.GET.get('anio')
+    
     # Filtrar los pedidos con estado "entregado"
     pedidos = Pedido.objects.filter(estado__descripcion="Entregado")
     
+    # Validar y aplicar filtros
+    if mes:
+        try:
+            mes_num = int(mes)
+            pedidos = pedidos.filter(fecha__month=mes_num)
+        except ValueError:
+            pass
+
+    if anio:
+        try:
+            anio_num = int(anio)
+            # Filtrar los pedidos para el año seleccionado
+            pedidos = pedidos.filter(fecha__year=anio_num)
+        except ValueError:
+            pass
+    
+    # Generar la lista de meses y años
+    meses = [str(i).zfill(2) for i in range(1, 13)]  # Lista de números de mes con formato de dos dígitos
+    current_year = datetime.now().year
+    years = list(range(2020, current_year + 1))
+    
     data = {
         'pedidos': pedidos,
+        'meses': meses,
+        'years': years,
+        'selected_mes': mes,
+        'selected_anio': anio,
     }
     return render(request, 'core/pedidos_entregados.html', data)
+
+#GENERAR INFORMES:
+def generar_informes(request):
+    # Obtener parámetros de filtro
+    mes = request.GET.get('mes')
+    anio = request.GET.get('anio')
+
+    # Obtener todos los pedidos con estado entregado
+    pedidos_entregados = Pedido.objects.filter(estado__descripcion="Entregado")
+
+    # Validar y aplicar filtros
+    if mes and mes.isdigit():
+        mes_num = int(mes)
+        pedidos_entregados = pedidos_entregados.filter(fecha__month=mes_num)
+    if anio and anio.isdigit():
+        anio = int(anio)
+        pedidos_entregados = pedidos_entregados.filter(fecha__year=anio)
+
+    wb = Workbook()
+    ws = wb.active
+
+    ws.append(['Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 'Comuna', 'Región', 'Precio Total', 'Productos'])
+
+    utc = pytz.UTC
+
+    for pedido in pedidos_entregados:
+        fecha_utc = pedido.fecha.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S') if pedido.fecha else None
+        precio_total = pedido.calcular_total()
+        productos = ", ".join([item.producto.nombreProducto for item in pedido.itempedido_set.all()])
+        ws.append([pedido.numero, fecha_utc, f"{pedido.nombre} {pedido.apellido}", pedido.direccion, pedido.comuna.nombreComuna, pedido.region.nombreRegion, precio_total, productos])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=ventas_entregadas_{mes}_{anio}.xlsx'
+    wb.save(response)
+    
+    return response

@@ -1,9 +1,14 @@
 django
 django-admin-interface
-django-crispy-forms
+django-crispy-forms==1.14.0
 pillow
 pymysql
 mysqlclient
 django-jazzmin
 fontawesomefree
+request
 openpyxl
+django-rest-framework
+django-paypal
+paypal-checkout-serversdk
+pytz

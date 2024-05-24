@@ -8,7 +8,7 @@
     <div class="container d-flex justify-content-center mx-auto align-items-center">
         <div class="row">
             <div class="">
-                <h1>ADMINISTRAR PEDIDOS</h1>
+                <h1>PEDIDOS ENTREGADOS</h1>
             </div>
         </div>
     </div>
@@ -19,6 +19,32 @@
 <div class="container my-5 shadow-lg">
     <div class="card shadow-lg">
         <div class="card-body">
+            <form method="get" action="{% url 'pedidos_entregados' %}">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="mes" class="form-label">Mes</label>
+                        <select id="mes" name="mes" class="form-control">
+                            <option value="">Seleccionar Mes</option>
+                            {% for m in meses %}
+                                <option value="{{ m }}" {% if selected_mes == m %}selected{% endif %}>{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="anio" class="form-label">Año</label>
+                        <select id="anio" name="anio" class="form-control">
+                            <option value="">Seleccionar Año</option>
+                            {% for y in years %}
+                                <option value="{{ y }}" {% if selected_anio == y %}selected{% endif %}>{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                    </div>
+                </div>
+            </form>
+
             <table class="table table-hover">
                 <thead class="table-dark text-center">
                     <tr>
@@ -35,7 +61,7 @@
                     {% for pedido in pedidos %}
                         <tr>
                             <td>{{ pedido.numero }}</td>
-                            <td>{{ pedido.fecha }}</td>
+                            <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
                             <td class="cliente small">{{ pedido.nombre }} {{ pedido.apellido }}</td>
                             <td class="direccion small">{{ pedido.direccion }}</td>
                             <td class="small">{{ pedido.comuna.nombreComuna }}</td>
@@ -49,7 +75,7 @@
     </div>
 </div>
 <div class="text-center mt-3">
-    <a href="{% url 'generar_informes' %}" class="btn btn-primary">Descargar Excel</a>
+    <a href="{% url 'generar_informes' %}?{% if selected_mes %}mes={{ selected_mes }}{% endif %}{% if selected_anio %}&{% if selected_mes %}&{% endif %}anio={{ selected_anio }}{% endif %}" class="btn btn-primary">Descargar Excel</a>
 </div>
 <br><br><br><br><br>
 
