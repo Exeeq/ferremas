@@ -98,6 +98,8 @@ def checkout(request):
         carrito = Carrito.objects.get(usuario=usuario)
         items = carrito.itemcarrito_set.all()
         
+        sucursales = sucursal.objects.all()
+
         api_mindicador = requests.get('https://mindicador.cl/api/')
         divisas = api_mindicador.json()
         tasa_dolar = divisas['dolar']['valor']
@@ -121,6 +123,7 @@ def checkout(request):
             'total_dolar': total_dolar_str,
             'regiones': regiones,
             'comunas': comunas,
+            'sucursales': sucursales,
             'MEDIA_URL': settings.MEDIA_URL,
         }
         
@@ -558,31 +561,32 @@ def soporte_contacto(request):
     return render(request, 'core/soporte_contacto.html')
 
 def pedidos_entregados(request):
-    # Obtener parámetros de filtro
     mes = request.GET.get('mes')
     anio = request.GET.get('anio')
-    
-    # Filtrar los pedidos con estado "entregado"
-    pedidos = Pedido.objects.filter(estado__descripcion="Entregado")
-    
-    # Validar y aplicar filtros
-    if mes:
-        try:
-            mes_num = int(mes)
-            pedidos = pedidos.filter(fecha__month=mes_num)
-        except ValueError:
-            pass
 
-    if anio:
-        try:
-            anio_num = int(anio)
-            # Filtrar los pedidos para el año seleccionado
-            pedidos = pedidos.filter(fecha__year=anio_num)
-        except ValueError:
-            pass
-    
-    # Generar la lista de meses y años
-    meses = [str(i).zfill(2) for i in range(1, 13)]  # Lista de números de mes con formato de dos dígitos
+    # Inicializa los pedidos como una lista vacía
+    pedidos = []
+
+    # Convertir los valores de mes y anio a enteros si están presentes, de lo contrario a 0
+    mes_num = int(mes) if mes and mes.isdigit() else 0
+    anio_num = int(anio) if anio and anio.isdigit() else 0
+
+    with connection.cursor() as cursor:
+        cursor.callproc('FiltrarPedidosEntregados', [mes_num, anio_num])
+        resultados = cursor.fetchall()
+        for row in resultados:
+            pedido = {
+                'numero': row[0],
+                'fecha': row[1],
+                'cliente': row[2],
+                'direccion': row[3],
+                'nombreComuna': row[4],
+                'nombreRegion': row[5],
+                'estado': row[6],
+            }
+            pedidos.append(pedido)
+
+    meses = [str(i).zfill(2) for i in range(1, 13)]
     current_year = datetime.now().year
     years = list(range(2020, current_year + 1))
     
@@ -601,32 +605,34 @@ def generar_informes(request):
     mes = request.GET.get('mes')
     anio = request.GET.get('anio')
 
-    # Obtener todos los pedidos con estado entregado
-    pedidos_entregados = Pedido.objects.filter(estado__descripcion="Entregado")
+    # Convertir los valores de mes y anio a enteros si están presentes, de lo contrario a 0
+    mes_num = int(mes) if mes and mes.isdigit() else 0
+    anio_num = int(anio) if anio and anio.isdigit() else 0
 
-    # Validar y aplicar filtros
-    if mes and mes.isdigit():
-        mes_num = int(mes)
-        pedidos_entregados = pedidos_entregados.filter(fecha__month=mes_num)
-    if anio and anio.isdigit():
-        anio = int(anio)
-        pedidos_entregados = pedidos_entregados.filter(fecha__year=anio)
+    with connection.cursor() as cursor:
+        cursor.callproc('FiltrarPedidosEntregados', [mes_num, anio_num])
+        resultados = cursor.fetchall()
 
-    wb = Workbook()
-    ws = wb.active
+        # Crear un libro de trabajo y una hoja de trabajo
+        wb = Workbook()
+        ws = wb.active
 
-    ws.append(['Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 'Comuna', 'Región', 'Precio Total', 'Productos'])
+        # Añadir encabezados a la hoja de trabajo
+        ws.append(['Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 'Comuna', 'Región', 'Estado Actual'])
 
-    utc = pytz.UTC
+        # Iterar sobre los pedidos filtrados y añadirlos a la hoja de trabajo
+        for row in resultados:
+            ws.append(row)
 
-    for pedido in pedidos_entregados:
-        fecha_utc = pedido.fecha.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S') if pedido.fecha else None
-        precio_total = pedido.calcular_total()
-        productos = ", ".join([item.producto.nombreProducto for item in pedido.itempedido_set.all()])
-        ws.append([pedido.numero, fecha_utc, f"{pedido.nombre} {pedido.apellido}", pedido.direccion, pedido.comuna.nombreComuna, pedido.region.nombreRegion, precio_total, productos])
+        # Obtener el nombre del archivo basado en los filtros aplicados
+        filename = f'ventas_entregadas_{mes or "None"}_{anio or "None"}.xlsx'
 
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename=ventas_entregadas_{mes}_{anio}.xlsx'
-    wb.save(response)
-    
-    return response
+        # Crear una respuesta HTTP con el contenido del libro de trabajo
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        
+        # Guardar el libro de trabajo en la respuesta HTTP
+        wb.save(response)
+        
+        return response
+

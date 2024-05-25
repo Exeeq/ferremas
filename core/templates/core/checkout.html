@@ -8,7 +8,7 @@
         <div class="row justify-content-between">
             <div class="col-lg-5">
                 <div class="intro-excerpt">
-                    <h1>Checkout</h1>
+                    <h1>Verificación</h1>
                 </div>
             </div>
             <div class="col-lg-7"></div>
@@ -20,8 +20,19 @@
 <div class="untree_co-section">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 mb-5 mb-md-0"> 
-                <h2 class="h3 mb-3 text-black">Detalle del pedido</h2>
+            <div class="col-md-12 mb-5">
+                <h2 class="h3 mb-3 text-black">Seleccione una opción de entrega</h2>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipo_entrega" id="envio_domicilio" value="envio_domicilio" checked>
+                    <label class="form-check-label" for="envio_domicilio">Envío a domicilio</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipo_entrega" id="retiro_tienda" value="retiro_tienda">
+                    <label class="form-check-label" for="retiro_tienda">Retiro en tienda</label>
+                </div>
+            </div>
+            <div class="col-md-6 mb-5 mb-md-0" id="form_envio">
+                <h2 class="h3 mb-3 text-black">Detalle del pedido (Envío a domicilio)</h2>
                 <div class="p-3 p-lg-5 border bg-white">
                     <form id="checkout-form" method="post" class="contact-form">
                         {% csrf_token %}
@@ -67,6 +78,35 @@
                                 <input type="email" class="form-control" id="correo" name="correo" required>
                             </div>
                         </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6 mb-5 mb-md-0" id="lista_sucursales" style="display: none;">
+                <h2 class="h3 mb-3 text-black">Lista de sucursales (Retiro en tienda)</h2>
+                <div class="p-3 p-lg-5 border bg-white">
+                    <form id="formSeleccionSucursal" method="post">
+                        {% csrf_token %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Seleccionar</th> <!-- Agregar una columna para la selección -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sucursal in sucursales %}
+                                <tr>
+                                    <td>{{ sucursal.nombreSucursal }}</td>
+                                    <td>{{ sucursal.direccionSucursal }}</td>
+                                    <td>
+                                        <input type="radio" name="sucursal" value="{{ sucursal.idSucursal }}">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <button type="submit" class="btn btn-primary">Seleccionar Sucursal</button>
                     </form>
                 </div>
             </div>
@@ -121,6 +161,8 @@
         </div>
     </div>
 </div>
+
+
 
 {% endblock contenido %}
 {% block js %}
@@ -255,5 +297,47 @@
             });
         }
     }, '#btnPaypal');
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const envioDomicilioRadio = document.getElementById("envio_domicilio");
+        const retiroTiendaRadio = document.getElementById("retiro_tienda");
+        const formEnvio = document.getElementById("form_envio");
+        const listaSucursales = document.getElementById("lista_sucursales");
+
+        function toggleFormulario() {
+            if (envioDomicilioRadio.checked) {
+                formEnvio.style.display = "block";
+                listaSucursales.style.display = "none";
+            } else if (retiroTiendaRadio.checked) {
+                formEnvio.style.display = "none";
+                listaSucursales.style.display = "block";
+                obtenerSucursales();
+            }
+        }
+
+        function obtenerSucursales() {
+            fetch("/obtener_sucursales/")
+                .then(response => response.json())
+                .then(data => {
+                    const sucursalList = document.getElementById("sucursal_list");
+                    sucursalList.innerHTML = "<ul>";
+                    data.forEach(sucursal => {
+                        sucursalList.innerHTML += `<li>${sucursal.nombreSucursal} - ${sucursal.direccionSucursal}</li>`;
+                    });
+                    sucursalList.innerHTML += "</ul>";
+                })
+                .catch(error => {
+                    console.error("Error al obtener las sucursales:", error);
+                });
+        }
+
+        // Mostrar el formulario de envío por defecto al cargar la página
+        toggleFormulario();
+
+        // Agregar evento de cambio para los radios
+        envioDomicilioRadio.addEventListener("change", toggleFormulario);
+        retiroTiendaRadio.addEventListener("change", toggleFormulario);
+    });
 </script>
 {% endblock js %}

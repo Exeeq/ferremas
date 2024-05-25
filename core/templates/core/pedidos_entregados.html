@@ -2,8 +2,6 @@
 {% load static %}
 
 {% block contenido %}
-
-<!-- Start Hero Section -->
 <div class="hero">
     <div class="container d-flex justify-content-center mx-auto align-items-center">
         <div class="row">
@@ -13,13 +11,12 @@
         </div>
     </div>
 </div>
-<!-- End Hero Section -->
 
 <br>
 <div class="container my-5 shadow-lg">
     <div class="card shadow-lg">
         <div class="card-body">
-            <form method="get" action="{% url 'pedidos_entregados' %}">
+            <form id="filtro-form" method="get" action="{% url 'pedidos_entregados' %}">
                 <div class="row mb-3">
                     <div class="col">
                         <label for="mes" class="form-label">Mes</label>
@@ -44,7 +41,6 @@
                     </div>
                 </div>
             </form>
-
             <table class="table table-hover">
                 <thead class="table-dark text-center">
                     <tr>
@@ -62,10 +58,10 @@
                         <tr>
                             <td>{{ pedido.numero }}</td>
                             <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
-                            <td class="cliente small">{{ pedido.nombre }} {{ pedido.apellido }}</td>
+                            <td class="cliente small">{{ pedido.cliente }}</td>
                             <td class="direccion small">{{ pedido.direccion }}</td>
-                            <td class="small">{{ pedido.comuna.nombreComuna }}</td>
-                            <td class="small">{{ pedido.region.nombreRegion }}</td>
+                            <td class="small">{{ pedido.nombreComuna }}</td>
+                            <td class="small">{{ pedido.nombreRegion }}</td>
                             <td class="small">{{ pedido.estado }}</td>
                         </tr>
                     {% endfor %}
@@ -75,10 +71,9 @@
     </div>
 </div>
 <div class="text-center mt-3">
-    <a href="{% url 'generar_informes' %}?{% if selected_mes %}mes={{ selected_mes }}{% endif %}{% if selected_anio %}&{% if selected_mes %}&{% endif %}anio={{ selected_anio }}{% endif %}" class="btn btn-primary">Descargar Excel</a>
+    <a href="{% url 'generar_informes' %}?mes={{ selected_mes }}&anio={{ selected_anio }}" class="btn btn-primary">Descargar Excel</a>
 </div>
 <br><br><br><br><br>
-
 {% endblock contenido %}
 
 {% block js %}
@@ -87,4 +82,23 @@
 <script src="{% static 'core/js/custom.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{% static 'core/js/mensajes.js' %}"></script>
+<script>
+    // Guardar los valores seleccionados antes de enviar el formulario
+    document.getElementById('filtro-form').addEventListener('submit', function() {
+        sessionStorage.setItem('selected_mes', document.getElementById('mes').value);
+        sessionStorage.setItem('selected_anio', document.getElementById('anio').value);
+    });
+
+    // Restaurar los valores seleccionados después de recargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        var selectedMes = sessionStorage.getItem('selected_mes');
+        var selectedAnio = sessionStorage.getItem('selected_anio');
+        if (selectedMes) {
+            document.getElementById('mes').value = selectedMes;
+        }
+        if (selectedAnio) {
+            document.getElementById('anio').value = selectedAnio;
+        }
+    });
+</script>
 {% endblock %}

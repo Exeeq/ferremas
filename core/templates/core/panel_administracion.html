@@ -46,21 +46,6 @@
     </div>
     {% endif %}
     <!-- Card 3 -->
-    {% if user.idRol_id == 5 or user.idRol_id == 2 %}
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mb-4 shadow-lg">
-                <div class="card-body text-center">
-                    <i class="fas fa-envelope fa-3x mb-3"></i>
-                    <h5 class="card-title">Soporte</h5>
-                    <p class="card-text">Administrar consultas y soporte al cliente.</p>
-                    <a href="{% url 'soporte_contacto' %}" class="btn btn-primary">Ir</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    <!-- Card 4 -->
     {% if user.idRol_id == 5 or user.idRol_id == 4 %}
     <div class="row justify-content-center">
         <div class="col-md-6">
