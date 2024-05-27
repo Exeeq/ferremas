@@ -46,7 +46,7 @@
                             <td>{{ usuario.6 }}</td>
                             <td class="text-center">
                                 <a href="{% url 'modificar_usuario' usuario.0 %}" class="btn btn-warning btn-sm">Modificar</a>
-                                <a href="{% url 'eliminar_usuario' usuario.0 %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a onclick="eliminarUsuarioAdmin({{ usuario.0 }})" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>
                     {% endfor %}

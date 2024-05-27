@@ -16,10 +16,12 @@
 <div class="container">
     <div class="row">
         <div class="col-12 m-5">
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" id="agregarUsuarioForm">
                 {% csrf_token %}
                 {{ form | crispy }}
-                <input type="submit" class="btn btn-success mt-4" value="Guardar">
+                <!-- Campo oculto para almacenar el ID del usuario -->
+                <input type="hidden" name="usuario_id" value="{{ usuario_id }}">
+                <button type="button" class="btn btn-success mt-4" onclick="confirmarAgregarUsuario()">Guardar</button>
             </form>
             <br><br><br>
         </div>
@@ -27,6 +29,23 @@
 </div>
 {% endblock %}
 {% block js %}
-    
-    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarAgregarUsuario() {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Desea añadir el usuario?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, añadir',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('agregarUsuarioForm').submit();
+            }
+        });
+    }
+</script>
 {% endblock %}

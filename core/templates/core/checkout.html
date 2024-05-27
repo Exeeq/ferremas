@@ -36,26 +36,27 @@
                 <div class="p-3 p-lg-5 border bg-white">
                     <form id="checkout-form" method="post" class="contact-form">
                         {% csrf_token %}
+                        <!-- Formulario de envío a domicilio -->
                         <div class="form-group row">
                             <div class="col-md-6">
-                                <label for="nombre" class="text-black">Nombre <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                <label for="id_nombre" class="text-black">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id_nombre" name="nombre" maxlength="100" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="apellido" class="text-black">Apellido <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="apellido" name="apellido" required>
+                                <label for="id_apellido" class="text-black">Apellido <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id_apellido" name="apellido" maxlength="100" required>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label for="direccion" class="text-black">Dirección <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle" required>
+                                <label for="id_direccion" class="text-black">Dirección <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id_direccion" name="direccion" maxlength="255" required>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-6">
-                                <label for="region" class="text-black">Región <span class="text-danger">*</span></label>
-                                <select class="form-control" id="region" name="region" required>
+                                <label for="id_region" class="text-black">Región <span class="text-danger">*</span></label>
+                                <select class="form-control" id="id_region" name="region" required>
                                     <option value="">Seleccionar región</option>
                                     {% for region in regiones %}
                                     <option value="{{ region.idRegion }}">{{ region.nombreRegion }}</option>
@@ -63,8 +64,8 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="comuna" class="text-black">Comuna <span class="text-danger">*</span></label>
-                                <select class="form-control" id="comuna" name="comuna" required>
+                                <label for="id_comuna" class="text-black">Comuna <span class="text-danger">*</span></label>
+                                <select class="form-control" id="id_comuna" name="comuna" required>
                                     <option value="">Seleccionar comuna</option>
                                     {% for comuna in comunas %}
                                     <option value="{{ comuna.idComuna }}">{{ comuna.nombreComuna }}</option>
@@ -74,57 +75,64 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label for="correo" class="text-black">Correo electrónico <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="correo" name="correo" required>
+                                <label for="id_correo" class="text-black">Correo electrónico <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="id_correo" name="correo" required>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
+            
+            <!-- Formulario para Retiro en Tienda -->
             <div class="col-md-6 mb-5 mb-md-0" id="lista_sucursales" style="display: none;">
                 <h2 class="h3 mb-3 text-black">Lista de sucursales (Retiro en tienda)</h2>
                 <div class="p-3 p-lg-5 border bg-white">
-                    <form id="formSeleccionSucursal" method="post">
+                    <form id="checkout-form" method="post" class="contact-form">
                         {% csrf_token %}
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Dirección</th>
-                                    <th>Seleccionar</th> <!-- Agregar una columna para la selección -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for sucursal in sucursales %}
-                                <tr>
-                                    <td>{{ sucursal.nombreSucursal }}</td>
-                                    <td>{{ sucursal.direccionSucursal }}</td>
-                                    <td>
-                                        <input type="radio" name="sucursal" value="{{ sucursal.idSucursal }}">
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <button type="submit" class="btn btn-primary">Seleccionar Sucursal</button>
-                    </form>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="row mb-5">
-                    <div class="col-md-12">
-                        <h2 class="h3 mb-3 text-black">Cupón de descuento</h2>
-                        <div class="p-3 p-lg-5 border bg-white">
-                            <label for="c_code" class="text-black mb-3">Ingrese su cupón, si tiene uno.</label>
-                            <div class="input-group w-75 couponcode-wrap">
-                                <input type="text" class="form-control me-2" id="c_code" placeholder="Cupón" aria-label="Coupon Code" aria-describedby="button-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-black btn-sm" type="button" id="button-addon2">Aplicar cupón</button>
-                                </div>
+                        <!-- Formulario de retiro en tienda -->
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="id_nombre" class="text-black">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id_nombre_2" name="nombre" maxlength="100" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_apellido" class="text-black">Apellido <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id_apellido_2" name="apellido" maxlength="100" required>
                             </div>
                         </div>
-                    </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="id_run" class="text-black">Run <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id_run" name="run" maxlength="20" required>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Tabla de sucursales -->
+                    <table class="table" id="sucursal_table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Dirección</th>
+                                <th>Seleccionar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sucursal_table_body">
+                            {% for sucursal in sucursales %}
+                            <tr>
+                                <td>{{ sucursal.nombreSucursal }}</td>
+                                <td>{{ sucursal.direccionSucursal }}</td>
+                                <td>
+                                    <input type="radio" name="sucursal" id="id_Sucursal_{{ sucursal.idSucursal }}" value="{{ sucursal.idSucursal }}">
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+
+            <div class="col-md-6">
                 <div class="row mb-5">
                     <div class="col-md-12">
                         <h2 class="h3 mb-3 text-black">Tu pedido</h2>
@@ -141,10 +149,6 @@
                                         <td>${{ item.precio_total }}</td>
                                     </tr>
                                     {% endfor %}
-                                    <tr>
-                                        <td class="text-black font-weight-bold"><strong>Subtotal carrito</strong></td>
-                                        <td class="text-black">${{ subtotal }}</td>
-                                    </tr>
                                     <tr>
                                         <td class="text-black font-weight-bold"><strong>Total de pedido</strong></td>
                                         <td class="text-black font-weight-bold"><strong>${{ total }} / USD ${{total_dolar}}</strong></td>
@@ -199,7 +203,7 @@
         style: {
             size: 'large',
             color: 'black',
-            shape: 'rect'
+            shape: 'pill'
         },
         commit: true,
         payment: function (data, actions) {
@@ -215,21 +219,23 @@
         onAuthorize: function (data, actions) {
             var csrftoken = getCookie('csrftoken');
             return actions.payment.execute().then(function () {
-                // Obtener los datos del formulario de checkout
-                var nombre = $('#nombre').val();
-                var apellido = $('#apellido').val();
-                var direccion = $('#direccion').val();
-                var region = $('#region').val();
-                var comuna = $('#comuna').val();
-                var correo = $('#correo').val();
+                var nombre = $('#id_nombre').val() ? $('#id_nombre').val() : $('#id_nombre_2').val();
+                var apellido = $('#id_apellido').val() ? $('#id_apellido').val() : $('#id_apellido_2').val();
+                var direccion = $('#id_direccion').val();
+                var region = $('#id_region').val();
+                var comuna = $('#id_comuna').val();
+                var correo = $('#id_correo').val();
+                var run = $('#id_run').val();
+                var sucursal = $('input[name="sucursal"]:checked').val();
+                var tipo_entrega = $('input[name="tipo_entrega"]:checked').val();
                 $.ajaxSetup({
                     beforeSend: function(xhr, settings) {
                         xhr.setRequestHeader('X-CSRFToken', csrftoken);
                     }
                 });
-
+    
                 console.log("ANTES DE CREAR PEDIDO");
-
+    
                 $.ajax({
                     type: 'POST',
                     url: '/crear_pedido/',  
@@ -240,6 +246,9 @@
                         region: region,
                         comuna: comuna,
                         correo: correo,
+                        run: run,
+                        sucursal: sucursal, 
+                        tipo_entrega: tipo_entrega,
                         csrfmiddlewaretoken: csrftoken
                     },
                     success: function (response) {
@@ -296,9 +305,10 @@
                 confirmButtonText: 'Confirmar'
             });
         }
-    }, '#btnPaypal');
+    }, '#btnPaypal');    
 </script>
 <script>
+
     document.addEventListener("DOMContentLoaded", function () {
         const envioDomicilioRadio = document.getElementById("envio_domicilio");
         const retiroTiendaRadio = document.getElementById("retiro_tienda");
@@ -306,38 +316,21 @@
         const listaSucursales = document.getElementById("lista_sucursales");
 
         function toggleFormulario() {
+            console.log("Cambio de opción de entrega detectado");
             if (envioDomicilioRadio.checked) {
                 formEnvio.style.display = "block";
                 listaSucursales.style.display = "none";
             } else if (retiroTiendaRadio.checked) {
                 formEnvio.style.display = "none";
                 listaSucursales.style.display = "block";
-                obtenerSucursales();
             }
-        }
+        };
 
-        function obtenerSucursales() {
-            fetch("/obtener_sucursales/")
-                .then(response => response.json())
-                .then(data => {
-                    const sucursalList = document.getElementById("sucursal_list");
-                    sucursalList.innerHTML = "<ul>";
-                    data.forEach(sucursal => {
-                        sucursalList.innerHTML += `<li>${sucursal.nombreSucursal} - ${sucursal.direccionSucursal}</li>`;
-                    });
-                    sucursalList.innerHTML += "</ul>";
-                })
-                .catch(error => {
-                    console.error("Error al obtener las sucursales:", error);
-                });
-        }
-
-        // Mostrar el formulario de envío por defecto al cargar la página
-        toggleFormulario();
-
-        // Agregar evento de cambio para los radios
+        // Agregar evento onchange para los radios
         envioDomicilioRadio.addEventListener("change", toggleFormulario);
         retiroTiendaRadio.addEventListener("change", toggleFormulario);
+
     });
+
 </script>
 {% endblock js %}

@@ -24,7 +24,7 @@
 
   <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
     <div class="container">
-      <a class="navbar-brand" href="index.html">
+      <a class="navbar-brand" href="{% url 'index' %}">
         <img class="logo1" src="{% static 'core/images/logo-ferremas-sinfondo.png' %}" alt="">
       </a>
 
@@ -47,7 +47,7 @@
             </a>
             <ul class="dropdown-menu bg-black" aria-labelledby="navbarDropdown">
               {% if user.is_authenticated %}
-                	<li><a class="dropdown-item text-white" href=""><i class="fa-solid fa-user"></i> {{ user.pnombre }} {{ user.ap_paterno }}</a></li>
+                	<li><a class="dropdown-item text-white" href="{% url 'perfil_usuario' %}"><i class="fa-solid fa-user"></i> {{ user.pnombre }} {{ user.ap_paterno }}</a></li>
 					{% if user.idRol_id != 1 and user.idRol_id != 3 %}
                 	<li><a class="dropdown-item text-white" href="{% url 'panel_administracion' %}"><i class="fa-solid fa-lock"></i> Administración</a></li>
                 {% endif %}

@@ -3,8 +3,28 @@ from .views import *
 from .views import CustomLoginView
 from django.conf import settings
 from django.contrib.staticfiles.urls import static
+from rest_framework import routers
+
+# CREAMOS LAS RUTAS PARA LA API
+router = routers.DefaultRouter()
+router.register(r'roles', RolUsuarioViewSet)
+router.register(r'regiones', RegionViewSet)
+router.register(r'comunas', ComunaViewSet)
+router.register(r'usuarios', UsuarioCustomViewSet)
+router.register(r'marcas', MarcaViewSet)
+router.register(r'categorias', CategoriaProductoViewSet)
+router.register(r'productos', ProductoViewSet)
+router.register(r'sucursales', SucursalViewSet)
+router.register(r'carritos', CarritoViewSet)
+router.register(r'items-carrito', ItemCarritoViewSet)
+router.register(r'seguimientos', SeguimientoViewSet)
+router.register(r'pedidos', PedidoViewSet)
+router.register(r'items-pedido', ItemPedidoViewSet)
+
 
 urlpatterns = [
+    path('api/', include(router.urls)),
+
     path('', index, name="index"),
     path('shop/', shop, name="shop"),
     path('about/', about, name="about"),
@@ -52,6 +72,8 @@ urlpatterns = [
     path('pedidos_entregados/', pedidos_entregados, name="pedidos_entregados"),
     path('generar_informes/', generar_informes, name="generar_informes"),
 
-
+    path('obtener_sucursales/', obtener_sucursales, name='obtener_sucursales'),
+    
+    path('perfil_usuario/', perfil_usuario, name='perfil_usuario'),
 ]
 

@@ -12,3 +12,4 @@ django-rest-framework
 django-paypal
 paypal-checkout-serversdk
 pytz
+djangorestframework

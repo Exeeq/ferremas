@@ -21,6 +21,68 @@ from django.http import HttpResponse
 import pytz
 from django.utils import timezone
 from datetime import datetime
+from rest_framework import viewsets
+from .serializers import *
+from django.core.paginator import Paginator
+from openpyxl.styles import Font, Alignment, PatternFill
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill
+import openpyxl.utils
+from django.contrib.auth import views as auth_views
+
+# SERIALIZERS:
+class RolUsuarioViewSet(viewsets.ModelViewSet):
+    queryset = rolUsuario.objects.all()
+    serializer_class = RolUsuarioSerializer
+
+class RegionViewSet(viewsets.ModelViewSet):
+    queryset = region.objects.all()
+    serializer_class = RegionSerializer
+
+class ComunaViewSet(viewsets.ModelViewSet):
+    queryset = comuna.objects.all()
+    serializer_class = ComunaSerializer
+
+class UsuarioCustomViewSet(viewsets.ModelViewSet):
+    queryset = usuarioCustom.objects.all()
+    serializer_class = UsuarioCustomSerializer
+
+class MarcaViewSet(viewsets.ModelViewSet):
+    queryset = marca.objects.all()
+    serializer_class = MarcaSerializer
+
+class CategoriaProductoViewSet(viewsets.ModelViewSet):
+    queryset = categoriaProducto.objects.all()
+    serializer_class = CategoriaProductoSerializer
+
+class ProductoViewSet(viewsets.ModelViewSet):
+    queryset = producto.objects.all()
+    serializer_class = ProductoSerializer
+
+class SucursalViewSet(viewsets.ModelViewSet):
+    queryset = sucursal.objects.all()
+    serializer_class = SucursalSerializer
+
+class CarritoViewSet(viewsets.ModelViewSet):
+    queryset = Carrito.objects.all()
+    serializer_class = CarritoSerializer
+
+class ItemCarritoViewSet(viewsets.ModelViewSet):
+    queryset = ItemCarrito.objects.all()
+    serializer_class = ItemCarritoSerializer
+
+class SeguimientoViewSet(viewsets.ModelViewSet):
+    queryset = Seguimiento.objects.all()
+    serializer_class = SeguimientoSerializer
+
+class PedidoViewSet(viewsets.ModelViewSet):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+
+class ItemPedidoViewSet(viewsets.ModelViewSet):
+    queryset = ItemPedido.objects.all()
+    serializer_class = ItemPedidoSerializer
+
 
 # VIEWS
 def index(request):
@@ -28,10 +90,17 @@ def index(request):
 
 @login_required
 def shop(request):
+    
+    productos = lista_productos()
+    paginator = Paginator(productos, 4)
 
+    page = request.GET.get('page', 1)
+    productos = paginator.get_page(page)
+    
     data = {
-        'listado': lista_productos(),
+        'listado': productos,
         'MEDIA_URL': settings.MEDIA_URL,
+        'paginator': paginator
     }
     return render(request, 'core/shop.html', data)
 
@@ -109,8 +178,6 @@ def checkout(request):
         total = subtotal 
         total_dolar = subtotal_dolar
 
-        # Formatear los valores numéricos como cadenas antes de pasarlos al template
-
         subtotal_dolar_str = '{:.2f}'.format(subtotal_dolar) 
         total_dolar_str = '{:.2f}'.format(total_dolar)
 
@@ -146,6 +213,10 @@ def register(request):
             # Asignar el rol por defecto Cliente
             user.idRol = rolUsuario.objects.get(nombreRol='Cliente')
             user.idComuna = form.cleaned_data['comuna']
+            
+            # Guardar el correo_usuario en el campo email predeterminado
+            user.email = user.correo_usuario
+
             user.save()
             return redirect("index")
 
@@ -356,6 +427,7 @@ def modificar_usuario(request, p_id):
                      p_idComuna,
                      p_idRol
                 ])
+            messages.success(request, 'Usuario modificado correctamente!')
             form.save()
             return render(request, 'core/gestion_usuarios.html', {'usuarios': lista_usuarios()})
     else:
@@ -367,8 +439,6 @@ def post_usuario(p_username, p_run, p_pnombre, p_ap_paterno, p_correo_usuario, p
         django_cursor = connection.cursor()
         cursor = django_cursor.connection.cursor()
 
-        #ENCRIPTAR LA CONTRASEÑA:
-        #Llamar al procedimiento almacenado:
         p_password_encrypted = make_password(p_password)
         cursor.callproc("SP_POST_USUARIO", [
              p_username,
@@ -382,6 +452,7 @@ def post_usuario(p_username, p_run, p_pnombre, p_ap_paterno, p_correo_usuario, p
              p_idRol,
              p_password_encrypted
         ])
+        usuarioCustom.objects.create_user(username=p_username, email=p_correo_usuario, password=p_password)
         return print("Funciono post usuario!")
     except Exception as e:
         return print("ERROR EN POST USUARIO: ", e)
@@ -413,7 +484,7 @@ def add_user(request):
                          p_idComuna,
                          p_idRol,
                          p_password)
-            
+            messages.success(request, 'Usuario agregado correctamente!')
             return render(request, 'core/gestion_usuarios.html', {'usuarios': lista_usuarios()})
     else:
         form = RegisterUserAdminForm()
@@ -460,36 +531,70 @@ def crear_pedido(request):
         # Recibir los datos del formulario
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
-        direccion = request.POST.get('direccion')
-        region_id = request.POST.get('region')
-        comuna_id = request.POST.get('comuna')
-        correo = request.POST.get('correo')
+        run = request.POST.get('run') 
+        tipo_entrega = request.POST.get('tipo_entrega')
+        sucursal_id = request.POST.get('sucursal')
 
-        # Asegurarse de convertir region_id y comuna_id en objetos de modelo
-        region_obj = region.objects.get(idRegion=region_id)
-        comuna_obj = comuna.objects.get(idComuna=comuna_id)
+        print(sucursal_id)
+        # Buscar la instancia de la sucursal utilizando el ID
+        if sucursal_id:
+            sucursal_instance = sucursal.objects.get(idSucursal=sucursal_id)
+        else:
+            sucursal_instance = None
 
-        # Crear el pedido utilizando los datos del formulario
-        pedido = Pedido.objects.create(
-            carrito=carrito,
-            numero=str(uuid.uuid4()),
-            nombre=nombre,
-            apellido=apellido,
-            direccion=direccion,
-            region=region_obj,
-            comuna=comuna_obj,
-            correo=correo
-        )
+        if tipo_entrega == "retiro_tienda":
+            pedido = Pedido.objects.create(
+                carrito=carrito,
+                numero=str(uuid.uuid4()),
+                nombre=nombre,
+                apellido=apellido,
+                direccion=None,
+                region=None,
+                comuna=None,
+                correo=None,
+                run=run,
+                sucursal=sucursal_instance,
+                tipo_entrega=tipo_entrega,
+            )
+        else:
+            # Recibir los datos adicionales para envío a domicilio
+            direccion = request.POST.get('direccion', '')
+            region_id = request.POST.get('region')
+            comuna_id = request.POST.get('comuna')
+            correo = request.POST.get('correo')
 
-        # Copiar los items del carrito al pedido
+            # Verificar si region_id es una cadena vacía
+            if region_id:
+                region_obj = region.objects.get(idRegion=region_id)
+            else:
+                region_obj = None
+
+            # Verificar si comuna_id es una cadena vacía
+            if comuna_id:
+                comuna_obj = comuna.objects.get(idComuna=comuna_id)
+            else:
+                comuna_obj = None
+
+            pedido = Pedido.objects.create(
+                carrito=carrito,
+                numero=str(uuid.uuid4()),
+                nombre=nombre,
+                apellido=apellido,
+                direccion=direccion,
+                region=region_obj,
+                comuna=comuna_obj,
+                correo=correo,
+                run=None,
+                sucursal=sucursal_instance,
+                tipo_entrega=tipo_entrega,
+            )
+
         items_carrito = carrito.itemcarrito_set.all()
         for item in items_carrito:
             ItemPedido.objects.create(pedido=pedido, producto=item.producto, cantidad=item.cantidad)
 
-        # Limpiar el carrito después de crear el pedido
         carrito.productos.clear()
 
-        # Devolver una respuesta JSON indicando éxito y el número de pedido creado
         return JsonResponse({'success': True, 'numero_pedido': pedido.numero})
     else:
         return JsonResponse({'success': False})
@@ -541,13 +646,15 @@ def administrar_pedidos(request):
 
 def cambiar_estado(request, numero_orden):
     pedido = Pedido.objects.get(numero=numero_orden)
-    form = EstadoPedido(request.POST or None, initial={'estado': pedido.estado})
+    form = EstadoPedido(request.POST or None, initial={'estado': pedido.estado.descripcion})
 
     if request.method == 'POST' and form.is_valid():
-        seguimiento = Seguimiento.objects.create(descripcion=form.cleaned_data['estado'])
+        estado_descripcion = form.cleaned_data['estado']
+        seguimiento, created = Seguimiento.objects.get_or_create(descripcion=estado_descripcion)
         pedido.estado = seguimiento
         pedido.save()
         # Realizar cualquier acción adicional después de actualizar el estado
+        return redirect(reverse('administrar_pedidos'))  # Redirige a donde quieras
 
     data = {
         'pedidos': Pedido.objects.all(),
@@ -563,8 +670,6 @@ def soporte_contacto(request):
 def pedidos_entregados(request):
     mes = request.GET.get('mes')
     anio = request.GET.get('anio')
-
-    # Inicializa los pedidos como una lista vacía
     pedidos = []
 
     # Convertir los valores de mes y anio a enteros si están presentes, de lo contrario a 0
@@ -576,13 +681,21 @@ def pedidos_entregados(request):
         resultados = cursor.fetchall()
         for row in resultados:
             pedido = {
-                'numero': row[0],
-                'fecha': row[1],
-                'cliente': row[2],
-                'direccion': row[3],
-                'nombreComuna': row[4],
-                'nombreRegion': row[5],
-                'estado': row[6],
+                'id': row[0],  # ID del pedido
+                'numero': row[1],  # Número de pedido
+                'fecha': row[2],  # Fecha del pedido
+                'carrito_id': row[3],  # ID del carrito
+                'estado': row[4],  # Estado
+                'apellido': row[5],  # Apellido del cliente
+                'comuna': row[6],  # Nombre de la comuna
+                'correo': row[7],  # Correo electrónico del cliente
+                'direccion': row[8],  # Dirección del cliente
+                'nombre': row[9],  # Nombre del cliente
+                'region': row[10],  # Nombre de la región
+                'sucursal_id': row[11],  # ID de la sucursal
+                'run': row[12],  # RUN del cliente
+                'tipo_entrega': row[13],  # Tipo de entrega
+                'total_pagado': row[14]  # Total pagado
             }
             pedidos.append(pedido)
 
@@ -617,12 +730,41 @@ def generar_informes(request):
         wb = Workbook()
         ws = wb.active
 
-        # Añadir encabezados a la hoja de trabajo
-        ws.append(['Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 'Comuna', 'Región', 'Estado Actual'])
+        # Definir encabezados de columna
+        headers = [
+            'Número de Pedido', 'Fecha', 'Cliente', 'Dirección', 
+            'Comuna', 'Región', 'Estado Actual', 'Total Pagado'
+        ]
+        
+        # Aplicar estilos a los encabezados
+        header_font = Font(bold=True, color="FFFFFF")
+        header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        
+        ws.append(headers)
+        for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=len(headers)):
+            for cell in col:
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal="center")
 
         # Iterar sobre los pedidos filtrados y añadirlos a la hoja de trabajo
         for row in resultados:
-            ws.append(row)
+            pedido = [
+                row[1],  # Número de Pedido
+                row[2].strftime('%d/%m/%Y'),  # Fecha
+                f"{row[9]} {row[5]}",  # Cliente (Nombre Apellido)
+                row[8],  # Dirección
+                row[6],  # Comuna
+                row[10],  # Región
+                row[4],  # Estado Actual
+                f"${row[14]:,.2f} CLP"  # Total Pagado
+            ]
+            ws.append(pedido)
+
+        # Ajustar el ancho de las columnas
+        column_widths = [20, 15, 30, 30, 20, 20, 15, 20]
+        for i, col_width in enumerate(column_widths, 1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = col_width
 
         # Obtener el nombre del archivo basado en los filtros aplicados
         filename = f'ventas_entregadas_{mes or "None"}_{anio or "None"}.xlsx'
@@ -635,4 +777,35 @@ def generar_informes(request):
         wb.save(response)
         
         return response
+
+def obtener_sucursales(request):
+    try:
+        sucursales = sucursal.objects.all()
+        data = [{'idSucursal': s.idSucursal, 'nombreSucursal': s.nombreSucursal, 'direccionSucursal': s.direccionSucursal} for s in sucursales]
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+#Perfil
+@login_required
+def perfil_usuario(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UsuarioCustomForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil actualizado correctamente!')
+            return redirect('perfil_usuario')
+    else:
+        form = UsuarioCustomForm(instance=user)
+    
+    return render(request, 'core/perfil_usuario.html', {'form': form})
+
+#Correo
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    email_template_name = 'registration/password_reset_email.html'
+
+class PasswordResetView(auth_views.PasswordResetView):
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
 

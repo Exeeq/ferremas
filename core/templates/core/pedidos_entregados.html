@@ -51,6 +51,7 @@
                         <th scope="col">Comuna</th>
                         <th scope="col">Región</th>
                         <th scope="col">Estado Actual</th>
+                        <th scope="col">Total Pagado</th>
                     </tr>
                 </thead>
                 <tbody class="flex-wrap text-center h6">
@@ -58,11 +59,12 @@
                         <tr>
                             <td>{{ pedido.numero }}</td>
                             <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
-                            <td class="cliente small">{{ pedido.cliente }}</td>
+                            <td class="cliente small">{{ pedido.nombre }} {{ pedido.apellido }}</td>
                             <td class="direccion small">{{ pedido.direccion }}</td>
-                            <td class="small">{{ pedido.nombreComuna }}</td>
-                            <td class="small">{{ pedido.nombreRegion }}</td>
+                            <td class="small">{{ pedido.comuna }}</td>
+                            <td class="small">{{ pedido.region }}</td>
                             <td class="small">{{ pedido.estado }}</td>
+                            <td class="small">${{ pedido.total_pagado }} CLP</td>
                         </tr>
                     {% endfor %}
                 </tbody>

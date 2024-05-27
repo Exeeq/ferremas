@@ -38,7 +38,7 @@ class usuarioCustom(AbstractUser):
     idRol = models.ForeignKey(rolUsuario, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return self.username    
+        return self.username
 
 #MODELOS RELACIONADOS A LOS PRODUCTOS
 class marca(models.Model):
@@ -121,15 +121,17 @@ class Pedido(models.Model):
     estado = models.ForeignKey(Seguimiento, on_delete=models.CASCADE, default=1)
     productos = models.ManyToManyField(producto, through='ItemPedido')
     direccion = models.CharField(max_length=200, blank=True, null=True)
-    region = models.ForeignKey(region, on_delete=models.CASCADE)
-    comuna = models.ForeignKey(comuna, on_delete=models.CASCADE)
+    region = models.ForeignKey(region, on_delete=models.CASCADE, blank=True, null=True)
+    comuna = models.ForeignKey(comuna, on_delete=models.CASCADE, blank=True, null=True)
     nombre = models.CharField(max_length=20, blank=True, null=True)
     apellido = models.CharField(max_length=24, blank=True, null=True)
+    run = models.CharField(max_length=12, blank=True, null=True)
     correo = models.EmailField(blank=True, null=True)
-    
+    sucursal = models.ForeignKey(sucursal, on_delete=models.CASCADE, blank=True, null=True)
+    tipo_entrega = models.CharField(max_length=20, choices=[('envio_domicilio', 'Envío a domicilio'), ('retiro_tienda', 'Retiro en tienda')])
+
     def __str__(self):
         return f"Pedido #{self.numero}"
-    
     
     def calcular_total(self):
         items = self.itempedido_set.all() 

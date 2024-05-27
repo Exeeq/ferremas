@@ -14,7 +14,7 @@ class UsuarioForm(forms.ModelForm):
     pnombre = forms.CharField(label='Primer Nombre')
     ap_paterno = forms.CharField(label='Apellido Paterno')
     correo_usuario = forms.EmailField(label='Correo electrónico')
-    fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento', widget=forms.DateInput(attrs={'type': 'date'}))
+    fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento')
     direccion = forms.CharField(label='Dirección', widget=forms.TextInput(attrs={'placeholder': 'Calle, número, comuna'}))
     idComuna = forms.ModelChoiceField(queryset=comuna.objects.all(), label='Comuna')
     idRol = forms.ModelChoiceField(queryset=rolUsuario.objects.all(), label='Rol')
@@ -29,7 +29,7 @@ class RegisterUserAdminForm(UserCreationForm):
     pnombre = forms.CharField(label='Primer Nombre')
     ap_paterno = forms.CharField(label='Apellido Paterno')
     correo_usuario = forms.EmailField(label='Correo electrónico')
-    fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento', widget=forms.DateInput(attrs={'type': 'date'}))
+    fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento')
     direccion = forms.CharField(label='Dirección', widget=forms.TextInput(attrs={'placeholder': 'Calle, número, comuna'}))
     idComuna = forms.ModelChoiceField(queryset=comuna.objects.all(), label='Comuna')
     idRol = forms.ModelChoiceField(queryset=rolUsuario.objects.all(), label='Rol')
@@ -43,7 +43,7 @@ class RegisterUserAdminForm(UserCreationForm):
 class RegisterForm(UserCreationForm):
     username = forms.CharField(label='Nombre de usuario', help_text='Mínimo 6 caracteres')
     run = forms.CharField(label='RUN (Rol Único Nacional)', help_text='Ejemplo: 12345678-9')
-    correo_usuario = forms.EmailField(label='Correo electrónico')
+
     pnombre = forms.CharField(label='Primer Nombre')
     ap_paterno = forms.CharField(label='Apellido Paterno')
     fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento', widget=forms.DateInput(attrs={'type': 'date'}))
@@ -125,7 +125,7 @@ class EstadoPedido(forms.Form):
     pedido_numero = forms.CharField(widget=forms.HiddenInput())
     estado = forms.ModelChoiceField(queryset=Seguimiento.objects.all(), empty_label=None)
 
-class CheckoutForm(forms.Form):
+class EnvioDomicilioForm(forms.Form):
     nombre = forms.CharField(max_length=100)
     apellido = forms.CharField(max_length=100)
     direccion = forms.CharField(max_length=255)
@@ -133,6 +133,24 @@ class CheckoutForm(forms.Form):
     comuna = forms.ModelChoiceField(queryset=comuna.objects.all())
     correo = forms.EmailField()
 
+class RetiroTiendaForm(forms.Form):
+    nombre = forms.CharField(max_length=100)
+    apellido = forms.CharField(max_length=100)
+    run = forms.CharField(max_length=20)
 
+class UsuarioCustomForm(forms.ModelForm):
+    class Meta:
+        model = usuarioCustom
+        fields = ['username', 'run', 'pnombre', 'ap_paterno', 'correo_usuario', 'fecha_nacimiento', 'direccion', 'idComuna']
+        labels = {
+            'username': 'Nombre de usuario',
+            'run': 'Run',
+            'pnombre': 'Nombre',
+            'ap_paterno': 'Apellido',
+            'correo_usuario': 'Correo',
+            'fecha_nacimiento': 'Fecha Nacimiento',
+            'direccion': 'Dirección',
+            'idComuna': 'Comuna',
+        }
 
 
