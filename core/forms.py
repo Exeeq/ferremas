@@ -1,12 +1,10 @@
 from django import forms
 from .models import *
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth import authenticate
-
-
-
+from django.core.exceptions import ValidationError
+import re
 
 class UsuarioForm(forms.ModelForm):
     username = forms.CharField(label='Nombre de usuario', help_text='Mínimo 6 caracteres')
@@ -22,6 +20,18 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = usuarioCustom
         fields = ['username', 'run', 'pnombre', 'ap_paterno', 'correo_usuario', 'fecha_nacimiento', 'direccion', 'idComuna', 'idRol']
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if len(username) < 6:
+            raise ValidationError('El nombre de usuario debe tener al menos 6 caracteres.')
+        return username
+
+    def clean_run(self):
+        run = self.cleaned_data.get('run')
+        if not re.match(r'^\d{7,8}-[\dkK]$', run):
+            raise ValidationError('El RUN debe tener el formato 12345678-9.')
+        return run
 
 class RegisterUserAdminForm(UserCreationForm):
     username = forms.CharField(label='Nombre de usuario', help_text='Mínimo 6 caracteres')
@@ -40,10 +50,28 @@ class RegisterUserAdminForm(UserCreationForm):
         model = usuarioCustom
         fields = ['username', 'run', 'pnombre', 'ap_paterno', 'correo_usuario', 'fecha_nacimiento', 'direccion', 'idComuna', 'idRol', 'password1', 'password2']
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if len(username) < 6:
+            raise ValidationError('El nombre de usuario debe tener al menos 6 caracteres.')
+        return username
+
+    def clean_run(self):
+        run = self.cleaned_data.get('run')
+        if not re.match(r'^\d{7,8}-[\dkK]$', run):
+            raise ValidationError('El RUN debe tener el formato 12345678-9.')
+        return run
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise ValidationError('Las contraseñas no coinciden.')
+        return password2
+
 class RegisterForm(UserCreationForm):
     username = forms.CharField(label='Nombre de usuario', help_text='Mínimo 6 caracteres')
     run = forms.CharField(label='RUN (Rol Único Nacional)', help_text='Ejemplo: 12345678-9')
-
     pnombre = forms.CharField(label='Primer Nombre')
     ap_paterno = forms.CharField(label='Apellido Paterno')
     fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento', widget=forms.DateInput(attrs={'type': 'date'}))
@@ -53,6 +81,18 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = usuarioCustom
         fields = ['username', 'run', 'correo_usuario', 'pnombre', 'ap_paterno', 'fecha_nacimiento', 'direccion', 'comuna']
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if len(username) < 6:
+            raise ValidationError('El nombre de usuario debe tener al menos 6 caracteres.')
+        return username
+
+    def clean_run(self):
+        run = self.cleaned_data.get('run')
+        if not re.match(r'^\d{7,8}-[\dkK]$', run):
+            raise ValidationError('El RUN debe tener el formato 12345678-9.')
+        return run
 
 class CustomAuthenticationForm(AuthenticationForm):
     email = forms.EmailField(
@@ -84,8 +124,8 @@ class CustomAuthenticationForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
-    
-#FORM CRUD PRODUCTOS (AÑADIR, ACTUALIZAR):
+
+# FORM CRUD PRODUCTOS (AÑADIR, ACTUALIZAR):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = producto
@@ -109,21 +149,39 @@ class ProductoForm(forms.ModelForm):
             'idMarca': forms.Select(attrs={'class': 'form-control'}),
         }
 
+    def clean_precioProducto(self):
+        precioProducto = self.cleaned_data.get('precioProducto')
+        if precioProducto <= 0:
+            raise ValidationError('El precio del producto debe ser mayor a 0.')
+        return precioProducto
+
+    def clean_stockProducto(self):
+        stockProducto = self.cleaned_data.get('stockProducto')
+        if stockProducto < 0:
+            raise ValidationError('El stock del producto no puede ser negativo.')
+        return stockProducto
+
 class SeguimientoForm(forms.Form):
-    numero_orden = forms.CharField(max_length=100, widget=forms.TextInput(attrs={"placeholder":"INGRESE NÚMERO DE PEDIDO"}))
+    numero_orden = forms.CharField(max_length=100, widget=forms.TextInput(attrs={"placeholder": "INGRESE NÚMERO DE PEDIDO"}))
     numero_orden.widget.attrs['class'] = 'text-center'
     numero_orden.label = ''
+
+    def clean_numero_orden(self):
+        numero_orden = self.cleaned_data.get('numero_orden')
+        if not numero_orden.isdigit():
+            raise ValidationError('El número de orden debe contener solo dígitos.')
+        return numero_orden
 
 ESTADOS_PEDIDO = [
     ('EN PREPARACIÓN', 'EN PREPARACIÓN'),
     ('LISTO PARA ENVÍO', 'LISTO PARA ENVÍO'),
     ('EN REPARTO', 'EN REPARTO'),
     ('ENTREGADO', 'ENTREGADO'),
-    ]
+]
 
 class EstadoPedido(forms.Form):
     pedido_numero = forms.CharField(widget=forms.HiddenInput())
-    estado = forms.ModelChoiceField(queryset=Seguimiento.objects.all(), empty_label=None)
+    estado = forms.ChoiceField(choices=ESTADOS_PEDIDO)
 
 class EnvioDomicilioForm(forms.Form):
     nombre = forms.CharField(max_length=100)
@@ -133,10 +191,40 @@ class EnvioDomicilioForm(forms.Form):
     comuna = forms.ModelChoiceField(queryset=comuna.objects.all())
     correo = forms.EmailField()
 
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if not nombre.isalpha():
+            raise ValidationError('El nombre debe contener solo letras.')
+        return nombre
+
+    def clean_apellido(self):
+        apellido = self.cleaned_data.get('apellido')
+        if not apellido.isalpha():
+            raise ValidationError('El apellido debe contener solo letras.')
+        return apellido
+
 class RetiroTiendaForm(forms.Form):
     nombre = forms.CharField(max_length=100)
     apellido = forms.CharField(max_length=100)
     run = forms.CharField(max_length=20)
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if not nombre.isalpha():
+            raise ValidationError('El nombre debe contener solo letras.')
+        return nombre
+
+    def clean_apellido(self):
+        apellido = self.cleaned_data.get('apellido')
+        if not apellido.isalpha():
+            raise ValidationError('El apellido debe contener solo letras.')
+        return apellido
+
+    def clean_run(self):
+        run = self.cleaned_data.get('run')
+        if not re.match(r'^\d{7,8}-[\dkK]$', run):
+            raise ValidationError('El RUN debe tener el formato 12345678-9.')
+        return run
 
 class UsuarioCustomForm(forms.ModelForm):
     class Meta:
@@ -153,4 +241,14 @@ class UsuarioCustomForm(forms.ModelForm):
             'idComuna': 'Comuna',
         }
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if len(username) < 6:
+            raise ValidationError('El nombre de usuario debe tener al menos 6 caracteres.')
+        return username
 
+    def clean_run(self):
+        run = self.cleaned_data.get('run')
+        if not re.match(r'^\d{7,8}-[\dkK]$', run):
+            raise ValidationError('El RUN debe tener el formato 12345678-9.')
+        return run

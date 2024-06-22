@@ -6,7 +6,7 @@ pymysql
 mysqlclient
 django-jazzmin
 fontawesomefree
-request
+requests
 openpyxl
 django-rest-framework
 django-paypal
