@@ -173,6 +173,7 @@ class SeguimientoForm(forms.Form):
         return numero_orden
 
 ESTADOS_PEDIDO = [
+    ('', ''),
     ('EN PREPARACIÓN', 'EN PREPARACIÓN'),
     ('LISTO PARA ENVÍO', 'LISTO PARA ENVÍO'),
     ('EN REPARTO', 'EN REPARTO'),
@@ -184,11 +185,11 @@ class EstadoPedido(forms.Form):
     estado = forms.ChoiceField(choices=ESTADOS_PEDIDO)
 
 class EnvioDomicilioForm(forms.Form):
-    nombre = forms.CharField(max_length=100)
-    apellido = forms.CharField(max_length=100)
-    direccion = forms.CharField(max_length=255)
-    region = forms.ModelChoiceField(queryset=region.objects.all())
-    comuna = forms.ModelChoiceField(queryset=comuna.objects.all())
+    nombre = forms.CharField(max_length=100, required=True)
+    apellido = forms.CharField(max_length=100, required=True)
+    direccion = forms.CharField(max_length=255, required=True)
+    region = forms.ModelChoiceField(queryset=region.objects.all(), required=True)
+    comuna = forms.ModelChoiceField(queryset=comuna.objects.all(), required=True)
     correo = forms.EmailField()
 
     def clean_nombre(self):
@@ -204,9 +205,9 @@ class EnvioDomicilioForm(forms.Form):
         return apellido
 
 class RetiroTiendaForm(forms.Form):
-    nombre = forms.CharField(max_length=100)
-    apellido = forms.CharField(max_length=100)
-    run = forms.CharField(max_length=20)
+    nombre = forms.CharField(max_length=100, required=True)
+    apellido = forms.CharField(max_length=100, required=True)
+    run = forms.CharField(max_length=20, required=True)
 
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
