@@ -252,3 +252,20 @@ class UsuarioCustomForm(forms.ModelForm):
         if not re.match(r'^\d{7,8}-[\dkK]$', run):
             raise ValidationError('El RUN debe tener el formato 12345678-9.')
         return run
+
+class CheckoutForm(forms.ModelForm):
+    metodo_pago = forms.ChoiceField(choices=[('paypal', 'PayPal'), ('transferencia', 'Transferencia Bancaria')], widget=forms.Select())
+    comprobante_pago = forms.ImageField(required=False)
+
+    class Meta:
+        model = Pedido
+        fields = ['tipo_entrega', 'direccion', 'region', 'comuna', 'nombre', 'apellido', 'run', 'correo', 'sucursal', 'metodo_pago', 'comprobante_pago']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        metodo_pago = cleaned_data.get('metodo_pago')
+
+        if metodo_pago == 'transferencia' and not self.cleaned_data.get('comprobante_pago'):
+            raise ValidationError('Debe subir un comprobante de pago para la transferencia bancaria.')
+        
+        return cleaned_data

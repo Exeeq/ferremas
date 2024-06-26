@@ -129,6 +129,7 @@ class Pedido(models.Model):
     correo = models.EmailField(blank=True, null=True)
     sucursal = models.ForeignKey(sucursal, on_delete=models.CASCADE, blank=True, null=True)
     tipo_entrega = models.CharField(max_length=20, choices=[('envio_domicilio', 'Envío a domicilio'), ('retiro_tienda', 'Retiro en tienda')])
+    comprobante_pago = models.ImageField(upload_to="comprobantes/", blank=True, null=True)  
 
     def __str__(self):
         return f"Pedido #{self.numero}"

@@ -26,7 +26,6 @@ from .serializers import *
 from django.core.paginator import Paginator
 from openpyxl.styles import Font, Alignment, PatternFill
 from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment, PatternFill
 import openpyxl.utils
 from django.contrib.auth import views as auth_views
 
@@ -181,9 +180,36 @@ def checkout(request):
         subtotal_dolar_str = '{:.2f}'.format(subtotal_dolar) 
         total_dolar_str = '{:.2f}'.format(total_dolar)
 
+        if request.method == "POST":
+            form = CheckoutForm(request.POST, request.FILES)
+            if form.is_valid():
+                metodo_pago = form.cleaned_data['metodo_pago']
+                
+                pedido = Pedido.objects.create(
+                    carrito=carrito,
+                    tipo_entrega=form.cleaned_data['tipo_entrega'],
+                    direccion=form.cleaned_data['direccion'],
+                    region=form.cleaned_data['region'],
+                    comuna=form.cleaned_data['comuna'],
+                    nombre=form.cleaned_data['nombre'],
+                    apellido=form.cleaned_data['apellido'],
+                    run=form.cleaned_data['run'],
+                    correo=form.cleaned_data['correo'],
+                    sucursal=form.cleaned_data['sucursal'],
+                    comprobante_pago=form.cleaned_data['comprobante_pago']
+                )
+
+                if metodo_pago == 'transferencia':
+                    pedido.comprobante_pago = form.cleaned_data['comprobante_pago']
+                    pedido.estado = Seguimiento.objects.get(descripcion='Esperando comprobante de pago')
+                    pedido.save()
+                    return redirect('confirmacion_pedido')
+        else:
+            form = CheckoutForm()
+
         data = {
             'carrito': carrito,
-            'items': items,  
+            'items': items,
             'subtotal': subtotal,
             'total': total,
             'subtotal_dolar': subtotal_dolar_str,
@@ -192,10 +218,10 @@ def checkout(request):
             'comunas': comunas,
             'sucursales': sucursales,
             'MEDIA_URL': settings.MEDIA_URL,
+            'form': form,
         }
-        
+
         return render(request, 'core/checkout.html', data)
-    
     except Exception as e:
         print("ERROR EN CHECKOUT: ", e)
 
@@ -534,7 +560,7 @@ def crear_pedido(request):
         run = request.POST.get('run') 
         tipo_entrega = request.POST.get('tipo_entrega')
         sucursal_id = request.POST.get('sucursal')
-
+        comprobante_pago = request.POST.get('comprobante_pago')
         print(sucursal_id)
         # Buscar la instancia de la sucursal utilizando el ID
         if sucursal_id:
@@ -555,6 +581,7 @@ def crear_pedido(request):
                 run=run,
                 sucursal=sucursal_instance,
                 tipo_entrega=tipo_entrega,
+                comprobante_pago=comprobante_pago
             )
         else:
             # Recibir los datos adicionales para envío a domicilio
@@ -586,7 +613,7 @@ def crear_pedido(request):
                 correo=correo,
                 run=None,
                 sucursal=sucursal_instance,
-                tipo_entrega=tipo_entrega,
+                tipo_entrega=tipo_entrega,          
             )
 
         items_carrito = carrito.itemcarrito_set.all()
