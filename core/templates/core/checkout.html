@@ -204,6 +204,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{% static 'core/js/mensajes.js' %}"></script>
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
 <script>
     function mostrarDatosTransferencia() {
         var metodoPago = document.getElementById('paymentMethod').value;
@@ -223,9 +224,58 @@
         }
     }
 
+    function validarCampos() {
+        var tipo_entrega = $('input[name="tipo_entrega"]:checked').val();
+        var nombre = $('#id_nombre').val() ? $('#id_nombre').val() : $('#id_nombre_2').val();
+        var apellido = $('#id_apellido').val() ? $('#id_apellido').val() : $('#id_apellido_2').val();
+        var direccion = $('#id_direccion').val();
+        var region = $('#id_region').val();
+        var comuna = $('#id_comuna').val();
+        var correo = $('#id_correo').val();
+        var run = $('#id_run').val();
+        var sucursal = $('input[name="sucursal"]:checked').val();
+
+        if (!nombre || !apellido || !correo) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, complete todos los campos obligatorios.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        if (tipo_entrega === 'envio_domicilio' && (!direccion || !region || !comuna)) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, complete todos los campos obligatorios para el envío a domicilio.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        if (tipo_entrega === 'retiro_tienda' && (!run || !sucursal)) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, complete todos los campos obligatorios para el retiro en tienda.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        return true;
+    }
+
     $(document).ready(function () {
         $('#btnTransferencia').on('click', function (e) {
             e.preventDefault();
+            
+            if (!validarCampos()) {
+                return;
+            }
+
             var csrftoken = getCookie('csrftoken');
             var nombre = $('#id_nombre').val() ? $('#id_nombre').val() : $('#id_nombre_2').val();
             var apellido = $('#id_apellido').val() ? $('#id_apellido').val() : $('#id_apellido_2').val();
@@ -234,8 +284,8 @@
             var comuna = $('#id_comuna').val();
             var correo = $('#id_correo').val();
             var run = $('#id_run').val();
-            var sucursal = $('input[name="sucursal"]:checked').val();
             var tipo_entrega = $('input[name="tipo_entrega"]:checked').val();
+            var sucursal = tipo_entrega === 'retiro_tienda' ? $('input[name="sucursal"]:checked').val() : null;
             var file = $('#comprobante_pago')[0].files[0];
             
             // Validación del comprobante de pago
@@ -248,8 +298,6 @@
                 });
                 return; 
             }
-
-            if(sucursal == null){}
 
             // Configuración de AJAX
             $.ajaxSetup({
@@ -267,7 +315,9 @@
             formData.append('comuna', comuna);
             formData.append('correo', correo);
             formData.append('run', run);
-            formData.append('sucursal', sucursal);
+            if (sucursal) {
+                formData.append('sucursal', sucursal);
+            }
             formData.append('tipo_entrega', tipo_entrega);
             formData.append('comprobante_pago', file);
             formData.append('csrfmiddlewaretoken', csrftoken);
@@ -303,8 +353,22 @@
             });
         });
     });
-</script>
-<script>
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     document.getElementById('paymentMethod').addEventListener('change', function() {
         var paymentMethod = this.value;
         var btnPaypal = document.getElementById('btnPaypal');
@@ -322,6 +386,50 @@
 </script>
 
 <script>
+    function validarCampos() {
+        var tipo_entrega = $('input[name="tipo_entrega"]:checked').val();
+        var nombre = $('#id_nombre').val() ? $('#id_nombre').val() : $('#id_nombre_2').val();
+        var apellido = $('#id_apellido').val() ? $('#id_apellido').val() : $('#id_apellido_2').val();
+        var direccion = $('#id_direccion').val();
+        var region = $('#id_region').val();
+        var comuna = $('#id_comuna').val();
+        var correo = $('#id_correo').val();
+        var run = $('#id_run').val();
+        var sucursal = $('input[name="sucursal"]:checked').val();
+
+        if (!nombre || !apellido || !correo) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, complete todos los campos obligatorios.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        if (tipo_entrega === 'envio_domicilio' && (!direccion || !region || !comuna)) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, complete todos los campos obligatorios para el envío a domicilio.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        if (tipo_entrega === 'retiro_tienda' && (!run || !sucursal)) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, complete todos los campos obligatorios para el retiro en tienda.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        return true;
+    }
+
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -351,6 +459,9 @@
         },
         commit: true,
         payment: function (data, actions) {
+            if (!validarCampos()) {
+                return actions.reject();
+            }
             return actions.payment.create({
                 transactions: [{
                     amount: { 

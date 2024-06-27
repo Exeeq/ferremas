@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-05-2024 a las 04:26:08
+-- Tiempo de generación: 27-06-2024 a las 04:44:41
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,11 +20,14 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `ferremasbd`
 --
+CREATE DATABASE IF NOT EXISTS `ferremasbd` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `ferremasbd`;
 
 DELIMITER $$
 --
 -- Procedimientos
 --
+DROP PROCEDURE IF EXISTS `FiltrarPedidosEntregados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `FiltrarPedidosEntregados` (IN `mes` INT, IN `anio` INT)   BEGIN
     SELECT 
         p.id, 
@@ -54,25 +57,31 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `FiltrarPedidosEntregados` (IN `mes`
     GROUP BY p.id;
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_DELETE_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE_PRODUCTO` (IN `p_idProducto` INT)   BEGIN
     DELETE FROM core_producto
     WHERE idProducto = p_idProducto;
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_DELETE_USUARIO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_DELETE_USUARIO` (IN `p_idUsuario` INT)   BEGIN
 
     DELETE FROM core_usuariocustom WHERE core_usuariocustom.id = p_idUsuario;
     
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_GET_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_PRODUCTO` (IN `p_idProducto` INT)  NO SQL SELECT * FROM core_producto 
 WHERE idProducto = p_idProducto$$
 
+DROP PROCEDURE IF EXISTS `SP_GET_PRODUCTOS`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_PRODUCTOS` (OUT `p_out` INT)  NO SQL SELECT * FROM core_producto$$
 
+DROP PROCEDURE IF EXISTS `SP_GET_USUARIO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_USUARIO` (IN `p_idUsuario` INT)  NO SQL SELECT * FROM core_usuariocustom
 WHERE id = p_idUsuario$$
 
+DROP PROCEDURE IF EXISTS `SP_GET_USUARIOS`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GET_USUARIOS` (OUT `p_out` INT)  NO SQL SELECT u.id,
 	   u.username,
        u.run,
@@ -87,6 +96,7 @@ JOIN core_rolusuario r
 JOIN core_comuna c
 	ON u.idComuna_id = c.idComuna$$
 
+DROP PROCEDURE IF EXISTS `SP_POST_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProducto` LONGTEXT, IN `precioProducto` INT, IN `stockProducto` INT, IN `imagenProducto` VARCHAR(255), IN `descripcionProducto` LONGTEXT, IN `idcategoriaProducto` INT, IN `idMarca` INT)  NO SQL BEGIN
     INSERT INTO core_producto (
         nombreProducto,
@@ -107,12 +117,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_PRODUCTO` (IN `nombreProduc
     );
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_POST_USUARIO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_POST_USUARIO` (IN `p_username` VARCHAR(150), IN `p_run` VARCHAR(12), IN `p_pnombre` VARCHAR(20), IN `p_ap_paterno` VARCHAR(24), IN `p_correo_usuario` VARCHAR(254), IN `p_fecha_nacimiento` DATE, IN `p_direccion` VARCHAR(100), IN `p_idComuna` INT, IN `p_idRol` INT, IN `p_password` VARCHAR(255))   BEGIN
     INSERT INTO core_usuariocustom (username, password, run, pnombre, ap_paterno, correo_usuario, fecha_nacimiento, direccion, idRol_id, idComuna_id)
     VALUES (p_username, p_password, p_run, p_pnombre, p_ap_paterno, p_correo_usuario, p_fecha_nacimiento, p_direccion, p_idRol, p_idComuna);
     
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_PUT_PRODUCTO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_PUT_PRODUCTO` (IN `p_idProducto` INT, IN `p_nombreProducto` LONGTEXT, IN `p_precioProducto` DECIMAL(10,0), IN `p_stockProducto` INT, IN `p_imagenProducto` VARCHAR(255), IN `p_descripcionProducto` LONGTEXT, IN `p_idMarca` INT, IN `p_idcategoriaProducto` INT)   BEGIN
     UPDATE core_producto
     SET nombreProducto = p_nombreProducto,
@@ -125,6 +137,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_PUT_PRODUCTO` (IN `p_idProducto`
     WHERE idProducto = p_idProducto;
 END$$
 
+DROP PROCEDURE IF EXISTS `SP_PUT_USUARIO`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_PUT_USUARIO` (IN `p_id` INT, IN `p_username` VARCHAR(100), IN `p_run` VARCHAR(50), IN `p_pnombre` VARCHAR(100), IN `p_ap_paterno` VARCHAR(100), IN `p_correo_usuario` VARCHAR(100), IN `p_fecha_nacimiento` DATE, IN `p_direccion` VARCHAR(255), IN `p_idComuna` INT, IN `p_idRol` INT)   BEGIN
     UPDATE core_usuariocustom
     SET 
@@ -148,6 +161,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `auth_group`
 --
 
+DROP TABLE IF EXISTS `auth_group`;
 CREATE TABLE `auth_group` (
   `id` int(11) NOT NULL,
   `name` varchar(150) NOT NULL
@@ -159,6 +173,7 @@ CREATE TABLE `auth_group` (
 -- Estructura de tabla para la tabla `auth_group_permissions`
 --
 
+DROP TABLE IF EXISTS `auth_group_permissions`;
 CREATE TABLE `auth_group_permissions` (
   `id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
@@ -171,6 +186,7 @@ CREATE TABLE `auth_group_permissions` (
 -- Estructura de tabla para la tabla `auth_permission`
 --
 
+DROP TABLE IF EXISTS `auth_permission`;
 CREATE TABLE `auth_permission` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -262,6 +278,7 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 -- Estructura de tabla para la tabla `core_carrito`
 --
 
+DROP TABLE IF EXISTS `core_carrito`;
 CREATE TABLE `core_carrito` (
   `id` int(11) NOT NULL,
   `usuario_id` int(11) NOT NULL
@@ -280,6 +297,7 @@ INSERT INTO `core_carrito` (`id`, `usuario_id`) VALUES
 -- Estructura de tabla para la tabla `core_categoriaproducto`
 --
 
+DROP TABLE IF EXISTS `core_categoriaproducto`;
 CREATE TABLE `core_categoriaproducto` (
   `idcategoriaProducto` int(11) NOT NULL,
   `nombrecategoriaProducto` varchar(60) NOT NULL
@@ -298,6 +316,7 @@ INSERT INTO `core_categoriaproducto` (`idcategoriaProducto`, `nombrecategoriaPro
 -- Estructura de tabla para la tabla `core_comuna`
 --
 
+DROP TABLE IF EXISTS `core_comuna`;
 CREATE TABLE `core_comuna` (
   `idComuna` int(11) NOT NULL,
   `nombreComuna` varchar(80) NOT NULL,
@@ -609,6 +628,7 @@ INSERT INTO `core_comuna` (`idComuna`, `nombreComuna`, `idRegion_id`) VALUES
 -- Estructura de tabla para la tabla `core_itemcarrito`
 --
 
+DROP TABLE IF EXISTS `core_itemcarrito`;
 CREATE TABLE `core_itemcarrito` (
   `id` int(11) NOT NULL,
   `cantidad` int(10) UNSIGNED NOT NULL CHECK (`cantidad` >= 0),
@@ -622,6 +642,7 @@ CREATE TABLE `core_itemcarrito` (
 -- Estructura de tabla para la tabla `core_itempedido`
 --
 
+DROP TABLE IF EXISTS `core_itempedido`;
 CREATE TABLE `core_itempedido` (
   `id` int(11) NOT NULL,
   `cantidad` int(10) UNSIGNED NOT NULL CHECK (`cantidad` >= 0),
@@ -634,9 +655,8 @@ CREATE TABLE `core_itempedido` (
 --
 
 INSERT INTO `core_itempedido` (`id`, `cantidad`, `pedido_id`, `producto_id`) VALUES
-(33, 1, 28, 10),
-(34, 1, 29, 9),
-(35, 1, 30, 12);
+(38, 2, 33, 10),
+(39, 1, 34, 10);
 
 -- --------------------------------------------------------
 
@@ -644,6 +664,7 @@ INSERT INTO `core_itempedido` (`id`, `cantidad`, `pedido_id`, `producto_id`) VAL
 -- Estructura de tabla para la tabla `core_marca`
 --
 
+DROP TABLE IF EXISTS `core_marca`;
 CREATE TABLE `core_marca` (
   `idMarca` int(11) NOT NULL,
   `nombreMarca` varchar(20) NOT NULL
@@ -663,6 +684,7 @@ INSERT INTO `core_marca` (`idMarca`, `nombreMarca`) VALUES
 -- Estructura de tabla para la tabla `core_pedido`
 --
 
+DROP TABLE IF EXISTS `core_pedido`;
 CREATE TABLE `core_pedido` (
   `id` int(11) NOT NULL,
   `numero` varchar(36) NOT NULL,
@@ -677,17 +699,17 @@ CREATE TABLE `core_pedido` (
   `region_id` int(11) DEFAULT NULL,
   `sucursal_id` int(11) DEFAULT NULL,
   `run` varchar(12) DEFAULT NULL,
-  `tipo_entrega` varchar(20) NOT NULL
+  `tipo_entrega` varchar(20) NOT NULL,
+  `comprobante_pago` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `core_pedido`
 --
 
-INSERT INTO `core_pedido` (`id`, `numero`, `fecha`, `carrito_id`, `estado_id`, `apellido`, `comuna_id`, `correo`, `direccion`, `nombre`, `region_id`, `sucursal_id`, `run`, `tipo_entrega`) VALUES
-(28, 'fa4aa2ac-aed1-458e-a80d-33581a115faa', '2024-05-27 01:22:35.744092', 3, 4, 'Albornoz', NULL, NULL, NULL, 'Exequiel', NULL, 3, '21.002.289-9', 'retiro_tienda'),
-(29, '841be419-9053-4ce7-b8aa-4abc168b18ad', '2024-05-27 01:23:08.845097', 3, 4, 'Albornoz', 1, 'albornozexequiel01@gmail.com', 'Millantu 123', 'Exequiel', 1, NULL, NULL, 'envio_domicilio'),
-(30, 'aca91c42-801e-4edb-a1be-028b44ec8566', '2024-05-27 01:23:55.167569', 3, 4, 'Albornoz', NULL, NULL, NULL, 'Exequiel', NULL, 2, '21.002.289-9', 'retiro_tienda');
+INSERT INTO `core_pedido` (`id`, `numero`, `fecha`, `carrito_id`, `estado_id`, `apellido`, `comuna_id`, `correo`, `direccion`, `nombre`, `region_id`, `sucursal_id`, `run`, `tipo_entrega`, `comprobante_pago`) VALUES
+(33, 'b59035a7-6f56-49ed-b568-7786b315025b', '2024-06-27 02:12:45.710856', 3, 4, 'Albornoz', 1, 'ex.albornoz@duocuc.cl', 'Millantu 123', 'Exequiel', 1, NULL, NULL, 'envio_domicilio', 'comprobantes/mountains-sunset-clean-skyline.jpg'),
+(34, '3e43a279-2500-4bfa-b5cb-b600828c29d6', '2024-06-27 02:33:29.002362', 3, 1, 'Albornoz', 14, 'ex.albornoz@duocuc.cl', 'Millantu 123', 'Exequiel', 1, NULL, NULL, 'envio_domicilio', 'comprobantes/FixSpot_Modelo_Lógico.png');
 
 -- --------------------------------------------------------
 
@@ -695,6 +717,7 @@ INSERT INTO `core_pedido` (`id`, `numero`, `fecha`, `carrito_id`, `estado_id`, `
 -- Estructura de tabla para la tabla `core_producto`
 --
 
+DROP TABLE IF EXISTS `core_producto`;
 CREATE TABLE `core_producto` (
   `idProducto` int(11) NOT NULL,
   `nombreProducto` longtext NOT NULL,
@@ -712,9 +735,9 @@ CREATE TABLE `core_producto` (
 
 INSERT INTO `core_producto` (`idProducto`, `nombreProducto`, `precioProducto`, `stockProducto`, `imagenProducto`, `descripcionProducto`, `idMarca_id`, `idcategoriaProducto_id`) VALUES
 (4, 'Martillo Loco', 100, 0, 'martillo-venta.jpg', 'El martillo es una herramienta versátil diseñada para golpear clavos y otros materiales.', 1, 1),
-(6, 'Martillo de felix el reparador', 140, 11, 'descarga.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1),
-(9, 'Kit guía de perforación', 230, 14, 'kit guia de perforacion.jpg', 'El sistema permite conectar sus piezas de trabajo rápida y oportunamente, facilitando el ensamblaje y mejorando la eficiencia.', 1, 1),
-(10, 'Presa tipo C', 140, 31, 'Prensa tipo c.jpg', 'Prensa Tipo C Puntas Giratorias 18SP™ 18 pulgadas / 455 mm.', 1, 1),
+(6, 'Martillo de felix el reparador', 140, 10, 'descarga.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1),
+(9, 'Kit guía de perforación', 230, 13, 'kit guia de perforacion.jpg', 'El sistema permite conectar sus piezas de trabajo rápida y oportunamente, facilitando el ensamblaje y mejorando la eficiencia.', 1, 1),
+(10, 'Presa tipo C', 140, 28, 'Prensa tipo c.jpg', 'Prensa Tipo C Puntas Giratorias 18SP™ 18 pulgadas / 455 mm.', 1, 1),
 (11, 'Lijadora Orbital', 122, 29, 'Lijadora orbital.jpg', 'Herramienta eléctrica que lija superficies de manera uniforme y eficiente, ideal para trabajos de lijado fino y preparación de superficies.', 2, 1),
 (12, 'Cinta Metrica', 114, 67, 'Cinta metrica.png', 'Es una herramienta de medición esencial, ideal para tomar medidas precisas de longitud de manera rápida y fácil.', 2, 1);
 
@@ -724,6 +747,7 @@ INSERT INTO `core_producto` (`idProducto`, `nombreProducto`, `precioProducto`, `
 -- Estructura de tabla para la tabla `core_region`
 --
 
+DROP TABLE IF EXISTS `core_region`;
 CREATE TABLE `core_region` (
   `idRegion` int(11) NOT NULL,
   `nombreRegion` varchar(80) NOT NULL
@@ -756,6 +780,7 @@ INSERT INTO `core_region` (`idRegion`, `nombreRegion`) VALUES
 -- Estructura de tabla para la tabla `core_rolusuario`
 --
 
+DROP TABLE IF EXISTS `core_rolusuario`;
 CREATE TABLE `core_rolusuario` (
   `idRol` int(11) NOT NULL,
   `nombreRol` varchar(20) NOT NULL
@@ -778,6 +803,7 @@ INSERT INTO `core_rolusuario` (`idRol`, `nombreRol`) VALUES
 -- Estructura de tabla para la tabla `core_seguimiento`
 --
 
+DROP TABLE IF EXISTS `core_seguimiento`;
 CREATE TABLE `core_seguimiento` (
   `id` int(11) NOT NULL,
   `descripcion` varchar(250) NOT NULL
@@ -799,6 +825,7 @@ INSERT INTO `core_seguimiento` (`id`, `descripcion`) VALUES
 -- Estructura de tabla para la tabla `core_sucursal`
 --
 
+DROP TABLE IF EXISTS `core_sucursal`;
 CREATE TABLE `core_sucursal` (
   `idSucursal` int(11) NOT NULL,
   `nombreSucursal` varchar(50) NOT NULL,
@@ -821,6 +848,7 @@ INSERT INTO `core_sucursal` (`idSucursal`, `nombreSucursal`, `direccionSucursal`
 -- Estructura de tabla para la tabla `core_usuariocustom`
 --
 
+DROP TABLE IF EXISTS `core_usuariocustom`;
 CREATE TABLE `core_usuariocustom` (
   `id` int(11) NOT NULL,
   `password` varchar(128) NOT NULL,
@@ -850,7 +878,7 @@ CREATE TABLE `core_usuariocustom` (
 --
 
 INSERT INTO `core_usuariocustom` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `run`, `pnombre`, `snombre`, `ap_paterno`, `ap_materno`, `fecha_nacimiento`, `direccion`, `idComuna_id`, `idRol_id`, `correo_usuario`) VALUES
-(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-05-27 01:55:25.595677', 1, 'admin', '', '', 'soporte.ferremas@gmail.com', 1, 1, '2024-05-13 19:58:21.484730', '10.001.100-1', 'Admin', '', 'Supremo', '', '2024-06-06', 'Admins 111', 1, 5, 'soporte.ferremas@gmail.com'),
+(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-06-27 02:28:44.838659', 1, 'admin', '', '', 'soporte.ferremas@gmail.com', 1, 1, '2024-05-13 19:58:21.484730', '10.001.100-1', 'Admin', '', 'Supremo', '', '2024-06-06', 'Admins 111', 1, 5, 'soporte.ferremas@gmail.com'),
 (35, 'pbkdf2_sha256$216000$y5Ygqec9gC4o$Gnz4fu1qnTs5DDVErNSk0odj+l7t4h6INf6L+/im+hw=', NULL, 0, 'Juan', '', '', 'albornozexequiel01@gmail.com', 0, 1, '2024-05-27 00:51:55.067229', '99.111.999-1', 'Juan', '', 'Callabo', '', '2002-02-01', 'Millantu 123', 1, 1, 'albornozexequiel01@gmail.com'),
 (36, 'pbkdf2_sha256$216000$XlYqlH3qPtso$YsL+pzOMee7koRoPtu+kp5fFQk3JDf3RlSrwyVoa28Y=', NULL, 0, 'Jairo', '', '', 'jairoman.number1@gmail.com', 0, 1, '2024-05-27 02:23:19.451079', '21.383.203-4', 'Jairo', '', 'Marin', '', '2003-09-05', 'El canelo calle 2', 36, 1, 'jairoman.number1@gmail.com');
 
@@ -860,6 +888,7 @@ INSERT INTO `core_usuariocustom` (`id`, `password`, `last_login`, `is_superuser`
 -- Estructura de tabla para la tabla `core_usuariocustom_groups`
 --
 
+DROP TABLE IF EXISTS `core_usuariocustom_groups`;
 CREATE TABLE `core_usuariocustom_groups` (
   `id` int(11) NOT NULL,
   `usuariocustom_id` int(11) NOT NULL,
@@ -872,6 +901,7 @@ CREATE TABLE `core_usuariocustom_groups` (
 -- Estructura de tabla para la tabla `core_usuariocustom_user_permissions`
 --
 
+DROP TABLE IF EXISTS `core_usuariocustom_user_permissions`;
 CREATE TABLE `core_usuariocustom_user_permissions` (
   `id` int(11) NOT NULL,
   `usuariocustom_id` int(11) NOT NULL,
@@ -884,6 +914,7 @@ CREATE TABLE `core_usuariocustom_user_permissions` (
 -- Estructura de tabla para la tabla `django_admin_log`
 --
 
+DROP TABLE IF EXISTS `django_admin_log`;
 CREATE TABLE `django_admin_log` (
   `id` int(11) NOT NULL,
   `action_time` datetime(6) NOT NULL,
@@ -901,6 +932,7 @@ CREATE TABLE `django_admin_log` (
 -- Estructura de tabla para la tabla `django_content_type`
 --
 
+DROP TABLE IF EXISTS `django_content_type`;
 CREATE TABLE `django_content_type` (
   `id` int(11) NOT NULL,
   `app_label` varchar(100) NOT NULL,
@@ -937,6 +969,7 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 -- Estructura de tabla para la tabla `django_migrations`
 --
 
+DROP TABLE IF EXISTS `django_migrations`;
 CREATE TABLE `django_migrations` (
   `id` int(11) NOT NULL,
   `app` varchar(255) NOT NULL,
@@ -981,7 +1014,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (30, 'core', '0012_auto_20240526_1447', '2024-05-26 18:48:04.117639'),
 (31, 'core', '0013_pedido_tipo_entrega', '2024-05-26 22:35:31.635674'),
 (32, 'core', '0014_remove_usuariocustom_correo_usuario', '2024-05-26 23:25:54.202975'),
-(33, 'core', '0015_usuariocustom_correo_usuario', '2024-05-26 23:30:38.518545');
+(33, 'core', '0015_usuariocustom_correo_usuario', '2024-05-26 23:30:38.518545'),
+(34, 'core', '0016_pedido_comprobante_pago', '2024-06-27 01:56:58.244371');
 
 -- --------------------------------------------------------
 
@@ -989,6 +1023,7 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 -- Estructura de tabla para la tabla `django_session`
 --
 
+DROP TABLE IF EXISTS `django_session`;
 CREATE TABLE `django_session` (
   `session_key` varchar(40) NOT NULL,
   `session_data` longtext NOT NULL,
@@ -1000,9 +1035,11 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
+('4v0ufx63qfz9si75h545rw7ecrb5878y', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1sMesO:yyIbIzIc4x5R3dg3JQgWJQiOlRrAc-srGgYWBT6A6Zo', '2024-07-11 02:28:44.839660'),
 ('a6y4l6syfngjy4n36nh0byvl7fgtgp22', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s9rst:gOMlBE_qD5luSY93Cszr-fQzFpx-0Rq4tSa-a8FZYz4', '2024-06-05 19:44:23.663698'),
 ('b4vdt7scv688oqb31vmk8det3jtpdr4y', 'eyJfcGFzc3dvcmRfcmVzZXRfdG9rZW4iOiJjN25tMTMtMGM5MWQwZTNlODdkZjAyMzk0YzgyY2ZhZjJkOGNiZWYifQ:1sBPWX:LKnobQEQ7p6O9LpOZ-WumO8UOJ0t9LRpQyhm2NbBlV4', '2024-06-10 01:51:41.527453'),
 ('fn6ffvjp5kuwz82bkpbgrcd3j84z2oe4', 'eyJfcGFzc3dvcmRfcmVzZXRfdG9rZW4iOiJjN25uajctZWIzNjkwMzk0NDBlZDcyZmJhNzJiMjhlNzkyNWJjZmYifQ:1sBQ1Z:lVCPoUpKW7HO4h26d7A7q-ggQrs5lt7BRey21HJN1C0', '2024-06-10 02:23:45.350585'),
+('lg33pqgd4ezwncafkfgkf7zfsrkdnkoj', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1sMeND:lEZEGRcb2mv1FB_UaSxY45ZY8PAV1F3HlJbAN83AFCs', '2024-07-11 01:56:31.797439'),
 ('nall9o7d82gq0ykfvvxr7v8yhirg6gx1', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s9szR:plocTYoZxHPSm2cA14vgjpftm0R3tlaJIinTM8diz68', '2024-06-05 20:55:13.278444'),
 ('xh5c7ruo5ckxq5enma4wvz9rdi07viy6', 'eyJfcGFzc3dvcmRfcmVzZXRfdG9rZW4iOiJjN25ubTEtMWFiMzhiYjY4ODVlYjA4NzcyZDk4NThlNWUzZjg3YWEifQ:1sBQ39:Oc1jVynrFlU35m1ZGgAb_NB8tgq4qqaK8TEqEu0SFSg', '2024-06-10 02:25:23.544473');
 
@@ -1216,13 +1253,13 @@ ALTER TABLE `core_comuna`
 -- AUTO_INCREMENT de la tabla `core_itemcarrito`
 --
 ALTER TABLE `core_itemcarrito`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT de la tabla `core_itempedido`
 --
 ALTER TABLE `core_itempedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT de la tabla `core_marca`
@@ -1234,7 +1271,7 @@ ALTER TABLE `core_marca`
 -- AUTO_INCREMENT de la tabla `core_pedido`
 --
 ALTER TABLE `core_pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de la tabla `core_producto`
@@ -1300,7 +1337,7 @@ ALTER TABLE `django_content_type`
 -- AUTO_INCREMENT de la tabla `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Restricciones para tablas volcadas

@@ -560,8 +560,13 @@ def crear_pedido(request):
         run = request.POST.get('run') 
         tipo_entrega = request.POST.get('tipo_entrega')
         sucursal_id = request.POST.get('sucursal')
-        comprobante_pago = request.POST.get('comprobante_pago')
-        print(sucursal_id)
+
+        # Obtener el archivo del comprobante de pago
+        if 'comprobante_pago' in request.FILES:
+            comprobante_pago = request.FILES['comprobante_pago']
+        else:
+            comprobante_pago = None
+
         # Buscar la instancia de la sucursal utilizando el ID
         if sucursal_id:
             sucursal_instance = sucursal.objects.get(idSucursal=sucursal_id)
@@ -614,6 +619,7 @@ def crear_pedido(request):
                 run=None,
                 sucursal=sucursal_instance,
                 tipo_entrega=tipo_entrega,          
+                comprobante_pago=comprobante_pago
             )
 
         items_carrito = carrito.itemcarrito_set.all()
@@ -667,7 +673,8 @@ def administrar_pedidos(request):
     
     data = {
         'pedidos':pedidos,
-        'form': form
+        'form': form,
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'core/administrar_pedidos.html', data)
 
