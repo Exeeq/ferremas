@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-06-2024 a las 04:44:41
+-- Tiempo de generación: 15-07-2024 a las 02:42:16
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -656,7 +656,10 @@ CREATE TABLE `core_itempedido` (
 
 INSERT INTO `core_itempedido` (`id`, `cantidad`, `pedido_id`, `producto_id`) VALUES
 (38, 2, 33, 10),
-(39, 1, 34, 10);
+(39, 1, 34, 10),
+(40, 1, 35, 10),
+(45, 1, 40, 10),
+(46, 1, 41, 6);
 
 -- --------------------------------------------------------
 
@@ -709,7 +712,10 @@ CREATE TABLE `core_pedido` (
 
 INSERT INTO `core_pedido` (`id`, `numero`, `fecha`, `carrito_id`, `estado_id`, `apellido`, `comuna_id`, `correo`, `direccion`, `nombre`, `region_id`, `sucursal_id`, `run`, `tipo_entrega`, `comprobante_pago`) VALUES
 (33, 'b59035a7-6f56-49ed-b568-7786b315025b', '2024-06-27 02:12:45.710856', 3, 4, 'Albornoz', 1, 'ex.albornoz@duocuc.cl', 'Millantu 123', 'Exequiel', 1, NULL, NULL, 'envio_domicilio', 'comprobantes/mountains-sunset-clean-skyline.jpg'),
-(34, '3e43a279-2500-4bfa-b5cb-b600828c29d6', '2024-06-27 02:33:29.002362', 3, 1, 'Albornoz', 14, 'ex.albornoz@duocuc.cl', 'Millantu 123', 'Exequiel', 1, NULL, NULL, 'envio_domicilio', 'comprobantes/FixSpot_Modelo_Lógico.png');
+(34, '3e43a279-2500-4bfa-b5cb-b600828c29d6', '2024-06-27 02:33:29.002362', 3, 1, 'Albornoz', 14, 'ex.albornoz@duocuc.cl', 'Millantu 123', 'Exequiel', 1, NULL, NULL, 'envio_domicilio', 'comprobantes/FixSpot_Modelo_Lógico.png'),
+(35, '96ab5829-8c59-47a9-a070-3378265457ca', '2024-07-14 21:29:55.716945', 3, 1, 'albornoz', 1, 'albornozexequiel01@gmail.com', 'duoc uc puente alto', 'Exequiel Albornoz', 1, NULL, NULL, 'envio_domicilio', 'comprobantes/8f317a6b034e4524972fcab2328526fc.jpg'),
+(40, '3a36acdf-739a-40fd-869e-fc2b0aaaa17b', '2024-07-15 00:26:42.137502', 3, 1, 'Albornoz', NULL, NULL, NULL, 'Exequiel', NULL, 2, '21002289-9', 'retiro_tienda', 'comprobantes/8f317a6b034e4524972fcab2328526fc_ufNsXzS.jpg'),
+(41, 'fc82cefd-0c3b-4ec4-9b3c-c5386e5c89bf', '2024-07-15 00:28:52.395168', 3, 1, 'Albornoz', NULL, NULL, NULL, 'Exequiel', NULL, 2, '21002289-9', 'retiro_tienda', '');
 
 -- --------------------------------------------------------
 
@@ -735,9 +741,9 @@ CREATE TABLE `core_producto` (
 
 INSERT INTO `core_producto` (`idProducto`, `nombreProducto`, `precioProducto`, `stockProducto`, `imagenProducto`, `descripcionProducto`, `idMarca_id`, `idcategoriaProducto_id`) VALUES
 (4, 'Martillo Loco', 100, 0, 'martillo-venta.jpg', 'El martillo es una herramienta versátil diseñada para golpear clavos y otros materiales.', 1, 1),
-(6, 'Martillo de felix el reparador', 140, 10, 'descarga.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1),
-(9, 'Kit guía de perforación', 230, 13, 'kit guia de perforacion.jpg', 'El sistema permite conectar sus piezas de trabajo rápida y oportunamente, facilitando el ensamblaje y mejorando la eficiencia.', 1, 1),
-(10, 'Presa tipo C', 140, 28, 'Prensa tipo c.jpg', 'Prensa Tipo C Puntas Giratorias 18SP™ 18 pulgadas / 455 mm.', 1, 1),
+(6, 'Martillo de felix el reparador', 140, 8, 'descarga.jpg', 'Martillo de Félix el reparador máximo golpeador, bélico, mastodonte, duro, fuerte, etc.', 1, 1),
+(9, 'Kit guía de perforación', 230, 11, 'kit guia de perforacion.jpg', 'El sistema permite conectar sus piezas de trabajo rápida y oportunamente, facilitando el ensamblaje y mejorando la eficiencia.', 1, 1),
+(10, 'Presa tipo C', 140, 25, 'Prensa tipo c.jpg', 'Prensa Tipo C Puntas Giratorias 18SP™ 18 pulgadas / 455 mm.', 1, 1),
 (11, 'Lijadora Orbital', 122, 29, 'Lijadora orbital.jpg', 'Herramienta eléctrica que lija superficies de manera uniforme y eficiente, ideal para trabajos de lijado fino y preparación de superficies.', 2, 1),
 (12, 'Cinta Metrica', 114, 67, 'Cinta metrica.png', 'Es una herramienta de medición esencial, ideal para tomar medidas precisas de longitud de manera rápida y fácil.', 2, 1);
 
@@ -878,9 +884,10 @@ CREATE TABLE `core_usuariocustom` (
 --
 
 INSERT INTO `core_usuariocustom` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `run`, `pnombre`, `snombre`, `ap_paterno`, `ap_materno`, `fecha_nacimiento`, `direccion`, `idComuna_id`, `idRol_id`, `correo_usuario`) VALUES
-(1, 'pbkdf2_sha256$216000$W8yfRzmhw4qh$85cipHi5oYN4NzQmnocYYKVL9MTM0LI/042qU3Mo3AQ=', '2024-06-27 02:28:44.838659', 1, 'admin', '', '', 'soporte.ferremas@gmail.com', 1, 1, '2024-05-13 19:58:21.484730', '10.001.100-1', 'Admin', '', 'Supremo', '', '2024-06-06', 'Admins 111', 1, 5, 'soporte.ferremas@gmail.com'),
+(1, 'pbkdf2_sha256$720000$7Q8saaNQdeVOvXL4gDhOr5$OLOEPdLem2ju9gstivFv+G/lZ4HsITesexG6ku6n1us=', '2024-07-14 22:56:07.269098', 1, 'admin', '', '', 'soporte.ferremas@gmail.com', 1, 1, '2024-05-13 19:58:21.484730', '10.001.100-1', 'Admin', '', 'Supremo', '', '2024-06-06', 'Admins 111', 1, 5, 'soporte.ferremas@gmail.com'),
 (35, 'pbkdf2_sha256$216000$y5Ygqec9gC4o$Gnz4fu1qnTs5DDVErNSk0odj+l7t4h6INf6L+/im+hw=', NULL, 0, 'Juan', '', '', 'albornozexequiel01@gmail.com', 0, 1, '2024-05-27 00:51:55.067229', '99.111.999-1', 'Juan', '', 'Callabo', '', '2002-02-01', 'Millantu 123', 1, 1, 'albornozexequiel01@gmail.com'),
-(36, 'pbkdf2_sha256$216000$XlYqlH3qPtso$YsL+pzOMee7koRoPtu+kp5fFQk3JDf3RlSrwyVoa28Y=', NULL, 0, 'Jairo', '', '', 'jairoman.number1@gmail.com', 0, 1, '2024-05-27 02:23:19.451079', '21.383.203-4', 'Jairo', '', 'Marin', '', '2003-09-05', 'El canelo calle 2', 36, 1, 'jairoman.number1@gmail.com');
+(36, 'pbkdf2_sha256$216000$XlYqlH3qPtso$YsL+pzOMee7koRoPtu+kp5fFQk3JDf3RlSrwyVoa28Y=', NULL, 0, 'Jairo', '', '', 'jairoman.number1@gmail.com', 0, 1, '2024-05-27 02:23:19.451079', '21.383.203-4', 'Jairo', '', 'Marin', '', '2003-09-05', 'El canelo calle 2', 36, 1, 'jairoman.number1@gmail.com'),
+(37, 'pbkdf2_sha256$720000$jhhfZ11rA0E7Ovn3rpzeVJ$8IuKPPD8Dw7Yd9jBps9zdAZdGRpNCn/bj/Nz2xFxr1U=', '2024-07-15 00:40:29.951069', 0, 'Jeffrey', '', '', '', 0, 1, '2024-07-15 00:39:04.592865', '21555654-4', 'Jeffrey', '', 'Ramirez', '', '2003-01-01', 'San Francisco 123', 32, 4, 'jeff.ramirez@duocuc.cl');
 
 -- --------------------------------------------------------
 
@@ -1036,11 +1043,17 @@ CREATE TABLE `django_session` (
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
 ('4v0ufx63qfz9si75h545rw7ecrb5878y', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1sMesO:yyIbIzIc4x5R3dg3JQgWJQiOlRrAc-srGgYWBT6A6Zo', '2024-07-11 02:28:44.839660'),
+('7vlls5rzsrsannaqig64kiw2hc4bdcwk', '.eJxVjMEOwiAQBf-FsyFQQFiP3v0GsrAgVQNJaU_Gf5cmPej1zcx7M4_bWvzW0-JnYhcm2el3Cxifqe6AHljvjcdW12UOfFf4QTu_NUqv6-H-HRTsZdTOoDMCIpEBpcFCRAUBzyIRCJ11ChTsJPOkSDg3FD2IzGS0ttKQZJ8v2-U3gA:1sT5Nh:XHbQyt-mQzIwaaaC2B6KIIEL42QoUzjDi4PLaQ7CHQw', '2024-07-28 19:59:37.011400'),
 ('a6y4l6syfngjy4n36nh0byvl7fgtgp22', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s9rst:gOMlBE_qD5luSY93Cszr-fQzFpx-0Rq4tSa-a8FZYz4', '2024-06-05 19:44:23.663698'),
+('apamj0il8ewpi3rcr0o53szfsr0pzyum', '.eJxVjMEOwiAQBf-FsyFQQFiP3v0GsrAgVQNJaU_Gf5cmPej1zcx7M4_bWvzW0-JnYhcm2el3Cxifqe6AHljvjcdW12UOfFf4QTu_NUqv6-H-HRTsZdTOoDMCIpEBpcFCRAUBzyIRCJ11ChTsJPOkSDg3FD2IzGS0ttKQZJ8v2-U3gA:1sT5Zd:2mXI5MIxNJSheVDlmjreLRszyDmBf9DUoEQeljJZTok', '2024-07-28 20:11:57.822765'),
 ('b4vdt7scv688oqb31vmk8det3jtpdr4y', 'eyJfcGFzc3dvcmRfcmVzZXRfdG9rZW4iOiJjN25tMTMtMGM5MWQwZTNlODdkZjAyMzk0YzgyY2ZhZjJkOGNiZWYifQ:1sBPWX:LKnobQEQ7p6O9LpOZ-WumO8UOJ0t9LRpQyhm2NbBlV4', '2024-06-10 01:51:41.527453'),
 ('fn6ffvjp5kuwz82bkpbgrcd3j84z2oe4', 'eyJfcGFzc3dvcmRfcmVzZXRfdG9rZW4iOiJjN25uajctZWIzNjkwMzk0NDBlZDcyZmJhNzJiMjhlNzkyNWJjZmYifQ:1sBQ1Z:lVCPoUpKW7HO4h26d7A7q-ggQrs5lt7BRey21HJN1C0', '2024-06-10 02:23:45.350585'),
+('i7qhn9b1igtwxmqhkf40gdmxhap8q841', '.eJxVjMsOgjAUBf-la9P0QqGtS_d8Q9P7qEUNJBRWxn8XEha6PTNz3iqmbS1xq7LEkdVVtU5dfkdM9JTpIPxI033WNE_rMqI-FH3SqoeZ5XU73b-DkmrZa2lAgg2Be-zAiYccGLgBx1lSzgzWsLQIyGR3z3bWZzIGeyJsDHn1-QIgqTjN:1sT9lV:qbRIzdh_YnDUouHCP8SENuey1r5kZsKMYHPiiHuvFiI', '2024-07-29 00:40:29.952069'),
 ('lg33pqgd4ezwncafkfgkf7zfsrkdnkoj', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1sMeND:lEZEGRcb2mv1FB_UaSxY45ZY8PAV1F3HlJbAN83AFCs', '2024-07-11 01:56:31.797439'),
 ('nall9o7d82gq0ykfvvxr7v8yhirg6gx1', '.eJxVjEsOAiEQBe_C2hB-3aBL956BQNPKqIFkmFkZ766TzEK3r6reS8S0LjWug-c4FXESWhx-t5zowW0D5Z7arUvqbZmnLDdF7nTISy_8PO_u30FNo35rk8kotgo0Wl90cERkM8BVoUL0QTNom51h5RIB4tEoi64ED0zFoRfvD7myNqY:1s9szR:plocTYoZxHPSm2cA14vgjpftm0R3tlaJIinTM8diz68', '2024-06-05 20:55:13.278444'),
+('o335608cvoekvx1i9mamyua1lrf05iv7', '.eJxVjMEOwiAQBf-FsyFQQFiP3v0GsrAgVQNJaU_Gf5cmPej1zcx7M4_bWvzW0-JnYhcm2el3Cxifqe6AHljvjcdW12UOfFf4QTu_NUqv6-H-HRTsZdTOoDMCIpEBpcFCRAUBzyIRCJ11ChTsJPOkSDg3FD2IzGS0ttKQZJ8v2-U3gA:1sT5aD:mATsp7qN4mYguTzF6l7gxbzJ4JBD4Q6aLsZIheCB25k', '2024-07-28 20:12:33.907672'),
+('rpr2madti7jjklz6yj1l52puvqtrawuz', '.eJxVjMEOwiAQBf-FsyFQQFiP3v0GsrAgVQNJaU_Gf5cmPej1zcx7M4_bWvzW0-JnYhcm2el3Cxifqe6AHljvjcdW12UOfFf4QTu_NUqv6-H-HRTsZdTOoDMCIpEBpcFCRAUBzyIRCJ11ChTsJPOkSDg3FD2IzGS0ttKQZJ8v2-U3gA:1sT5MU:JIi8vofPUx0JBIlnWIY9SAiptmnJ_Xjw9ePNQ7647KY', '2024-07-28 19:58:22.487457'),
+('wudb04qcua1qhm1cix3zgr3knl7i3vk2', '.eJxVjMEOwiAQBf-FsyFQQFiP3v0GsrAgVQNJaU_Gf5cmPej1zcx7M4_bWvzW0-JnYhcm2el3Cxifqe6AHljvjcdW12UOfFf4QTu_NUqv6-H-HRTsZdTOoDMCIpEBpcFCRAUBzyIRCJ11ChTsJPOkSDg3FD2IzGS0ttKQZJ8v2-U3gA:1sT5lO:_sdf6nYsD006KkSMkGacNsv7jQjQvDjaiyE2xxa2sWo', '2024-07-28 20:24:06.959710'),
 ('xh5c7ruo5ckxq5enma4wvz9rdi07viy6', 'eyJfcGFzc3dvcmRfcmVzZXRfdG9rZW4iOiJjN25ubTEtMWFiMzhiYjY4ODVlYjA4NzcyZDk4NThlNWUzZjg3YWEifQ:1sBQ39:Oc1jVynrFlU35m1ZGgAb_NB8tgq4qqaK8TEqEu0SFSg', '2024-06-10 02:25:23.544473');
 
 --
@@ -1253,13 +1266,13 @@ ALTER TABLE `core_comuna`
 -- AUTO_INCREMENT de la tabla `core_itemcarrito`
 --
 ALTER TABLE `core_itemcarrito`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de la tabla `core_itempedido`
 --
 ALTER TABLE `core_itempedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `core_marca`
@@ -1271,7 +1284,7 @@ ALTER TABLE `core_marca`
 -- AUTO_INCREMENT de la tabla `core_pedido`
 --
 ALTER TABLE `core_pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT de la tabla `core_producto`
@@ -1307,7 +1320,7 @@ ALTER TABLE `core_sucursal`
 -- AUTO_INCREMENT de la tabla `core_usuariocustom`
 --
 ALTER TABLE `core_usuariocustom`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `core_usuariocustom_groups`

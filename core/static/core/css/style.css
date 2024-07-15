@@ -754,3 +754,22 @@ textarea {
   text-decoration: none;
   cursor: pointer;
 }
+
+.modal-dialog-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100% - 1rem);
+}
+
+.modal-content {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.modal-body img {
+  max-width: 50%;
+  height: auto;
+  max-height: 80vh;
+}

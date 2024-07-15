@@ -1,10 +1,11 @@
 {% extends 'core/base.html' %}
 {% load static %}
+
 {% block css %}
 <link href="{% static 'core/css/style.css' %}" rel="stylesheet">
 {% endblock css %}
-{% block contenido %}
 
+{% block contenido %}
 <!-- Start Hero Section -->
 <div class="hero">
     <div class="container d-flex justify-content-center mx-auto align-items-center">
@@ -43,57 +44,53 @@
                             <tr>
                                 <td>{{ pedido.numero }}</td>
                                 <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
-                                <td class="cliente">{{ pedido.nombre|default:"_"}} {{ pedido.apellido|default:"_"}}</td>
-                                <td class="direccion">{{ pedido.direccion|default:"_"}}</td>
-                                <td>{{ pedido.comuna.nombreComuna|default:"_"}}</td>
-                                <td>{{ pedido.region.nombreRegion|default:"_"}}</td>
-                                <td>{{ pedido.run|default:"_"}}</td>
-                                <td>{{ pedido.get_tipo_entrega_display|default:"_"}}</td>
-                                <td><img src="{{ MEDIA_URL }}{{ pedido.comprobante_pago }}" alt="Comprobante de Pago" width="100px" height="100px" onclick="openModal('{{ MEDIA_URL }}{{ pedido.comprobante_pago }}')"></td>
-                                <td>{{ pedido.estado }}</td>
+                                <td class="cliente">{{ pedido.nombre|default:"N/A"}} {{ pedido.apellido|default:"N/A"}}</td>
+                                <td class="direccion">{{ pedido.direccion|default:"N/A"}}</td>
+                                <td>{{ pedido.comuna.nombreComuna|default:"N/A"}}</td>
+                                <td>{{ pedido.region.nombreRegion|default:"N/A"}}</td>
+                                <td>{{ pedido.run|default:"N/A"}}</td>
+                                <td>{{ pedido.get_tipo_entrega_display|default:"N/A"}}</td>
                                 <td>
-                                    {% if pedido.estado.id != 4 %}
-                                        <form id="form-{{ pedido.numero }}" method="post" action="{% url 'cambiar_estado' pedido.numero %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="pedido_numero" value="{{ pedido.numero }}">
-                                            {{ form.estado }}
-                                            <button type="button" class="btn btn-sm bg-warning border-warning mt-3" onclick="confirmarActualizacion('{{ pedido.numero }}')">Actualizar</button>
-                                        </form>
+                                    {% if pedido.comprobante_pago %}
+                                        <img src="{{ MEDIA_URL }}{{ pedido.comprobante_pago }}" alt="Comprobante de Pago" width="100px" height="100px" class="img-thumbnail" onclick="mostrarImagen('{{ MEDIA_URL }}{{ pedido.comprobante_pago }}')">
                                     {% else %}
-                                        <button type="button" class="btn btn-sm bg-secondary border-secondary mt-3" disabled>Entregado</button>
+                                        N/A
                                     {% endif %}
                                 </td>
+                                <td>{{ pedido.estado }}</td>
+                                {% if user.idRol_id == 5 or user.idRol_id == 2 %}
+                                    <td>
+                                        {% if pedido.estado.id != 4 %}
+                                            <form id="form-{{ pedido.numero }}" method="post" action="{% url 'cambiar_estado' pedido.numero %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="pedido_numero" value="{{ pedido.numero }}">
+                                                {{ form.estado }}
+                                                <button type="button" class="btn btn-sm bg-warning border-warning mt-3" onclick="confirmarActualizacion('{{ pedido.numero }}')">Actualizar</button>
+                                            </form>
+                                        {% else %}
+                                            <button type="button" class="btn btn-sm bg-secondary border-secondary mt-3" disabled>Entregado</button>
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <td>No accesible...</td>
+                                {% endif %}
+
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                 <div id="myModal" class="modal">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <img class="modal-content" id="img01">
-                 </div>
             </div>
         </div>
     </div>
 </div>
-<br><br><br><br><br>
-
 {% endblock contenido %}
+
 {% block js %}
 <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'core/js/tiny-slider.js' %}"></script>
 <script src="{% static 'core/js/custom.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{% static 'core/js/mensajes.js' %}"></script>
 <script>
-    function openModal(src) {
-        document.getElementById('myModal').style.display = "block";
-        document.getElementById('img01').src = src;
-    }
-
-    function closeModal() {
-        document.getElementById('myModal').style.display = "none";
-    }
-
     function confirmarActualizacion(numeroPedido) {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -110,5 +107,19 @@
             }
         });
     }
+
+    function mostrarImagen(src) {
+        Swal.fire({
+            imageUrl: src,
+            imageAlt: 'Comprobante de Pago',
+            width: '40%',
+            imageHeight: 'auto',
+            showCloseButton: true,
+            showConfirmButton: false,
+            customClass: {
+                image: 'img-fluid'
+            }
+        });
+    }
 </script>
-{% endblock %}
+{% endblock js %}

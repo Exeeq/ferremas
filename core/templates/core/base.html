@@ -52,7 +52,12 @@
                 	<li><a class="dropdown-item text-white" href="{% url 'panel_administracion' %}"><i class="fa-solid fa-lock"></i> Administración</a></li>
                 {% endif %}
 				<li><a class="dropdown-item text-white" href="{% url 'mis_pedidos' %}"><i class="fa-solid fa-store"></i> Mis pedidos</a></li>
-                <li><a class="dropdown-item text-white" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+					<i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+				</a></li>
+				<form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+					{% csrf_token %}
+				</form>
               {% else %}
                 <li><a class="dropdown-item text-white" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión</a></li>
                 <li><a class="dropdown-item text-white" href="{% url 'register' %}"><i class="fa-solid fa-cash-register"></i> Registrarse</a></li>
